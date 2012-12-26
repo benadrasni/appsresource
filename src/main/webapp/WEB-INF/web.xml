@@ -1,0 +1,96 @@
+<web-app version="2.5"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+  <welcome-file-list>
+    <welcome-file>Appsresource.html</welcome-file>
+  </welcome-file-list>
+
+  <context-param>
+    <!-- max size of the upload request -->
+    <param-name>maxSize</param-name>
+    <param-value>3145728</param-value>
+  </context-param>
+  <context-param>
+    <!-- Useful in development mode to slow down the uploads in fast networks.
+         Put the number of milliseconds to sleep in each block received in the server.
+         false or 0, means don't use slow uploads  -->
+    <param-name>slowUploads</param-name>
+    <param-value>200</param-value>
+  </context-param>
+
+  <servlet>
+    <servlet-name>service</servlet-name>
+    <servlet-class>sk.benko.appsresource.server.ServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>userservice</servlet-name>
+    <servlet-class>sk.benko.appsresource.server.AppUserServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>dbservice</servlet-name>
+    <servlet-class>sk.benko.appsresource.server.DbServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>appservice</servlet-name>
+    <servlet-class>sk.benko.appsresource.server.ApplicationServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>uploadServlet</servlet-name>
+    <!-- This is the default servlet, it puts files in session -->
+    <servlet-class>sk.benko.appsresource.server.ImportObjectsUploadAction</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>userservice</servlet-name>
+    <url-pattern>/appsresource/userservice</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>dbservice</servlet-name>
+    <url-pattern>/appsresource/dbservice</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>appservice</servlet-name>
+    <url-pattern>/appsresource/appservice</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>uploadServlet</servlet-name>
+    <url-pattern>*.gupld</url-pattern>
+  </servlet-mapping>
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>all</web-resource-name>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>*</role-name>
+    </auth-constraint>
+  </security-constraint>
+  <servlet>
+    <servlet-name>SystemServiceServlet</servlet-name>
+    <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
+    <init-param>
+      <param-name>services</param-name>
+      <param-value/>
+    </init-param>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>SystemServiceServlet</servlet-name>
+    <url-pattern>/_ah/spi/*</url-pattern>
+  </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>service</servlet-name>
+        <url-pattern>/appsresource/service</url-pattern>
+    </servlet-mapping>
+
+</web-app>

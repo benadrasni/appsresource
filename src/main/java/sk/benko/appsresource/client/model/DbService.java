@@ -1,0 +1,1137 @@
+package sk.benko.appsresource.client.model;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+
+import sk.benko.appsresource.client.model.result.CreateOrUpdateObjectRelationResult;
+import sk.benko.appsresource.client.model.result.GetObjectRelationsResult;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+
+/**
+ * The RPC api available to the client. The asynchronous version that is used
+ * directly by the client is {@link DbServiceAsync}.
+ *
+ */
+@RemoteServiceRelativePath("dbservice")
+public interface DbService extends Service {
+  
+  /**
+   * Encapsulates a response from
+   * {@link DbService#createObjectType(ObjectType)}.
+   */
+  @SuppressWarnings("serial")
+  static class CreateOrUpdateObjectTypeResult implements Serializable {
+    private int id;
+    private String code;
+    private Date updateTime;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param key
+     *          the key that was assigned to the new {@link ObjectType}
+     * @param updateTime
+     *          the time assigned to {@link ObjectType#getLastUpdatedAt()}
+     */
+    public CreateOrUpdateObjectTypeResult(int id, String code, Date updateTime) {
+      assert !GWT.isClient();
+      this.id = id;
+      this.code = code;
+      this.updateTime = updateTime;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private CreateOrUpdateObjectTypeResult() {
+    }
+
+    /**
+     * Returns the key that was assigned to the new {@link ObjectType}.
+     *
+     * @return
+     */
+    public int getId() {
+      return id;
+    }
+
+    /**
+     * Returns the code that was assigned to the new {@link ObjectType}.
+     *
+     * @return
+     */
+    public String getCode() {
+      return code;
+    }
+
+    /**
+     * Returns the {@link Date} that was assigned to
+     * {@link ObjectType#getLastUpdatedAt()} by the server.
+     *
+     * @return
+     */
+    public Date getUpdateTime() {
+      return updateTime;
+    }
+  }
+
+  /**
+   * Encapsulates a response from
+   * {@link DbService#createObjectAttribute(ObjectAttribute)}.
+   */
+  @SuppressWarnings("serial")
+  static class CreateOrUpdateObjectAttributeResult implements Serializable {
+    private int id;
+    private String code;
+    private Date updateTime;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param key
+     *          the key that was assigned to the new {@link ObjectAttribute}
+     * @param updateTime
+     *          the time assigned to {@link ObjectAttribute#getLastUpdatedAt()}
+     */
+    public CreateOrUpdateObjectAttributeResult(int id, String code, Date updateTime) {
+      assert !GWT.isClient();
+      this.id = id;
+      this.code = code;
+      this.updateTime = updateTime;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private CreateOrUpdateObjectAttributeResult() {
+    }
+
+    /**
+     * Returns the key that was assigned to the new {@link ObjectAttribute}.
+     *
+     * @return
+     */
+    public int getId() {
+      return id;
+    }
+
+    /**
+     * Returns the code that was assigned to the new {@link ObjectAttribute}.
+     *
+     * @return
+     */
+    public String getCode() {
+      return code;
+    }
+
+    /**
+     * Returns the {@link Date} that was assigned to
+     * {@link ObjectAttribute#getLastUpdatedAt()} by the server.
+     *
+     * @return
+     */
+    public Date getUpdateTime() {
+      return updateTime;
+    }
+  }
+
+  /**
+   * Encapsulates a response from
+   * {@link DbService#createOrUpdateValueType(ValueType)}.
+   */
+  @SuppressWarnings("serial")
+  static class CreateOrUpdateValueTypeResult implements Serializable {
+    private int id;
+    private String code;
+    private Date updateTime;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param key
+     *          the key that was assigned to the new {@link ValueType}
+     * @param updateTime
+     *          the time assigned to {@link ValueType#getLastUpdatedAt()}
+     */
+    public CreateOrUpdateValueTypeResult(int id, String code, Date updateTime) {
+      assert !GWT.isClient();
+      this.id = id;
+      this.code = code;
+      this.updateTime = updateTime;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private CreateOrUpdateValueTypeResult() {
+    }
+
+    /**
+     * Returns the key that was assigned to the new {@link ValueType}.
+     *
+     * @return
+     */
+    public int getId() {
+      return id;
+    }
+
+    /**
+     * Returns the code that was assigned to the new {@link ValueType}.
+     *
+     * @return
+     */
+    public String getCode() {
+      return code;
+    }
+
+    /**
+     * Returns the {@link Date} that was assigned to
+     * {@link ValueType#getLastUpdatedAt()} by the server.
+     *
+     * @return
+     */
+    public Date getUpdateTime() {
+      return updateTime;
+    }
+  }
+
+  /**
+   * Encapsulates a response from
+   * {@link DbService#createOrUpdateUnit(Unit)}.
+   */
+  @SuppressWarnings("serial")
+  static class CreateOrUpdateUnitResult implements Serializable {
+    private int id;
+    private String code;
+    private Date updateTime;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param id
+     *          the key that was assigned to the new {@link Unit}
+     * @param updateTime
+     *          the time assigned to {@link Unit#getLastUpdatedAt()}
+     */
+    public CreateOrUpdateUnitResult(int id, String code, Date updateTime) {
+      assert !GWT.isClient();
+      this.id = id;
+      this.code = code;
+      this.updateTime = updateTime;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private CreateOrUpdateUnitResult() {
+    }
+
+    /**
+     * Returns the key that was assigned to the new {@link Unit}.
+     *
+     * @return
+     */
+    public int getId() {
+      return id;
+    }
+
+    /**
+     * Returns the code that was assigned to the new {@link Unit}.
+     *
+     * @return
+     */
+    public String getCode() {
+      return code;
+    }
+
+    /**
+     * Returns the {@link Date} that was assigned to
+     * {@link Unit#getLastUpdatedAt()} by the server.
+     *
+     * @return
+     */
+    public Date getUpdateTime() {
+      return updateTime;
+    }
+  }
+
+  /**
+   * Encapsulates a response from
+   * {@link DbService#createTemplate(Template)}.
+   */
+  @SuppressWarnings("serial")
+  static class CreateOrUpdateTemplateResult implements Serializable {
+    private int id;
+    private String code;
+    private Date updateTime;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param key
+     *          the key that was assigned to the new {@link Template}
+     * @param updateTime
+     *          the time assigned to {@link Template#getLastUpdatedAt()}
+     */
+    public CreateOrUpdateTemplateResult(int id, String code, Date updateTime) {
+      assert !GWT.isClient();
+      this.id = id;
+      this.code = code;
+      this.updateTime = updateTime;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private CreateOrUpdateTemplateResult() {
+    }
+
+    /**
+     * Returns the key that was assigned to the new {@link ObjectAttribute}.
+     *
+     * @return
+     */
+    public int getId() {
+      return id;
+    }
+
+    /**
+     * Returns the code that was assigned to the new {@link ObjectAttribute}.
+     *
+     * @return
+     */
+    public String getCode() {
+      return code;
+    }
+
+    /**
+     * Returns the {@link Date} that was assigned to
+     * {@link Template#getLastUpdatedAt()} by the server.
+     *
+     * @return
+     */
+    public Date getUpdateTime() {
+      return updateTime;
+    }
+  }
+
+  /**
+   * Encapsulates a response from
+   * {@link DbService#createTemplateRelation(TemplateRelation)}.
+   */
+  @SuppressWarnings("serial")
+  static class CreateOrUpdateTemplateRelationResult implements Serializable {
+    private int id;
+    private String code;
+    private Date updateTime;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param key
+     *          the key that was assigned to the new {@link TemplateRelation}
+     * @param updateTime
+     *          the time assigned to {@link TemplateRelation#getLastUpdatedAt()}
+     */
+    public CreateOrUpdateTemplateRelationResult(int id, String code, Date updateTime) {
+      assert !GWT.isClient();
+      this.id = id;
+      this.code = code;
+      this.updateTime = updateTime;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private CreateOrUpdateTemplateRelationResult() {
+    }
+
+    /**
+     * Returns the key that was assigned to the new {@link TemplateRelation}.
+     *
+     * @return
+     */
+    public int getId() {
+      return id;
+    }
+
+    /**
+     * Returns the code that was assigned to the new {@link TemplateRelation}.
+     *
+     * @return
+     */
+    public String getCode() {
+      return code;
+    }
+
+    /**
+     * Returns the {@link Date} that was assigned to
+     * {@link TemplateRelation#getLastUpdatedAt()} by the server.
+     *
+     * @return
+     */
+    public Date getUpdateTime() {
+      return updateTime;
+    }
+  }
+
+  /**
+   * Encapsulates a response from
+   * {@link DbService#createTemplateGroup(TemplateGroup)}.
+   */
+  @SuppressWarnings("serial")
+  static class CreateOrUpdateTemplateGroupResult implements Serializable {
+    private int id;
+    private String code;
+    private Date updateTime;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param key
+     *          the key that was assigned to the new {@link TemplateGroup}
+     * @param updateTime
+     *          the time assigned to {@link TemplateGroup#getLastUpdatedAt()}
+     */
+    public CreateOrUpdateTemplateGroupResult(int id, String code, Date updateTime) {
+      assert !GWT.isClient();
+      this.id = id;
+      this.code = code;
+      this.updateTime = updateTime;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private CreateOrUpdateTemplateGroupResult() {
+    }
+
+    /**
+     * Returns the key that was assigned to the new {@link TemplateGroup}.
+     *
+     * @return
+     */
+    public int getId() {
+      return id;
+    }
+
+    /**
+     * Returns the code that was assigned to the new {@link TemplateGroup}.
+     *
+     * @return
+     */
+    public String getCode() {
+      return code;
+    }
+
+    /**
+     * Returns the {@link Date} that was assigned to
+     * {@link TemplateGroup#getLastUpdatedAt()} by the server.
+     *
+     * @return
+     */
+    public Date getUpdateTime() {
+      return updateTime;
+    }
+  }
+
+  /**
+   * Encapsulates a response from
+   * {@link DbService#createTemplateAttribute(TemplateAttribute)}.
+   */
+  @SuppressWarnings("serial")
+  static class CreateOrUpdateTemplateAttributeResult implements Serializable {
+    private int id;
+    private String code;
+    private Date updateTime;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param key
+     *          the key that was assigned to the new {@link TemplateAttribute}
+     * @param updateTime
+     *          the time assigned to {@link TemplateAttribute#getLastUpdatedAt()}
+     */
+    public CreateOrUpdateTemplateAttributeResult(int id, String code, Date updateTime) {
+      assert !GWT.isClient();
+      this.id = id;
+      this.code = code;
+      this.updateTime = updateTime;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private CreateOrUpdateTemplateAttributeResult() {
+    }
+
+    /**
+     * Returns the key that was assigned to the new {@link TemplateAttribute}.
+     *
+     * @return
+     */
+    public int getId() {
+      return id;
+    }
+
+    /**
+     * Returns the code that was assigned to the new {@link TemplateAttribute}.
+     *
+     * @return
+     */
+    public String getCode() {
+      return code;
+    }
+
+    /**
+     * Returns the {@link Date} that was assigned to
+     * {@link TemplateAttribute#getLastUpdatedAt()} by the server.
+     *
+     * @return
+     */
+    public Date getUpdateTime() {
+      return updateTime;
+    }
+  }
+
+  /**
+   * Encapsulates a response from
+   * {@link DbService#createApplication(Application)}.
+   */
+  @SuppressWarnings("serial")
+  static class CreateOrUpdateApplicationResult implements Serializable {
+    private int id;
+    private String code;
+    private Date updateTime;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param key
+     *          the key that was assigned to the new {@link Application}
+     * @param updateTime
+     *          the time assigned to {@link Application#getLastUpdatedAt()}
+     */
+    public CreateOrUpdateApplicationResult(int id, String code, Date updateTime) {
+      assert !GWT.isClient();
+      this.id = id;
+      this.code = code;
+      this.updateTime = updateTime;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private CreateOrUpdateApplicationResult() {
+    }
+
+    /**
+     * Returns the key that was assigned to the new {@link Application}.
+     *
+     * @return
+     */
+    public int getId() {
+      return id;
+    }
+
+    /**
+     * Returns the code that was assigned to the new {@link Application}.
+     *
+     * @return
+     */
+    public String getCode() {
+      return code;
+    }
+
+    /**
+     * Returns the {@link Date} that was assigned to
+     * {@link Application#getLastUpdatedAt()} by the server.
+     *
+     * @return
+     */
+    public Date getUpdateTime() {
+      return updateTime;
+    }
+  }
+
+  /**
+   * Encapsulates a response from
+   * {@link DbService#createApplicationTemplate(ApplicationTemplate)}.
+   */
+  @SuppressWarnings("serial")
+  static class CreateOrUpdateApplicationTemplateResult implements Serializable {
+    private int appId;
+    private int tId;
+
+    private Date updateTime;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param key
+     *          the key that was assigned to the new {@link ApplicationTemplate}
+     * @param updateTime
+     *          the time assigned to {@link ApplicationTemplate#getLastUpdatedAt()}
+     */
+    public CreateOrUpdateApplicationTemplateResult(int appId, int tId, Date updateTime) {
+      assert !GWT.isClient();
+      this.appId = appId;
+      this.tId = tId;
+      this.updateTime = updateTime;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private CreateOrUpdateApplicationTemplateResult() {
+    }
+
+    /**
+     * Returns part of the key that was assigned to the new {@link ApplicationTemplate}.
+     *
+     * @return
+     */
+    public int getAppId() {
+      return appId;
+    }
+
+    /**
+     * Returns part of the key that was assigned to the new {@link ApplicationTemplate}.
+     *
+     * @return
+     */
+    public int getTId() {
+      return tId;
+    }
+
+    /**
+     * Returns the {@link Date} that was assigned to
+     * {@link Application#getLastUpdatedAt()} by the server.
+     *
+     * @return
+     */
+    public Date getUpdateTime() {
+      return updateTime;
+    }
+  }
+
+  /**
+   * Encapsulates a response from {@link DbService#getObjectTypes(String)}.
+   */
+  @SuppressWarnings("serial")
+  static class GetObjectTypesResult implements Serializable {
+    private ArrayList<ObjectType> objectTypes;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param objectTypes
+     *          the list of object types to return
+     */
+    public GetObjectTypesResult(ArrayList<ObjectType> objectTypes) {
+      assert !GWT.isClient();
+      this.objectTypes = objectTypes;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private GetObjectTypesResult() {
+    }
+
+    /**
+     * Returns the object types that were returned by the server. This can be
+     * zero-length, but will not be null.
+     *
+     * @return
+     */
+    public ArrayList<ObjectType> getObjectTypes() {
+      return objectTypes;
+    }
+  }
+  
+  /**
+   * Encapsulates a response from {@link DbService#getObjectAttributes(String)}.
+   */
+  @SuppressWarnings("serial")
+  static class GetObjectAttributesResult implements Serializable {
+    private ArrayList<ObjectAttribute> objectAttributes;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param timestamp
+     *          an opaque timestamp
+     * @param objectAttributes
+     *          the list of object attributes to return
+     */
+    public GetObjectAttributesResult(ArrayList<ObjectAttribute> objectAttributes) {
+      assert !GWT.isClient();
+      this.objectAttributes = objectAttributes;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private GetObjectAttributesResult() {
+    }
+
+    /**
+     * Returns the object types that were returned by the server. This can be
+     * zero-length, but will not be null.
+     *
+     * @return
+     */
+    public ArrayList<ObjectAttribute> getObjectAttributes() {
+      return objectAttributes;
+    }
+  }
+
+  /**
+   * Encapsulates a response from {@link DbService#getValueTypes(String)}.
+   */
+  @SuppressWarnings("serial")
+  static class GetValueTypesResult implements Serializable {
+    private ArrayList<ValueType> valueTypes;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param valueTypes
+     *          the list of value types to return
+     */
+    public GetValueTypesResult(ArrayList<ValueType> valueTypes) {
+      assert !GWT.isClient();
+      this.valueTypes = valueTypes;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private GetValueTypesResult() {
+    }
+
+    /**
+     * Returns the value types that were returned by the server. This can be
+     * zero-length, but will not be null.
+     *
+     * @return
+     */
+    public ArrayList<ValueType> getValueTypes() {
+      return valueTypes;
+    }
+  }
+
+  /**
+   * Encapsulates a response from {@link DbService#getUnits(String)}.
+   */
+  @SuppressWarnings("serial")
+  static class GetUnitsResult implements Serializable {
+    private ArrayList<Unit> units;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param units
+     *          the list of units to return
+     */
+    public GetUnitsResult(ArrayList<Unit> units) {
+      assert !GWT.isClient();
+      this.units = units;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private GetUnitsResult() {
+    }
+
+    /**
+     * Returns the units that were returned by the server. This can be
+     * zero-length, but will not be null.
+     *
+     * @return
+     */
+    public ArrayList<Unit> getUnits() {
+      return units;
+    }
+  }
+
+  /**
+   * Encapsulates a response from {@link DbService#getTemplates(String)}.
+   */
+  @SuppressWarnings("serial")
+  static class GetTemplatesResult implements Serializable {
+    private ArrayList<Template> templates;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param templates
+     *          the list of templates to return
+     */
+    public GetTemplatesResult(ArrayList<Template> templates) {
+      assert !GWT.isClient();
+      this.templates = templates;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private GetTemplatesResult() {
+    }
+
+    /**
+     * Returns the object types that were returned by the server. This can be
+     * zero-length, but will not be null.
+     *
+     * @return
+     */
+    public ArrayList<Template> getTemplates() {
+      return templates;
+    }
+  }
+
+  /**
+   * Encapsulates a response from {@link DbService#getTemplateRelations(String)}.
+   */
+  @SuppressWarnings("serial")
+  static class GetTemplateRelationsResult implements Serializable {
+    private ArrayList<TemplateRelation> templateRelations;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param templateRelations
+     *          the list of template relations to return
+     */
+    public GetTemplateRelationsResult(ArrayList<TemplateRelation> templateRelations) {
+      assert !GWT.isClient();
+      this.templateRelations = templateRelations;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private GetTemplateRelationsResult() {
+    }
+
+    /**
+     * Returns the object types that were returned by the server. This can be
+     * zero-length, but will not be null.
+     *
+     * @return
+     */
+    public ArrayList<TemplateRelation> getTemplateRelations() {
+      return templateRelations;
+    }
+  }
+
+  /**
+   * Encapsulates a response from {@link DbService#getTemplateGroups(String)}.
+   */
+  @SuppressWarnings("serial")
+  static class GetTemplateGroupsResult implements Serializable {
+    private ArrayList<TemplateGroup> templateGroups;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param templatesOld
+     *          the list of templates to return
+     */
+    public GetTemplateGroupsResult(ArrayList<TemplateGroup> templateGroups) {
+      assert !GWT.isClient();
+      this.templateGroups = templateGroups;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private GetTemplateGroupsResult() {
+    }
+
+    /**
+     * Returns the object types that were returned by the server. This can be
+     * zero-length, but will not be null.
+     *
+     * @return
+     */
+    public ArrayList<TemplateGroup> getTemplateGroups() {
+      return templateGroups;
+    }
+  }
+
+  /**
+   * Encapsulates a response from {@link DbService#getTemplateAttributes(String)}.
+   */
+  @SuppressWarnings("serial")
+  static class GetTemplateAttributesResult implements Serializable {
+    private ArrayList<TemplateAttribute> templateAttributes;
+
+    /**
+     * Constructs a new result. This constructor can only be invoked on the
+     * server.
+     *
+     * @param templatesOld
+     *          the list of template attributes to return
+     */
+    public GetTemplateAttributesResult(ArrayList<TemplateAttribute> templateAttributes) {
+      assert !GWT.isClient();
+      this.templateAttributes = templateAttributes;
+    }
+
+    /**
+     * Needed for RPC serialization.
+     */
+    @SuppressWarnings("unused")
+    private GetTemplateAttributesResult() {
+    }
+
+    /**
+     * Returns the template attributes that were returned by the server. 
+     * This can be zero-length, but will not be null.
+     *
+     * @return
+     */
+    public ArrayList<TemplateAttribute> getTemplateAttributes() {
+      return templateAttributes;
+    }
+  }
+
+  /**
+   * Get all object types for the currently logged in author. <code>timestamp</code> is
+   * an opaque timestamp used by the server to optimize the set of results that
+   * are returned. Callers should pass a timestamp from
+   * {@link GetObjectTypesResult#getTimestamp()}. For the initial call, or to simply
+   * receive the full set of object types, pass <code>null</code>.
+   *
+   * @return
+   * @throws AccessDeniedException
+   */
+  GetObjectTypesResult getObjectTypes()  throws AccessDeniedException;
+  
+  /**
+   * Get all object attributes for given object type.
+   *
+   * @param otId
+   *          an id of object type
+   * @return
+   * @throws AccessDeniedException
+   */
+  GetObjectAttributesResult getObjectAttributes(int otId)
+      throws AccessDeniedException;
+
+  /**
+   * Get all object relations for given object type.
+   *
+   * @param otId
+   *          an id of object type
+   * @return
+   * @throws AccessDeniedException
+   */
+  GetObjectRelationsResult getObjectRelations(int otId)
+      throws AccessDeniedException;
+  
+  /**
+   * Get all value types.
+   *
+   * @return
+   * @throws AccessDeniedException
+   */
+  GetValueTypesResult getValueTypes() throws AccessDeniedException;
+  
+  /**
+   * Get all units for the currently logged in author. <code>timestamp</code> is
+   * an opaque timestamp used by the server to optimize the set of results that
+   * are returned. Callers should pass a timestamp from
+   * {@link GetUnitsResult#getTimestamp()}. For the initial call, or to simply
+   * receive the full set of object types, pass <code>null</code>.
+   *
+   * @return
+   * @throws AccessDeniedException
+   */
+  GetUnitsResult getUnits() throws AccessDeniedException;
+
+  /**
+   * Get all templates for the currently logged in author. <code>timestamp</code> is
+   * an opaque timestamp used by the server to optimize the set of results that
+   * are returned. Callers should pass a timestamp from
+   * {@link GetTemplatesResult#getTimestamp()}. For the initial call, or to simply
+   * receive the full set of object types, pass <code>null</code>.
+   *
+   * @return
+   * @throws AccessDeniedException
+   */
+  GetTemplatesResult getTemplates() throws AccessDeniedException;
+  
+  /**
+   * Get all template groups for the currently logged in author. <code>timestamp</code> is
+   * an opaque timestamp used by the server to optimize the set of results that
+   * are returned. Callers should pass a timestamp from
+   * {@link GetTemplateRelationsResult#getTimestamp()}. For the initial call, or to simply
+   * receive the full set of object types, pass <code>null</code>.
+   *
+   * @return
+   * @throws AccessDeniedException
+   */
+  GetTemplateRelationsResult getTemplateRelations()
+      throws AccessDeniedException;
+  
+  GetTemplateGroupsResult getTemplateGroups(Template template)
+      throws AccessDeniedException;
+  
+  /**
+   * Returns the information needed to load the application template.
+   *
+   * @return a result object
+   * @throws AccessDeniedException
+   */
+  //UserInfoResult getUserInfo() throws AccessDeniedException;  
+
+  /**
+   * Create a new {@link ObjectType}.
+   *
+   * @param objectType
+   *          the object type
+   * @return a result object
+   * @throws AccessDeniedException
+   */
+  CreateOrUpdateObjectTypeResult createObjectType(ObjectType objectType, AppUser author);
+
+  /**
+   * Create a new {@link ObjectAttribute}.
+   *
+   * @param objectAttribute
+   *          the object attribute
+   * @return a result object
+   * @throws AccessDeniedException
+   */
+  CreateOrUpdateObjectAttributeResult createObjectAttribute(ObjectAttribute objectAttribute, AppUser author);
+
+  /**
+   * Create a new {@link ObjectRelation}.
+   *
+   * @param objectRelation
+   *          the object relation
+   * @return a result object
+   * @throws AccessDeniedException
+   */
+  CreateOrUpdateObjectRelationResult createObjectRelation(ObjectRelation objectRelation, AppUser author);
+  
+  /**
+   * Create a new {@link ValueType}.
+   *
+   * @param valueType
+   *          the value type
+   * @return a result object
+   * @throws AccessDeniedException
+   */
+  CreateOrUpdateValueTypeResult createValueType(ValueType valueType, AppUser author);
+
+  /**
+   * Create a new {@link Unit}.
+   *
+   * @param unit
+   *          the unit
+   * @return a result object
+   * @throws AccessDeniedException
+   */
+  CreateOrUpdateUnitResult createUnit(Unit unit, AppUser author);
+
+  /**
+   * Create a new {@link Template}.
+   *
+   * @param template
+   *          the template
+   * @return a result object
+   * @throws AccessDeniedException
+   */
+  CreateOrUpdateTemplateResult createTemplate(Template template, 
+      HashMap<TemplateTree,ArrayList<TemplateTreeItem>> trees,
+      HashMap<TemplateList,ArrayList<TemplateListItem>> lists,
+      AppUser author);
+
+  /**
+   * Create a new {@link TemplateRelation}.
+   *
+   * @param templateRelation
+   *          the template relation
+   * @return a result object
+   * @throws AccessDeniedException
+   */
+  CreateOrUpdateTemplateRelationResult createTemplateRelation(TemplateRelation templateRelation, AppUser author);
+
+  /**
+   * Create a new {@link TemplateGroup}.
+   *
+   * @param templateGroup
+   *          the template group
+   * @return a result object
+   * @throws AccessDeniedException
+   */
+  CreateOrUpdateTemplateGroupResult createTemplateGroup(TemplateGroup templateGroup, AppUser author);
+
+  /**
+   * Create a new {@link TemplateAttribute}.
+   *
+   * @param templateAttribute
+   *          the template attribute
+   * @return a result object
+   * @throws AccessDeniedException
+   */
+  CreateOrUpdateTemplateAttributeResult createTemplateAttribute(TemplateAttribute templateAttribute, AppUser author);
+  
+  /**
+   * Create a new {@link Application}.
+   *
+   * @param application
+   *          the application
+   * @param appts
+   *          the list of template belongs to the application
+   * @return a result object
+   * @throws AccessDeniedException
+   */
+  CreateOrUpdateApplicationResult createOrUpdateApplication(Application application, 
+      ArrayList<ApplicationTemplate> appts, AppUser author);
+
+}

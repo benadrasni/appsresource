@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.6.1//EN"
+        "http://google-web-toolkit.googlecode.com/svn/tags/1.6.1/distro-source/core/src/gwt-module.dtd">
+<module rename-to='appsresource'>
+  <!-- Inherit the core Web Toolkit stuff.                        -->
+  <inherits name='com.google.gwt.user.User'/>
+  <inherits name="com.google.gwt.i18n.I18N"/>
+
+  <!-- Inherit the default GWT style sheet.  You can change       -->
+  <!-- the theme of your GWT application by uncommenting          -->
+  <!-- any one of the following lines.                            -->
+  <inherits name='com.google.gwt.user.theme.clean.Clean'/>
+  <!-- <inherits name='com.google.gwt.user.theme.standard.Standard'/> -->
+  <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
+  <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
+
+  <!-- Other module inherits                                      -->
+  <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/>
+  <inherits name="gwtupload.GWTUpload"/>
+  <inherits name="com.reveregroup.gwt.imagepreloader.ImagePreloader" />
+  <stylesheet src="upload.css"/>
+  <stylesheet src="themes/basic/theme.css"/>
+  
+  <script src="../ga.js"/>
+  
+  <!-- Specify the app entry point class.                         -->
+  <entry-point class='sk.benko.appsresource.client.layout.Main'/>
+
+  <extend-property name="locale" values="de"/>
+  <extend-property name="locale" values="sk"/>
+  <!-- Specify the paths for translatable code                    -->
+  <source path='client'/>
+  <source path='shared'/>
+</module>

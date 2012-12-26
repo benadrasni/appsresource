@@ -1,0 +1,505 @@
+/*********************
+ * Label panel
+ */
+.appsres-Label {
+	
+}
+
+.appsres-GroupLabel {
+	font-weight: bold;
+}
+
+.appsres-Label-highlighted {
+	color: red;
+}
+
+/*********************
+ * Panel
+ */
+.appsres-Panel {
+
+}
+
+/*********************
+ * TextBox panel
+ */
+/** textbox panel styles */
+.appsres-TextBoxPanel {
+    border: 1px solid lightgrey;
+}
+
+.appsres-TextBox {
+	width: 100%;
+	border-style: hidden;
+	height: 26px;
+}
+
+.appsres-TextBox-disabled {
+	cursor: default;
+	pointer-events: none;
+	opacity: .5;
+}
+
+.appsres-TextBox-mandatory {
+	background-color: #f5f5f5;
+}
+
+.appsres-TextBox-align-right {
+	text-align: right;
+}
+
+/*********************
+ * TextArea panel
+ */
+/** textarea panel styles */
+.appsres-TextAreaPanel {
+    border: 1px solid lightgrey;
+}
+
+.appsres-TextArea {
+	width: 100%;
+	height: 100%;
+	border-style: hidden;
+	padding: 0;	
+}
+
+.appsres-TextArea-disabled {
+	cursor: default;
+	pointer-events: none;
+	opacity: .5;
+}
+
+
+/*********************
+ * Choose box and date picker styles
+ */
+/** main combo box style */
+.appsres-TextButtonPanel {
+    border: 1px solid lightgrey;
+}
+
+/** button styles */
+.appsres-TextButtonPanel .choice-button {
+	
+}
+
+/** image styles */
+.appsres-TextButtonPanel .image {
+	
+}
+
+/*********************
+ * Calendar widget styles
+ */
+/** calendar panel styles */
+.appsres-Calendar {
+	
+}
+
+/** calendar layout flex table styles */
+.appsres-Calendar .layout-table {
+	cursor: default;
+	border-collapse: collapse;
+}
+
+/** layout cells styles */
+.appsres-Calendar .layout-table td {
+	vertical-align: middle;
+	text-align: center;
+}
+
+/** header cell styles */
+.appsres-Calendar .header-cell {
+	font-weight: bold;
+	color: #444;
+	background-color: #BBBBBB;
+}
+
+.appsres-Calendar .clear-cell {
+	font-weight: bold;
+	background-color: #BBBBBB;
+	cursor: pointer;
+}
+
+/** button cell styles */
+.appsres-Calendar .switch-cell {
+	background-color: gainsboro;
+	cursor: pointer;
+}
+
+/** today button cell styles */
+.appsres-Calendar .today-button-cell {
+	background-color: gainsboro;
+	cursor: pointer;
+}
+
+/** small button styles */
+.appsres-Calendar .switch-button {
+	
+}
+
+/** today button styles */
+.appsres-Calendar .today-button {
+	font-weight: bold;
+	color: black;
+}
+
+/** days flex table styles */
+.appsres-Calendar .days-table {
+	width: 100%;
+	padding: 1px;
+	border-collapse: collapse;
+}
+
+/** days flex table styles */
+.appsres-Calendar .days-table td {
+	border: 1px solid darkgray;
+}
+
+/** day name row cell styles */
+.appsres-Calendar .day-name-cell {
+	background-color: gainsboro;
+	text-align: center;
+	vertical-align: middle;
+	font-size: 95%;
+}
+
+/** week days header cell styles */
+.appsres-Calendar .week-day-cell {
+	background-color: gainsboro;
+	text-align: center;
+	vertical-align: middle;
+}
+
+/** week number column cell styles */
+.appsres-Calendar .week-number-cell {
+	background-color: gainsboro;
+	text-align: center;
+	font-size: 95%;
+	min-width: 15px;
+}
+
+/** day cell styles */
+.appsres-Calendar .day-cell {
+	text-align: center;
+	vertical-align: middle;
+	color: black;
+	cursor: pointer;
+	min-height: 30px;
+	min-width: 30px;
+}
+
+/** today cell styles */
+.appsres-Calendar .today-cell {
+	font-weight: bold;
+}
+
+/** selected day styles */
+.appsres-Calendar .selected-day-cell {
+	background-color: #EEEEEE;
+	cursor: default;
+}
+
+/** holiday cell styles */
+.appsres-Calendar .holiday-cell {
+	color: red;
+}
+
+/** neighbour month day cell styles */
+.appsres-Calendar .disabled-day-cell {
+	text-align: center;
+	vertical-align: middle;
+	color: darkgray;
+}
+
+/** time cell styles */
+.advanced-Calendar .time-cell {
+	text-align: center;
+	font-family: sans-serif;
+	font-size: 10px;
+	padding: 0;
+	border-collapse: collapse;
+	display: inline;
+}
+
+/** select box of the time section styles */
+.advanced-Calendar select {
+	font-family: sans-serif;
+	font-size: 10px;
+	width: 45px;
+	border: 1px solid darkgray;
+}
+
+/** date picker component styles */
+.advanced-DatePicker {
+	
+}
+
+/** date box styles */
+.advanced-DatePicker .date-box {
+	font-family: sans-serif;
+	font-size: 10px;
+	width: 100%;
+	border: 1px dashed darkgray;
+}
+
+/** open calendar button styles */
+.advanced-DatePicker .open-calendar-button {
+	font-family: sans-serif;
+	font-size: 10px;
+	text-align: center;
+	vertical-align: middle;
+	color: black;
+	padding: 1px 1px 1px 1px;
+	background-color: gainsboro;
+	border: 1px solid darkgray;
+	cursor: pointer;
+	width: 18px;
+}
+
+/*********************
+ * Image panel, image, credit, edit url styles
+ */
+/** main image panel style */
+.appsres-ImagePanel {
+	overflow: hidden;
+	text-align: center;
+	vertical-align: middle;
+	display: table-cell;
+}
+
+.appsres-ImagePanel-border {
+	border: 1px solid lightGrey;
+}
+
+.appsres-PanelCredit {
+    position: absolute;
+	left: 16px;
+	right: 16px;
+	bottom: -4px;
+	height: 50px;
+	transition: max-height .5s .2s;
+	-webkit-transition: max-height .5s .2s;
+	-moz-transition: max-height .5s .2s;
+	-o-transition: max-height .5s .2s;
+	background-color: rgba(0, 0, 0, 0.5);
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	-o-border-radius: 4px;
+	border-radius: 4px;
+	color: white;
+	cursor: auto;
+	max-height: 0;
+	overflow: hidden;
+}
+
+.appsres-ImageCredit {
+    position: absolute;
+	font-size: 9px;
+	opacity: .5;
+	top: 0;
+	right: 5px;
+}
+
+.appsres-ImageLink {
+	position: absolute;
+	top: 25px;
+	right: 5px;
+	left: 5px;
+	height: 10px;
+	font-size: 9px;
+	opacity: .5;
+}
+
+.appsres-PanelEdit {
+    position: absolute;
+	left: 16px;
+	right: 16px;
+	bottom: -4px;
+	height: 25px;
+	transition: max-height .5s 2s;
+	-webkit-transition: max-height .5s 2s;
+	-moz-transition: max-height .5s 2s;
+	-o-transition: max-height .5s 2s;
+	background-color: rgba(0, 0, 0, 0.5);
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	-o-border-radius: 4px;
+	border-radius: 4px;
+	color: white;
+	cursor: auto;
+	max-height: 0;
+	overflow: hidden;
+}
+
+.appsres-EditLink {
+	position: absolute;
+	top: 0;
+	right: 5px;
+	left: 5px;
+	height: 10px;
+	font-size: 9px;
+	opacity: .5;
+}
+
+/*********************
+ * Combo box, suggestion box and date picker styles
+ */
+/** main combo box style */
+.advanced-TextButtonPanel {
+	border: 1px;
+	padding: 0;
+}
+
+/** main combo box style */
+.advanced-Grid .advanced-TextButtonPanel {
+	border: 0;
+	padding: 0;
+}
+
+/** layout styles */
+.advanced-TextButtonPanel table {
+	border: 0;
+	padding: 0;
+	border-collapse: collapse;
+	height: 18px;
+}
+
+/** layout styles */
+.advanced-Grid .advanced-TextButtonPanel table {
+	height: 13px;
+}
+
+/** common layout cell styles */
+.advanced-TextButtonPanel td {
+	border: 1px solid darkgray;
+	padding: 0;
+	vertical-align: middle;
+}
+
+/** common layout cell styles */
+.advanced-Grid .advanced-TextButtonPanel td,.advanced-Grid .subgrid-row .advanced-FocusPanel .advanced-TextButtonPanel td
+	{
+	border: 0;
+	padding: 0;
+	vertical-align: middle;
+}
+
+/** text box styles */
+.advanced-TextButtonPanel .selected-value {
+	border: 1px solid white;
+	font-family: sans-serif;
+	font-size: 12px;
+	color: black;
+	height: 16px;
+	padding: 0;
+}
+
+.advanced-Grid .selected-value {
+	border: 0;
+	height: 13px;
+}
+
+/** selected text box style */
+.advanced-TextButtonPanel .selected-row {
+	background-color: #EEEEEE;
+}
+
+/** button styles */
+.advanced-TextButtonPanel .choice-button {
+	width: 16px;
+	height: 16px;
+	background-color: gainsboro;
+	border: 1px outset darkgray;
+	padding: 0;
+}
+
+.advanced-Grid .choice-button {
+	height: 13px;
+	width: 16px;
+	overflow: hidden;
+}
+
+/** button styles */
+.advanced-TextButtonPanel .choice-button-up-hovering {
+	cursor: pointer;
+}
+
+/** button styles */
+.advanced-TextButtonPanel .choice-button-down {
+	background-color: gainsboro;
+	border: 1px solid darkgray;
+}
+
+/** button styles */
+.advanced-TextButtonPanel .choice-button-down-hovering {
+	background-color: gainsboro;
+	border: 1px solid darkgray;
+	cursor: default;
+}
+
+/** button image styles */
+.advanced-TextButtonPanel img {
+	display: inline;
+	border: 0;
+}
+
+/** button image styles */
+.advanced-Grid .advanced-TextButtonPanel img {
+	position: relative;
+	top: -3px;
+}
+
+/*********************
+ * Border styles
+ */
+/** rounded border styles */
+.advanced-RoundCornerBorder .line {
+	border-style: solid;
+}
+
+/** rounded border content styles */
+.advanced-RoundCornerBorder .round-container {
+	border-style: solid;
+}
+
+.advanced-RoundCornerBorder div {
+	background-color: #EEEEEE;
+}
+
+/** rounded border shadow styles */
+.advanced-RoundCornerBorder .shadow1 {
+	border-color: #B8B6B8;
+}
+
+/** rounded border shadow styles */
+.advanced-RoundCornerBorder .shadow2 {
+	border-color: #DBDADB;
+}
+
+/** rounded border shadow styles */
+.advanced-RoundCornerBorder .shadow3 {
+	border-color: #F1F0F1;
+}
+
+/** single border styles */
+.advanced-SingleBorder .single-container {
+	border: 1px solid black;
+	padding: 1px;
+	margin: 0;
+}
+
+/** single border shadow styles */
+.advanced-SingleBorder .shadow1 {
+	background-color: #B8B6B8;
+}
+
+/** single border shadow styles */
+.advanced-SingleBorder .shadow2 {
+	background-color: #DBDADB;
+}
+
+/** single border shadow styles */
+.advanced-SingleBorder .shadow3 {
+	background-color: #F1F0F1;
+}
