@@ -43,11 +43,10 @@ public class SurfaceView extends AbsolutePanel implements
   private void displayAppus() {
     if (this.model.getApplicationUsers() != null) {
       Collection<ApplicationUser> appus = this.model.getApplicationUsers().values();
-      if (appus != null)
-        for (ApplicationUser applicationUser : appus) {
-          ApplicationWidget aw = new ApplicationWidget(appDragController, applicationUser);
-          add(aw.getApplicationAsHTML(this.model));
-        }
+      for (ApplicationUser applicationUser : appus) {
+        ApplicationWidget aw = new ApplicationWidget(appDragController, applicationUser);
+        add(aw.getApplicationAsHTML(this.model));
+      }
     }
   }
   

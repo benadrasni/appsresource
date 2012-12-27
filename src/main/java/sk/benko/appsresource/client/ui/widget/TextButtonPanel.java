@@ -1,7 +1,7 @@
 package sk.benko.appsresource.client.ui.widget;
 
 import sk.benko.appsresource.client.CSSConstants;
-import sk.benko.appsresource.client.ui.widget.theme.ThemeImage;
+import sk.benko.appsresource.client.util.ThemeImage;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;

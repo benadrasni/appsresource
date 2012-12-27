@@ -92,7 +92,7 @@ public class AppUserServiceImpl extends ServiceImpl implements AppUserService {
     return new GetLanguagesResult(getLangs());
   }
 
-  private ArrayList<Language> getLangs() throws AccessDeniedException {
+  private ArrayList<Language> getLangs() {
     final StoreDB.Api api = store.getApi();
     try {
       return toClientLanguages(api.getLanguages());
@@ -124,7 +124,7 @@ public class AppUserServiceImpl extends ServiceImpl implements AppUserService {
     return new GetApplicationsResult(getAs());
   }
 
-  private ArrayList<Application> getAs() throws AccessDeniedException {
+  private ArrayList<Application> getAs() {
     final StoreDB.Api api = store.getApi();
     try {
       final ArrayList<Application> fromCache = cache.getApplications();
@@ -193,8 +193,7 @@ public class AppUserServiceImpl extends ServiceImpl implements AppUserService {
     return null;
   }
   
-  private ArrayList<ApplicationUser> getAppUsers(int appId)
-      throws AccessDeniedException {
+  private ArrayList<ApplicationUser> getAppUsers(int appId) {
     final StoreDB.Api api = store.getApi();
     try {
       final ArrayList<ApplicationUser> fromCache = cache.getApplicationUsers(appId);
@@ -213,8 +212,7 @@ public class AppUserServiceImpl extends ServiceImpl implements AppUserService {
     return new ArrayList<ApplicationUser>();  
   }
 
-  private ArrayList<ApplicationUser> getUserApps(int userId)
-      throws AccessDeniedException {
+  private ArrayList<ApplicationUser> getUserApps(int userId) {
     final StoreDB.Api api = store.getApi();
     try {
       final ArrayList<ApplicationUser> fromCache = cache.getApplicationUsers(userId);

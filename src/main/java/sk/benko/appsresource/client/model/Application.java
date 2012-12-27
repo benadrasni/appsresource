@@ -29,7 +29,7 @@ public class Application extends DesignItem {
   /**
    * A basic constructor to be used on client-side only.
    *
-   * @param name
+   * @param name      the name of the application
    */
   public Application(String name) {
     assert GWT.isClient();
@@ -39,13 +39,13 @@ public class Application extends DesignItem {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
-   * @param code
-   * @param name
-   * @param desc
-   * @param flags
-   * @param lastUpdatedAt
-   * @param author
+   * @param id              application's id
+   * @param code            application's code
+   * @param name            application's name
+   * @param desc            application's description
+   * @param flags           application's flags
+   * @param userId          who created application
+   * @param lastUpdatedAt   when application was updated
    */
   public Application(int id, String code, String name, String desc, 
       String category, int flags, int userId, Date lastUpdatedAt) {
@@ -88,9 +88,8 @@ public class Application extends DesignItem {
    * Invoked when the model receives notification from the server that this 
    * application has been modified.
    *
-   * @param application
-   *          a note containing up-to-date information about <code>this</code>
-   * @return <code>this</code>, for chaining purposes
+   * @param application   an application containing up-to-date information about <code>this</code>
+   * @return              <code>this</code>, for chaining purposes
    */
   Application update(Application application) {
     if (!application.getLastUpdatedAt().equals(lastUpdatedAt)) {

@@ -316,8 +316,7 @@ public class TemplateDialog extends DesignerDialog implements
       
       @Override
       public void onClick(ClickEvent event) {
-        for (Iterator<TemplateList> iterator = tlists.keySet().iterator(); iterator.hasNext();) {
-          TemplateList itl = iterator.next();
+        for (TemplateList itl : tlists.keySet()) {
           itl.setFlags(ClientUtils.unsetFlag(TemplateList.FLAG_DEFAULT, itl.getFlags()));
         }
         tl.setFlags(ClientUtils.setFlag(TemplateTree.FLAG_DEFAULT, tl.getFlags()));

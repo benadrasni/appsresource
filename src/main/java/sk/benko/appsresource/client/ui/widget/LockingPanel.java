@@ -37,7 +37,7 @@ public class LockingPanel extends PopupPanel {
      * Shows the panel.
      */
     public void lock() {
-        setStyleName("advanced-LockingPanel");
+        setStyleName("appsres-LockingPanel");
         setPopupPosition(0, 0);
         setWidth("100%");
         setHeight("100%");

@@ -194,8 +194,7 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
     return new GetSearchObjectsResult(getRelObjs(langId, objId, rel, tlId, from, perPage));
   }
 
-  private List<AObject> getObjs(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta)
-      throws AccessDeniedException {
+  private List<AObject> getObjs(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta) {
     List<AObject> result = new ArrayList<AObject>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -209,8 +208,7 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
     return result;
   }
 
-  private Map<AObject, List<AValue>> getSearchObjs(int langId, String searchString, int tlId, int from, int perPage)
-      throws AccessDeniedException {
+  private Map<AObject, List<AValue>> getSearchObjs(int langId, String searchString, int tlId, int from, int perPage) {
     Map<AObject, List<AValue>> result = new LinkedHashMap<AObject, List<AValue>>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -234,8 +232,7 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
     return result;
   }
 
-  private Map<AObject, List<AValue>> getRelObjs(int langId, int objId, int rel, int tlId, int from, int perPage)
-      throws AccessDeniedException {
+  private Map<AObject, List<AValue>> getRelObjs(int langId, int objId, int rel, int tlId, int from, int perPage) {
     Map<AObject, List<AValue>> result = new LinkedHashMap<AObject, List<AValue>>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -259,8 +256,7 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
     return result;
   }
 
-  private HashMap<Template, Integer> getSearchObjCounts(int appId, String searchString)
-      throws AccessDeniedException {
+  private HashMap<Template, Integer> getSearchObjCounts(int appId, String searchString) {
     HashMap<Template, Integer> result = new LinkedHashMap<Template, Integer>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -278,8 +274,7 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
     return result;
   }
 
-  private HashMap<Template, Integer> getRelObjCounts(int objId, int rel, Template t)
-      throws AccessDeniedException {
+  private HashMap<Template, Integer> getRelObjCounts(int objId, int rel, Template t) {
     HashMap<Template, Integer> result = new LinkedHashMap<Template, Integer>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -348,7 +343,7 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
     return new GetValuesResult(getVals(object));
   }
 
-  private Map<Integer, Map<Integer, List<AValue>>> getVals(AObject object) throws AccessDeniedException {
+  private Map<Integer, Map<Integer, List<AValue>>> getVals(AObject object) {
     Map<Integer, Map<Integer, List<AValue>>> result = new HashMap<Integer, Map<Integer, List<AValue>>>();
 
     final StoreDB.Api api = store.getApi();

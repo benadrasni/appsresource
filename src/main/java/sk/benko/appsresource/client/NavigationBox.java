@@ -1,7 +1,7 @@
 package sk.benko.appsresource.client;
 
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.ui.widget.theme.ThemeImage;
+import sk.benko.appsresource.client.util.ThemeImage;
 
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;

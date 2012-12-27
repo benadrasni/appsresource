@@ -11,14 +11,13 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class DesignerActionView extends FlowPanel {
   
   /**
-   * @param model
-   *          the model to which the UI will bind itself
+   * @param dModel      the model to which the UI will bind itself
    */
-  public DesignerActionView(final DesignerModel dmodel) {
+  public DesignerActionView(final DesignerModel dModel) {
     getElement().setId(CSSConstants.CSS_ACTION);
 
-    add(new DesignerActionToolbarView(dmodel));
-    add(new DesignerActionButtonsView(dmodel));
-    add(new NavigationView(dmodel));
+    add(new DesignerActionToolbarView());
+    add(new DesignerActionButtonsView(dModel));
+    add(new NavigationView(dModel));
   }
 }

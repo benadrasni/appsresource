@@ -1,6 +1,6 @@
 package sk.benko.appsresource.client.layout;
 
-import sk.benko.appsresource.client.ui.widget.theme.ThemeImage;
+import sk.benko.appsresource.client.util.ThemeImage;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;

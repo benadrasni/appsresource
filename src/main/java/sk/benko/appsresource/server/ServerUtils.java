@@ -19,7 +19,7 @@ public class ServerUtils {
   public static String mySQLFilter(String s) {
     if (s == null)
       s = "";
-    StringBuffer filtered = new StringBuffer(s.length());
+    StringBuilder filtered = new StringBuilder(s.length());
     char c;
     for (int i = 0; i < s.length(); i++) {
       c = s.charAt(i);

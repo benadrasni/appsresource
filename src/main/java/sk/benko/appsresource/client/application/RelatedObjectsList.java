@@ -36,9 +36,7 @@ public class RelatedObjectsList extends ObjectsList implements ApplicationModel.
   public void onRelatedObjectsLoaded(String ID, int rel, Map<AObject, List<AValue>> objectValues) {
     if (!toString().equals(ID)) return;
     list.clear();
-    for (Iterator<AObject> iterator = objectValues.keySet().iterator(); 
-        iterator.hasNext();) {
-      final AObject aobject = iterator.next();
+    for (final AObject aobject : objectValues.keySet()) {
       List<AValue> values = objectValues.get(aobject);
       if (values.size() > 0) {
         ObjectRowView orv = new ObjectRowView(aobject, "content-row");
@@ -52,7 +50,8 @@ public class RelatedObjectsList extends ObjectsList implements ApplicationModel.
             Document.get().getElementById("appcontent").removeFromParent();
             final RootPanel root = RootPanel.get();
             root.add(ov);
-          }});
+          }
+        });
         list.add(orv);
       }
     }

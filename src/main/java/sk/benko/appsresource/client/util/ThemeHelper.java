@@ -17,10 +17,6 @@
 package sk.benko.appsresource.client.util;
 
 import com.google.gwt.core.client.GWT;
-import sk.benko.appsresource.client.ui.widget.theme.ThemeApplicable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This sigleton is used to centrilize and simplify theme management.
@@ -29,16 +25,10 @@ import java.util.List;
  * @since 1.0.0
  */                                                
 public class ThemeHelper {
-    /** default name of the CSS link element */
-    public static final String LINK_ELEMENT_ID = "advancedTheme";
     /** an instance of this class */
     private static final ThemeHelper instance = new ThemeHelper();
-    /** theme name */
-    private String themeName = "basic";
     /** base directory name (a subfolder to store themes) that can include a context name if starts with '/' */
     private String baseDirectory;
-    /** the list of widgets which must do anything on theme change (see {@link ThemeApplicable}) */  
-    private List<ThemeApplicable> applicables = new ArrayList<ThemeApplicable>();
 
     /**
      * Creates an instance of this class.
@@ -55,36 +45,13 @@ public class ThemeHelper {
     }
 
     /**
-     * Sets current theme name and changes it.
-     *
-     * @param name is a bew theme name.
-     */
-    public void setThemeName (String name) {
-        if (name != null && !name.equals(themeName)) {
-          themeName = name;
-          StyleUtil.setLinkHref(LINK_ELEMENT_ID, getBaseDirectory() + "themes/" + name + "/theme.css");
-            for (ThemeApplicable applicable : applicables)
-                applicable.apply(themeName);
-        }
-    }
-
-    /**
-     * Gets current theme name.
-     *
-     * @return is a theme name.
-     */
-    public String getThemeName () {
-        return themeName;
-    }
-
-    /**
      * This method gets a full name of the specified image using the theme name.
      *
      * @param shortName is a short name of the image.
      * @return is a full name.
      */
     public String getFullImageName(String shortName) {
-        return getBaseDirectory() + "themes/" + getThemeName() + "/images/" + shortName;
+        return getBaseDirectory() + "../images/" + shortName;
     }
 
     /**
@@ -105,25 +72,6 @@ public class ThemeHelper {
      */
     public void setBaseDirectory(String baseDirectory) {
         this.baseDirectory = baseDirectory;
-    }
-
-    /**
-     * Registers a new applicable widget.
-     *
-     * @param applicable is a theme applicable widget.
-     */
-    public void register(ThemeApplicable applicable) {
-        this.applicables.add(applicable);
-    }
-
-    /**
-     * Unregisters the specified applicable widget if it was registered.<p/>
-     * Otherwise does nothing.
-     *
-     * @param applicable is an applicable widget to be unregistered. 
-     */
-    public void unregister(ThemeApplicable applicable) {
-        this.applicables.remove(applicable);
     }
 
     /**

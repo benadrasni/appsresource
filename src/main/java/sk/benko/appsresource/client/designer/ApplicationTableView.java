@@ -69,9 +69,8 @@ public class ApplicationTableView extends TableView implements
 
   public void displayRows() {
     Collection<Application> apps = getModel().getUserModel().getApplications().values();
-    if (apps != null)
-      for (Application app : apps) {
-        add(new ApplicationRowView(getModel(), app));
-      }
+    for (Application app : apps) {
+      add(new ApplicationRowView(getModel(), app));
+    }
   }
 }

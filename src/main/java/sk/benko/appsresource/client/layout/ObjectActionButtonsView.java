@@ -7,7 +7,7 @@ import sk.benko.appsresource.client.application.ImportObjectsDialog;
 import sk.benko.appsresource.client.model.AObject;
 import sk.benko.appsresource.client.model.AValue;
 import sk.benko.appsresource.client.model.ApplicationModel;
-import sk.benko.appsresource.client.ui.widget.theme.ThemeImage;
+import sk.benko.appsresource.client.util.ThemeImage;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

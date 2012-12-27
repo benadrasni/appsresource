@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sk.benko.appsresource.client.ui.widget.theme;
+package sk.benko.appsresource.client.util;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Image;
@@ -28,15 +28,16 @@ import sk.benko.appsresource.client.util.ThemeHelper;
  * @author Sergey Skladchikov
  * @since 1.4.6
  */
-public class ThemeImage extends Image implements ThemeApplicable {
-  /** image short name */
+public class ThemeImage extends Image {
+  /**
+   * image short name
+   */
   private String shortName;
 
   /**
    * Creates an instance of this class and registers the widget to make it theme applicable.
    */
   public ThemeImage() {
-      ThemeHelper.getInstance().register(this);  
   }
 
   /**
@@ -45,9 +46,9 @@ public class ThemeImage extends Image implements ThemeApplicable {
    * @param shortName is an image short name.
    */
   public ThemeImage(String shortName) {
-      this();
-      this.shortName = shortName;
-      setUrl(shortName);
+    this();
+    this.shortName = shortName;
+    setUrl(shortName);
   }
 
   /**
@@ -56,19 +57,9 @@ public class ThemeImage extends Image implements ThemeApplicable {
    * @param shortName is a short name of the image (without the path).
    */
   public void setUrl(String shortName) {
-      this.shortName = shortName;
-      if (this.shortName != null)
-        DOM.setElementAttribute(getElement(), "src", ThemeHelper.getInstance().getFullImageName(shortName));
+    this.shortName = shortName;
+    if (this.shortName != null)
+      DOM.setElementAttribute(getElement(), "src", ThemeHelper.getInstance().getFullImageName(shortName));
   }
 
-  /**
-   * This method is invoked on theme change.<p/>
-   * The widget implementing this method should do anything specific, usualy look & feel change.
-   *
-   * @param themeName is a theme name to apply.
-   * @see ThemeApplicable#apply(String)
-   */
-  public void apply(String themeName) {
-      setUrl(this.shortName);
-  }
 }

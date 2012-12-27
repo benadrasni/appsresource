@@ -96,20 +96,19 @@ public class SubscriptionDialog extends UserDialog {
     Collection<ApplicationUser> appus = getModel().getApplicationUsers().values();
     boolean isSubscribed = false;
     int i = 0;
-    if (apps != null)
-      for (Application application : apps) {
-        if (application.isPublic()) {
-          for (ApplicationUser applicationUser : appus) {
-            isSubscribed = applicationUser.getAppId() == application.getId();
-            if (isSubscribed) break;
-          }
-          if (!isSubscribed) {
-            ApplicationWidget aw = new ApplicationWidget(application);
-            widget.setWidget(i / 3, i % 3, aw.getApplicationAsSimplePanel());
-            i++;
-          }
+    for (Application application : apps) {
+      if (application.isPublic()) {
+        for (ApplicationUser applicationUser : appus) {
+          isSubscribed = applicationUser.getAppId() == application.getId();
+          if (isSubscribed) break;
+        }
+        if (!isSubscribed) {
+          ApplicationWidget aw = new ApplicationWidget(application);
+          widget.setWidget(i / 3, i % 3, aw.getApplicationAsSimplePanel());
+          i++;
         }
       }
+    }
   }
   
   private void fill(ApplicationUser appu) {

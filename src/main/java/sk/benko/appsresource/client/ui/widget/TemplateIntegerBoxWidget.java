@@ -90,7 +90,7 @@ public class TemplateIntegerBoxWidget extends TemplateWidget implements HasBlurH
 
     if (value != null && value.getRank() == getRank() 
         && value.getValueDouble() != null) {
-      setInt(value.getValueDouble().doubleValue());
+      setInt(value.getValueDouble());
       setValue(value);
       if (value.getId() > 0)
         setOldValue(ClientUtils.parseInt(getIntTextBox().getDf().format(

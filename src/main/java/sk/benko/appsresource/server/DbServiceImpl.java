@@ -94,8 +94,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<ObjectType> getOTs()
-      throws AccessDeniedException {
+  private ArrayList<ObjectType> getOTs() {
     final StoreDB.Api api = store.getApi();
     try {
       final ArrayList<ObjectType> fromCache = cache.getObjectTypes();
@@ -158,8 +157,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<ObjectAttribute> getOAs(int otId)
-      throws AccessDeniedException {
+  private ArrayList<ObjectAttribute> getOAs(int otId) {
     final StoreDB.Api api = store.getApi();
     try {
       final ArrayList<ObjectAttribute> fromCache = cache.getObjectAttributes(otId);
@@ -224,8 +222,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<ObjectRelation> getORs(int otId)
-      throws AccessDeniedException {
+  private ArrayList<ObjectRelation> getORs(int otId) {
     final StoreDB.Api api = store.getApi();
     try {
       final ArrayList<ObjectRelation> fromCache = cache.getObjectRelations(otId);
@@ -287,8 +284,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
   
-  private ArrayList<ValueType> getVTs()
-      throws AccessDeniedException {
+  private ArrayList<ValueType> getVTs() {
     ArrayList<ValueType> result = new ArrayList<ValueType>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -350,7 +346,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
   
-  private ArrayList<Unit> getUs()  throws AccessDeniedException {
+  private ArrayList<Unit> getUs() {
     final StoreDB.Api api = store.getApi();
     try {
       final ArrayList<Unit> fromCache = cache.getUnits();
@@ -458,8 +454,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<Template> getTs()
-      throws AccessDeniedException {
+  private ArrayList<Template> getTs() {
     final StoreDB.Api api = store.getApi();
     try {
       final ArrayList<Template> fromCache = cache.getTemplates();
@@ -522,8 +517,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<TemplateRelation> getTRs()
-      throws AccessDeniedException {
+  private ArrayList<TemplateRelation> getTRs() {
     final StoreDB.Api api = store.getApi();
     try {
       final ArrayList<TemplateRelation> fromCache = cache.getTemplateRelations();
@@ -590,8 +584,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<TemplateGroup> getTGs(Template template) 
-      throws AccessDeniedException {
+  private ArrayList<TemplateGroup> getTGs(Template template) {
     final StoreDB.Api api = store.getApi();
     try {
       final ArrayList<TemplateGroup> fromCache = cache.getTemplateGroups(template.getId());
@@ -670,8 +663,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<TemplateAttribute> getTAs()
-      throws AccessDeniedException {
+  private ArrayList<TemplateAttribute> getTAs() {
     final StoreDB.Api api = store.getApi();
     try {
       final ArrayList<TemplateAttribute> fromCache = cache.getTemplateAttributes();
@@ -705,8 +697,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
           application.getCategory(), application.getFlags(), author.getId());
       api.saveApplication(app);
       api.deleteApplicationTemplates(app);
-      for (int i = 0; i < appts.size(); i++) {
-        ApplicationTemplate appt = appts.get(i);
+      for (ApplicationTemplate appt : appts) {
         final StoreDB.ApplicationTemplate apptdb = new StoreDB.ApplicationTemplate(
             appt.getAppId(), appt.getTId(), appt.getFlags(), appt.getParentMenuId(),
             appt.getRank(), author.getId());

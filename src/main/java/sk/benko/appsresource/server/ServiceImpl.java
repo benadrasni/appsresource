@@ -70,8 +70,7 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
   }
   
 
-  private ArrayList<ApplicationTemplate> getATs(Application app)
-      throws AccessDeniedException {
+  private ArrayList<ApplicationTemplate> getATs(Application app) {
     ArrayList<ApplicationTemplate> result = new ArrayList<ApplicationTemplate>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -113,8 +112,7 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
     return new GetTemplateTreesResult(getTts(tId));
   }
   
-  private ArrayList<TemplateTree> getTts(int tId)
-      throws AccessDeniedException {
+  private ArrayList<TemplateTree> getTts(int tId) {
     final StoreDB.Api api = store.getApi();
     try {
       final ArrayList<TemplateTree> fromCache = cache.getTemplateTrees(tId);
@@ -154,8 +152,7 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
     return new GetTemplateTreeItemsResult(getTtis(tt));
   }
   
-  private ArrayList<TemplateTreeItem> getTtis(TemplateTree tt)
-      throws AccessDeniedException {
+  private ArrayList<TemplateTreeItem> getTtis(TemplateTree tt) {
     ArrayList<TemplateTreeItem> result = new ArrayList<TemplateTreeItem>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -196,8 +193,7 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
     return new GetTemplateListsResult(getTls(tId));
   }
   
-  private ArrayList<TemplateList> getTls(int tId)
-      throws AccessDeniedException {
+  private ArrayList<TemplateList> getTls(int tId) {
     ArrayList<TemplateList> result = new ArrayList<TemplateList>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -238,8 +234,7 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
     return new GetTemplateListItemsResult(getTlis(tl));
   }
   
-  private ArrayList<TemplateListItem> getTlis(TemplateList tl)
-      throws AccessDeniedException {
+  private ArrayList<TemplateListItem> getTlis(TemplateList tl) {
     ArrayList<TemplateListItem> result = new ArrayList<TemplateListItem>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -279,8 +274,7 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
     return clients;
   }
 
-  private ArrayList<TemplateAttribute> getTAs(Template t)
-      throws AccessDeniedException {
+  private ArrayList<TemplateAttribute> getTAs(Template t) {
     ArrayList<TemplateAttribute> result = new ArrayList<TemplateAttribute>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -320,8 +314,7 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
     return clients;
   }
 
-  private ArrayList<TemplateRelation> getTrs(Template t)
-      throws AccessDeniedException {
+  private ArrayList<TemplateRelation> getTrs(Template t) {
     ArrayList<TemplateRelation> result = new ArrayList<TemplateRelation>();
     final StoreDB.Api api = store.getApi();
     try {

@@ -8,10 +8,9 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.google.appengine.api.rdbms.AppEngineDriver;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -19,22 +18,26 @@ import com.google.appengine.api.rdbms.AppEngineDriver;
  */
 public class StoreDB {
   private static final Logger log = Logger.getLogger(StoreDB.class.getName());
-  private static String CODE_SEPARATOR = "-";
-  private static int ID_OFFSET = 7;
-  private static int FILTER_OFFSET = 100;
-  private static int BUFFER_SIZE = 200;
+  private static final String CODE_SEPARATOR = "-";
+  private static final int ID_OFFSET = 7;
+  private static final int FILTER_OFFSET = 100;
+  private static final int BUFFER_SIZE = 200;
 
   //private static int LOG_OBJECT_CREATE = 0;
   //private static int LOG_OBJECT_EDIT = 1;
-  private static int LOG_OBJECT_DELETE = 2;
+  private static final int LOG_OBJECT_DELETE = 2;
   //private static int LOG_VALUE_CREATE = 3;
   //private static int LOG_VALUE_UPDATE = 4;
-  private static int LOG_VALUE_DELETE = 5;
+  private static final int LOG_VALUE_DELETE = 5;
 
   public class Api {
+    private static final String URL = "jdbc:google:rdbms://appsres:appsres2/appsresource";
+    private static final String USER = "appsres";
+    private static final String PASSWORD = "appsres";
+
     private Connection connection;
-    
-    private Api() {
+
+    private Api () {
       connection = getConnection();
     }
 
@@ -42,19 +45,16 @@ public class StoreDB {
       try {
         DriverManager.registerDriver(new AppEngineDriver());
 
-        String url = "jdbc:google:rdbms://appsres:appsres2/appsresource";
-        String user = "appsres";
-        String password = "appsres";
-        connection = DriverManager.getConnection(url, user, password);
+        connection = DriverManager.getConnection(URL, USER, PASSWORD);
         connection.setAutoCommit(false);
       }
       catch (SQLException ex) {
-        log.log(Level.SEVERE, ex.getLocalizedMessage(), ex);
+        log.error(ex.getLocalizedMessage(), ex);
       }
 
       return connection;
     }
-    
+
     public void commit() throws SQLException {
       connection.commit();
     }
@@ -63,7 +63,7 @@ public class StoreDB {
       try {
         connection.rollback();
       } catch (Exception ex) {
-        log.severe(ex.getLocalizedMessage());
+        log.error(ex.getLocalizedMessage(), ex);
       }
     }
 
@@ -71,13 +71,13 @@ public class StoreDB {
       try {
         connection.close();
       } catch (Exception ex) {
-        log.severe(ex.getLocalizedMessage());
+        log.error(ex.getLocalizedMessage(), ex);
       }
     }
     /**
      * Gets an user from database.
      *
-     * @return
+     * @return      application user
      */
     public AppUser getUser(String email) throws SQLException {
       AppUser appUser = AppUser.load(connection, email);
@@ -91,28 +91,27 @@ public class StoreDB {
     /**
      * Gets all languages from the database.
      *
-     * @return
+     * @return      list of all languages
      */
     public ArrayList<Language> getLanguages() throws SQLException {
       return Language.loadLanguages(connection);
     }
-    
+
     /**
      * Save an object type to the database.
      *
-     * @param objectType
-     *          the object type to be persisted
-     * @return <code>objectType</code>, for call chaining
+     * @param objectType    the object type to be persisted
+     * @return              <code>objectType</code>, for call chaining
      */
     public ObjectType saveObjectType(ObjectType objectType) throws SQLException {
       objectType.setLastUpdatedAt(new Date());
       return objectType.save(connection);
     }
-    
+
     /**
      * Gets all object types from the database.
      *
-     * @return
+     * @return      list of all object types
      */
     public ArrayList<ObjectType> getObjectTypes() throws SQLException {
       return ObjectType.loadObjectTypes(connection);
@@ -121,22 +120,22 @@ public class StoreDB {
     /**
      * Save an object attribute to the database.
      *
-     * @param objectAttribute
-     *          the object attribute to be persisted
-     * @return <code>objectAttribute</code>, for call chaining
+     * @param objectAttribute   the object attribute to be persisted
+     * @return                  <code>objectAttribute</code>, for call chaining
      */
-    public ObjectAttribute saveObjectAttribute(ObjectAttribute objectAttribute) 
+    public ObjectAttribute saveObjectAttribute(ObjectAttribute objectAttribute)
         throws SQLException {
       objectAttribute.setLastUpdatedAt(new Date());
       return objectAttribute.save(connection);
     }
-    
+
     /**
      * Gets all object attributes from the database.
      *
-     * @return
+     * @param otId  object type's id
+     * @return      list of all object type's attributes
      */
-    public ArrayList<ObjectAttribute> getObjectAttributes(int otId) 
+    public ArrayList<ObjectAttribute> getObjectAttributes(int otId)
         throws SQLException {
       return ObjectAttribute.loadObjectAttributes(connection, otId);
     }
@@ -144,20 +143,20 @@ public class StoreDB {
     /**
      * Save an object attribute to the database.
      *
-     * @param objectRelation
-     *          the object relation to be persisted
-     * @return <code>objectRelation</code>, for call chaining
+     * @param objectRelation      the object relation to be persisted
+     * @return                    <code>objectRelation</code>, for call chaining
      */
-    public ObjectRelation saveObjectRelation(ObjectRelation objectRelation) 
+    public ObjectRelation saveObjectRelation(ObjectRelation objectRelation)
         throws SQLException {
       objectRelation.setLastUpdatedAt(new Date());
       return objectRelation.save(connection);
     }
-    
+
     /**
      * Gets all object relations from the database.
      *
-     * @return
+     * @param otId  object type's id
+     * @return      list of all object type's relations
      */
     public ArrayList<ObjectRelation> getObjectRelations(int otId) throws SQLException {
       return ObjectRelation.loadObjectRelations(connection, otId);
@@ -166,19 +165,18 @@ public class StoreDB {
     /**
      * Save a value type to the database.
      *
-     * @param valueType
-     *          the value type to be persisted
-     * @return <code>valueType</code>, for call chaining
+     * @param valueType     the value type to be persisted
+     * @return              <code>valueType</code>, for call chaining
      */
     public ValueType saveValueType(ValueType valueType) throws SQLException {
       valueType.setLastUpdatedAt(new Date());
       return valueType.save(connection);
     }
-    
+
     /**
      * Gets all value types from the database.
      *
-     * @return
+     * @return      list of all value types
      */
     public ArrayList<ValueType> getValueTypes() throws SQLException {
       return ValueType.loadValueTypes(connection);
@@ -187,32 +185,30 @@ public class StoreDB {
     /**
      * Save an unit to the database.
      *
-     * @param unit
-     *          the unit to be persisted
-     * @return <code>unit</code>, for call chaining
+     * @param unit      the unit to be persisted
+     * @return          <code>unit</code>, for call chaining
      */
     public Unit saveUnit(Unit unit) throws SQLException {
       unit.setLastUpdatedAt(new Date());
       return unit.save(connection);
     }
-    
+
     /**
      * Gets all units from the database.
      *
-     * @return
+     * @return      list of all units
      */
     public ArrayList<Unit> getUnits() throws SQLException {
       return Unit.loadUnits(connection);
     }
-    
+
     /**
      * Save a template to the database.
      *
-     * @param template
-     *          the template to be persisted
-     * @return <code>template</code>, for call chaining
+     * @param template      the template to be persisted
+     * @return              <code>template</code>, for call chaining
      */
-    public Template saveTemplate(Template template) 
+    public Template saveTemplate(Template template)
         throws SQLException {
       template.setLastUpdatedAt(new Date());
       return template.save(connection);
@@ -221,16 +217,16 @@ public class StoreDB {
     /**
      * Gets template from the database.
      *
-     * @return
+     * @return      <code>template</code>
      */
     public Template getTemplate(int tId) throws SQLException {
       return Template.load(connection, tId);
     }
-    
+
     /**
      * Gets all templates from the database.
      *
-     * @return
+     * @return      list of all templates
      */
     public ArrayList<Template> getTemplates() throws SQLException {
       return Template.loadTemplates(connection);
@@ -239,29 +235,28 @@ public class StoreDB {
     /**
      * Save a template relation to the database.
      *
-     * @param templateRelation
-     *          the template relation to be persisted
-     * @return <code>templateRelation</code>, for call chaining
+     * @param templateRelation      the template relation to be persisted
+     * @return                      <code>templateRelation</code>, for call chaining
      */
-    public TemplateRelation saveTemplateRelation(TemplateRelation templateRelation) 
-        throws SQLException {
+    public TemplateRelation saveTemplateRelation(TemplateRelation templateRelation) throws SQLException {
       templateRelation.setLastUpdatedAt(new Date());
       return templateRelation.save(connection);
     }
-    
+
     /**
      * Gets all template relations from the database.
      *
-     * @return
+     * @return      list of relations for all templates
      */
     public ArrayList<TemplateRelation> getTemplateRelations() throws SQLException {
       return TemplateRelation.loadTemplateRelations(connection);
     }
-    
+
     /**
      * Gets all template relations belongs to given template from the database.
      *
-     * @return
+     * @param tId     template's id
+     * @return        list of relations belongs to the template
      */
     public ArrayList<TemplateRelation> getTemplateRelations(int tId) throws SQLException {
       return TemplateRelation.loadTemplateRelations(connection, tId);
@@ -274,92 +269,89 @@ public class StoreDB {
      *          the template group to be persisted
      * @return <code>templateGroup</code>, for call chaining
      */
-    public TemplateGroup saveTemplateGroup(TemplateGroup templateGroup) 
-        throws SQLException {
+    public TemplateGroup saveTemplateGroup(TemplateGroup templateGroup) throws SQLException {
       templateGroup.setLastUpdatedAt(new Date());
       return templateGroup.save(connection);
     }
-    
+
     /**
      * Gets all template groups from the database.
      *
-     * @return
+     * @return      list of attribute groups for all templates
      */
     public ArrayList<TemplateGroup> getTemplateGroups() throws SQLException {
       return TemplateGroup.loadTemplateGroups(connection);
     }
-    
+
     /**
      * Gets all template groups belongs to given template from the database.
      *
-     * @return
+     * @param tId     template's id
+     * @return        list of attribute groups belongs to the template
      */
     public ArrayList<TemplateGroup> getTemplateGroups(int tId) throws SQLException {
       return TemplateGroup.loadTemplateGroups(connection, tId);
     }
-    
+
     /**
      * Save a template attribute to the database.
      *
-     * @param templateAttribute
-     *          the template attribute to be persisted
-     * @return <code>templateAttribute</code>, for call chaining
+     * @param templateAttribute     the template attribute to be persisted
+     * @return                      <code>templateAttribute</code>, for call chaining
      */
-    public TemplateAttribute saveTemplateAttribute(TemplateAttribute templateAttribute) 
+    public TemplateAttribute saveTemplateAttribute(TemplateAttribute templateAttribute)
         throws SQLException {
       templateAttribute.setLastUpdatedAt(new Date());
       return templateAttribute.save(connection);
     }
-    
+
     /**
      * Gets all template attributes from the database.
      *
-     * @return
+     * @return      list of all template's attributes for all templates
      */
     public ArrayList<TemplateAttribute> getTemplateAttributes() throws SQLException {
       return TemplateAttribute.loadTemplateAttributes(connection);
     }
-    
+
     /**
      * Gets all template attributes belongs to template group from the database.
      *
-     * @return
+     * @param tId     template's id
+     * @return        list of attributes belongs to the template
      */
     public ArrayList<TemplateAttribute> getTemplateAttributes(int tId) throws SQLException {
       return TemplateAttribute.loadTemplateAttributes(connection, tId);
     }
-    
+
     /**
      * Save a template tree to the database.
      *
-     * @param template tree
-     *          the template tree to be persisted
-     * @return <code>templateTree</code>, for call chaining
+     * @param templateTree      the template tree to be persisted
+     * @return                  <code>templateTree</code>, for call chaining
      */
-    public TemplateTree saveTemplateTree(TemplateTree templateTree) 
-        throws SQLException {
+    public TemplateTree saveTemplateTree(TemplateTree templateTree) throws SQLException {
       templateTree.setLastUpdatedAt(new Date());
       return templateTree.save(connection);
     }
 
     /**
-     * Gets all template's trees from the database.
+     * Gets all template's trees for the template.
      *
-     * @return
+     * @param tId     template's id
+     * @return        list of all trees defined for the template
      */
-    public ArrayList<TemplateTree> getTemplateTrees(int tId) 
-        throws SQLException {
+    public ArrayList<TemplateTree> getTemplateTrees(int tId) throws SQLException {
       return TemplateTree.loadTemplateTrees(connection, tId);
     }
 
     /**
      * Save a template tree item to the database.
      *
-     * @param template tree item
-     *          the template tree iten to be persisted
-     * @return <code>templateTreeItem</code>, for call chaining
+     * @param templateTreeItem      the template tree iten to be persisted
+     * @return                      <code>templateTreeItem</code>, for call chaining
      */
-    public TemplateTreeItem saveTemplateTreeItem(TemplateTreeItem templateTreeItem) 
+    public TemplateTreeItem saveTemplateTreeItem(TemplateTreeItem templateTreeItem)
         throws SQLException {
       return templateTreeItem.save(connection);
     }
@@ -367,22 +359,20 @@ public class StoreDB {
     /**
      * Gets all application's templates from the database.
      *
-     * @return
+     * @param ttId    template tree's id
+     * @return        list of items for the template tree
      */
-    public ArrayList<TemplateTreeItem> getTemplateTreeItems(int tId) 
-        throws SQLException {
-      return TemplateTreeItem.loadTemplateTreeItems(connection, tId);
+    public ArrayList<TemplateTreeItem> getTemplateTreeItems(int ttId) throws SQLException {
+      return TemplateTreeItem.loadTemplateTreeItems(connection, ttId);
     }
-    
+
     /**
      * delete all template tree items from template tree.
      *
-     * @param templateTree
-     *          the template tree
-     * @return <code>templateTree</code>, for call chaining
+     * @param templateTree      the template tree
+     * @return                  <code>templateTree</code>, for call chaining
      */
-    public void deleteTemplateTreeItems(TemplateTree templateTree) 
-        throws SQLException {
+    public void deleteTemplateTreeItems(TemplateTree templateTree) throws SQLException {
       templateTree.setLastUpdatedAt(new Date());
       TemplateTreeItem.deleteTemplateTreeItems(connection, templateTree.getId());
     }
@@ -390,11 +380,10 @@ public class StoreDB {
     /**
      * Save a template list to the database.
      *
-     * @param templateList
-     *          the template list to be persisted
-     * @return <code>templateList</code>, for call chaining
+     * @param templateList      the template list to be persisted
+     * @return                  <code>templateList</code>, for call chaining
      */
-    public TemplateList saveTemplateList(TemplateList templateList) 
+    public TemplateList saveTemplateList(TemplateList templateList)
         throws SQLException {
       templateList.setLastUpdatedAt(new Date());
       return templateList.save(connection);
@@ -403,78 +392,71 @@ public class StoreDB {
     /**
      * Gets all template's lists from the database.
      *
-     * @return
+     * @param tId       template's id
+     * @return          list of all template lists for the template
      */
-    public ArrayList<TemplateList> getTemplateLists(int tId) 
-        throws SQLException {
+    public ArrayList<TemplateList> getTemplateLists(int tId) throws SQLException {
       return TemplateList.loadTemplateLists(connection, tId);
     }
 
     /**
      * Save a template list item to the database.
      *
-     * @param templateListItem
-     *          the template list item to be persisted
-     * @return <code>templateListItem</code>, for call chaining
+     * @param templateListItem      the template list item to be persisted
+     * @return                      <code>templateListItem</code>, for call chaining
      */
-    public TemplateListItem saveTemplateListItem(TemplateListItem templateListItem) 
-        throws SQLException {
+    public TemplateListItem saveTemplateListItem(TemplateListItem templateListItem) throws SQLException {
       return templateListItem.save(connection);
     }
 
     /**
      * Gets all template list's items from the database.
      *
-     * @return
+     * @param tlId      template list's id
+     * @return          list of items for the template list
      */
-    public ArrayList<TemplateListItem> getTemplateListItems(int tId) 
-        throws SQLException {
-      return TemplateListItem.loadTemplateListItems(connection, tId);
+    public ArrayList<TemplateListItem> getTemplateListItems(int tlId)throws SQLException {
+      return TemplateListItem.loadTemplateListItems(connection, tlId);
     }
-    
+
     /**
      * delete all template list items from template tree.
      *
-     * @param templateList
-     *          the template list
-     * @return <code>templateList</code>, for call chaining
+     * @param templateList      the template list
+     * @return                  <code>templateList</code>, for call chaining
      */
-    public void deleteTemplateListItems(TemplateList templateList) 
-        throws SQLException {
+    public void deleteTemplateListItems(TemplateList templateList)throws SQLException {
       templateList.setLastUpdatedAt(new Date());
       TemplateListItem.deleteTemplateListItems(connection, templateList.getId());
     }
-    
+
     /**
      * Save an application to the database.
      *
-     * @param application
-     *          the application to be persisted
-     * @return <code>application</code>, for call chaining
+     * @param application     the application to be persisted
+     * @return                <code>application</code>, for call chaining
      */
-    public Application saveApplication(Application application) 
-        throws SQLException {
+    public Application saveApplication(Application application) throws SQLException {
       application.setLastUpdatedAt(new Date());
       return application.save(connection);
     }
-    
+
     /**
      * Gets all application from the database.
      *
-     * @return
+     * @return      list of all applications
      */
     public ArrayList<Application> getApplications() throws SQLException {
       return Application.loadApplications(connection);
     }
-    
+
     /**
      * Save a pair of application and template to the database.
      *
-     * @param application template
-     *          the application template to be persisted
-     * @return <code>applicationTemplate</code>, for call chaining
+     * @param applicationTemplate     the application template to be persisted
+     * @return                        <code>applicationTemplate</code>, for call chaining
      */
-    public ApplicationTemplate saveApplicationTemplate(ApplicationTemplate applicationTemplate) 
+    public ApplicationTemplate saveApplicationTemplate(ApplicationTemplate applicationTemplate)
         throws SQLException {
       applicationTemplate.setLastUpdatedAt(new Date());
       return applicationTemplate.save(connection);
@@ -483,75 +465,70 @@ public class StoreDB {
     /**
      * delete all templates from application.
      *
-     * @param application
-     *          the application
-     * @return <code>applicationTemplate</code>, for call chaining
+     * @param application     the application
      */
-    public void deleteApplicationTemplates(Application application) 
+    public void deleteApplicationTemplates(Application application)
         throws SQLException {
       application.setLastUpdatedAt(new Date());
       ApplicationTemplate.deleteTemplates(connection, application.getId());
     }
-    
+
     /**
      * Gets all templates belongs to given application from the database.
      *
-     * @return
+     * @param appId     application's id
+     * @return          list of all templates which belong to the application
      */
-    public ArrayList<ApplicationTemplate> getAppTemplatesByApp(int appId) 
-        throws SQLException {
+    public ArrayList<ApplicationTemplate> getAppTemplatesByApp(int appId) throws SQLException {
       return ApplicationTemplate.loadAppTemplatesByApp(connection, appId);
     }
 
     /**
      * Gets all applications which contains given template from the database.
      *
-     * @return
+     * @param tId     template's id
+     * @return        list of <code>ApplicationTemplate</code>s
      */
-    public ArrayList<ApplicationTemplate> getAppTemplatesByTemplate(int tId) 
-        throws SQLException {
+    public ArrayList<ApplicationTemplate> getAppTemplatesByTemplate(int tId) throws SQLException {
       return ApplicationTemplate.loadAppTemplatesByTemplate(connection, tId);
     }
 
     /**
      * Gets all user's application from the database.
      *
-     * @return
+     * @param userId      user's id
+     * @return            list of all users for the application
      */
-    public ArrayList<ApplicationUser> getUserApplications(int userId) 
-        throws SQLException {
+    public ArrayList<ApplicationUser> getUserApplications(int userId) throws SQLException {
       return ApplicationUser.loadUserApplications(connection, userId);
     }
 
     /**
      * Gets all user's application from the database.
      *
-     * @return
+     * @param appId application's id
+     * @return      list of users for the application
      */
-    public ArrayList<ApplicationUser> getApplicationUsers(int appId) 
-        throws SQLException {
+    public ArrayList<ApplicationUser> getApplicationUsers(int appId) throws SQLException {
       return ApplicationUser.loadApplicationUsers(connection, appId);
     }
 
     /**
      * Save a pair of application and user to the database.
      *
-     * @param application user
-     *          the application user to be persisted
-     * @return <code>applicationUser</code>, for call chaining
+     * @param applicationUser     the application user to be persisted
+     * @return                    <code>applicationUser</code>, for call chaining
      */
-    public ApplicationUser saveApplicationUser(ApplicationUser applicationUser) 
-        throws SQLException {
+    public ApplicationUser saveApplicationUser(ApplicationUser applicationUser) throws SQLException {
       applicationUser.setLastUpdatedAt(new Date());
       return applicationUser.save(connection);
     }
-    
+
     /**
      * Save an object to the database.
      *
-     * @param object
-     *          the object to be persisted
-     * @return <code>object</code>, for call chaining
+     * @param object      the object to be persisted
+     * @return            <code>object</code>, for call chaining
      */
     public AObject saveObject(AObject object) throws SQLException {
       object.setLastUpdatedAt(new Date());
@@ -563,9 +540,9 @@ public class StoreDB {
      *
      * @param objectId
      *          the id of object to be deleted
-     * @return 
+     * @return
      */
-    public int deleteObject(int otId, int objectId, int userId) 
+    public int deleteObject(int otId, int objectId, int userId)
         throws SQLException {
       return AObject.delete(connection, otId, objectId, userId);
     }
@@ -609,7 +586,7 @@ public class StoreDB {
      *
      * @return
      */
-    public HashMap<Template, Integer> getSearchObjectCounts(int appId, String searchString) 
+    public HashMap<Template, Integer> getSearchObjectCounts(int appId, String searchString)
         throws SQLException {
       return AObject.loadSearchObjectCounts(connection, appId, searchString);
     }
@@ -619,8 +596,8 @@ public class StoreDB {
      *
      * @return
      */
-    public HashMap<AObject, ArrayList<AValue>> getSearchObjects(int langId, 
-        String searchString, int tlId, int from, int perPage) 
+    public HashMap<AObject, ArrayList<AValue>> getSearchObjects(int langId,
+        String searchString, int tlId, int from, int perPage)
             throws SQLException {
       return AObject.loadSearchObjects(connection, langId, searchString, tlId, from, perPage);
     }
@@ -630,7 +607,7 @@ public class StoreDB {
      *
      * @return
      */
-    public int getRelatedObjectCounts(int objId, int rel) 
+    public int getRelatedObjectCounts(int objId, int rel)
         throws SQLException {
       return AObject.loadRelatedObjectCounts(connection, objId, rel);
     }
@@ -641,7 +618,7 @@ public class StoreDB {
      * @return
      */
     public LinkedHashMap<AObject, ArrayList<AValue>> getRelatedObjects(
-        int langId, int objId, int rel, int tlId, int from, int perPage) 
+        int langId, int objId, int rel, int tlId, int from, int perPage)
             throws SQLException {
       return AObject.loadRelatedObjects(connection, langId, objId, rel, tlId, from, perPage);
     }
@@ -653,7 +630,7 @@ public class StoreDB {
      *          the value to be persisted
      * @return <code>value</code>, for call chaining
      */
-    public AValue saveValue(AValue value) 
+    public AValue saveValue(AValue value)
         throws SQLException {
       value.setLastUpdatedAt(new Date());
       return value.save(connection);
@@ -677,43 +654,45 @@ public class StoreDB {
      * @param filename
      * @return <code>id</code>, for call chaining
      */
-    public int saveImportHeader(String userId, String appId, String tId, 
+    public int saveImportHeader(String userId, String appId, String tId,
         String filename) throws SQLException {
       return Import.saveHeader(connection, userId, appId, tId, filename);
     }
-    
+
     /**
      * Save an import row to the database.
      *
      * @param headerId
-     * @param number
+     * @param rowNumber
      * @param row
      * @return <code>id</code>, for call chaining
      */
-    public int saveImportRow(int headerId, int rowNumber, String[] row) 
+    public int saveImportRow(int headerId, int rowNumber, String[] row)
         throws SQLException {
       return Import.saveRow(connection, headerId, rowNumber, row);
     }
-    
-    
+
+
     /**
      * Import objects to the database.
      *
      * @param userId
-     * @param appId
-     * @param t1Id
+     * @param app
+     * @param t
+     * @param filename
      * @param map
      * @param keys
-     * @return <code>id</code>, for call chaining
+     * @param onlyUpdate
+     * @return              list of
      */
     public List<Integer> importObjects(int userId, Application app, Template t, String filename,
         Map<Integer, TemplateAttribute> map, Map<Integer, TemplateAttribute> keys,
         boolean onlyUpdate) throws SQLException {
       return Import.importObjects(connection, userId, app, t, filename, map, keys, onlyUpdate);
     }
-    
+
     public Map<Integer, TemplateAttribute> getCommonAttributes(int t1, int t2) throws SQLException {
-      return StoreDB.getCommonAttributes(connection, t1, t2); 
+      return StoreDB.getCommonAttributes(connection, t1, t2);
     }
   }
 
@@ -731,7 +710,7 @@ public class StoreDB {
      * The user's id. Serves as the primary key for this object.
      */
     private int id;
-    
+
     /**
      * The user's email.
      */
@@ -775,7 +754,7 @@ public class StoreDB {
      * Create a new author.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public AppUser(ResultSet rs) throws SQLException {
       setId(rs.getInt(ID));
@@ -804,12 +783,12 @@ public class StoreDB {
     /**
      * Sets the author's id.
      *
-     * @param name
+     * @param id
      */
     public void setId(int id) {
       this.id = id;
     }
-    
+
     /**
      * Sets the author's email.
      *
@@ -818,7 +797,7 @@ public class StoreDB {
     public void setEmail(String email) {
       this.email = email;
     }
-    
+
     /**
      * @return the flags
      */
@@ -840,13 +819,13 @@ public class StoreDB {
     public void setLastUpdatedAt(Date lastupdatedat) {
       this.lastupdatedat = lastupdatedat;
     }
-    
+
     public static AppUser load(Connection c, String email) throws SQLException {
       AppUser result = null;
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
         + " WHERE " + EMAIL + "= '" + email + "'";
       log.info(query);
       ResultSet rs = stmt.executeQuery(query);
@@ -855,7 +834,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public AppUser save(Connection c) throws SQLException {
@@ -864,7 +843,7 @@ public class StoreDB {
       if (this.getId() == 0) {
         stmt.execute(
           "INSERT INTO " + TABLE + " ("
-            + EMAIL + ")" 
+            + EMAIL + ")"
           + " VALUES ('" + getEmail() + "')");
         setId(getIdentity(stmt));
       }
@@ -872,7 +851,7 @@ public class StoreDB {
       return this;
     }
   }
-  
+
   /**
    * An ORM object representing a language.
    */
@@ -882,7 +861,7 @@ public class StoreDB {
     public static final String ID = "lang_id";
     public static final String CODE = "lang_code";
     public static final String NAME = "lang_name";
-    
+
     /**
      * An auto-generated primary key for this object. This key will be a child
      * key of the owning surface's key.
@@ -898,7 +877,7 @@ public class StoreDB {
      * The name of the language.
      */
     private String name;
-    
+
     /**
      * Create a new application.
      *
@@ -916,7 +895,7 @@ public class StoreDB {
      * Create a new language.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public Language(ResultSet rs) throws SQLException {
       setId(rs.getInt(ID));
@@ -952,7 +931,7 @@ public class StoreDB {
       ArrayList<Language> result = new ArrayList<Language>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT * FROM " + TABLE;
       ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
@@ -960,11 +939,11 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
   }
-  
-  
+
+
   /**
    * An ORM object representing a object type.
    */
@@ -979,7 +958,7 @@ public class StoreDB {
     public static final String PARENT_ID = "ot_ot_id";
     public static final String USER_ID = "ot_user_id";
     public static final String LASTUPDATEDAT = "ot_lastupdateat";
-    
+
     /**
      * An auto-generated primary key for this object. This key will be a child
      * key of the owning surface's key.
@@ -1017,7 +996,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new objectType.
      *
@@ -1029,7 +1008,7 @@ public class StoreDB {
      * @param userId
      *          the author who created this object type
      */
-    public ObjectType(int id, String code, String name, String desc, 
+    public ObjectType(int id, String code, String name, String desc,
         int parentId, ObjectType parent, int userId) {
       setId(id);
       setCode(code);
@@ -1044,7 +1023,7 @@ public class StoreDB {
      * Create a new objectType.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public ObjectType(ResultSet rs, boolean withParent) throws SQLException {
       setId(rs.getInt(ID));
@@ -1052,11 +1031,11 @@ public class StoreDB {
       setName(rs.getString(NAME));
       setDesc(rs.getString(DESC));
       setParentId(rs.getInt(PARENT_ID));
-      if (withParent && getParentId() > 0) 
+      if (withParent && getParentId() > 0)
         setParent(new ObjectType(rs, "parent"));
       setUserId(rs.getInt(USER_ID));
     }
-    
+
     public ObjectType(ResultSet rs, String alias) throws SQLException {
       setId(rs.getInt(alias+"_"+ID));
       setCode(rs.getString(alias+"_"+CODE));
@@ -1134,8 +1113,8 @@ public class StoreDB {
       ObjectType result = null;
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
         + " WHERE " + ID + "=" + id;
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) {
@@ -1143,7 +1122,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public ObjectType save(Connection c) throws SQLException {
@@ -1153,7 +1132,7 @@ public class StoreDB {
         setCode(getNewCode(c));
         stmt.execute(
           "INSERT INTO " + TABLE + " ("
-            + CODE + ", " + NAME + ", " + DESC + ", " + PARENT_ID + ", " + USER_ID + ")" 
+            + CODE + ", " + NAME + ", " + DESC + ", " + PARENT_ID + ", " + USER_ID + ")"
           + " VALUES ('" + getCode() + "'"
           + ",'" + ServerUtils.mySQLFilter(getName()) + "'"
           + "," + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "'" : "null")
@@ -1164,10 +1143,10 @@ public class StoreDB {
       // update an existing record
       else {
         stmt.executeUpdate(
-          "UPDATE " + TABLE + " SET "  
+          "UPDATE " + TABLE + " SET "
             + NAME + "='" + ServerUtils.mySQLFilter(getName()) + "', "
             + DESC + "=" + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "', " : "null, ")
-            + PARENT_ID + "=" + (getParentId() == 0 ? "null, " : getParentId() + ", ") 
+            + PARENT_ID + "=" + (getParentId() == 0 ? "null, " : getParentId() + ", ")
             + USER_ID + "=" + getUserId() + ", "
             + LASTUPDATEDAT + "= now()"
           + " WHERE " + ID + "=" + getId());
@@ -1180,13 +1159,13 @@ public class StoreDB {
       ArrayList<ObjectType> result = new ArrayList<ObjectType>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT ot.*, "
           + " parent.ot_id as parent_ot_id, parent.ot_ot_id as parent_ot_ot_id, "
           + " parent.ot_code as parent_ot_code, parent.ot_name as parent_ot_name, "
           + " parent.ot_desc as parent_ot_desc, parent.ot_user_id as parent_ot_user_id, "
-          + " parent.ot_lastupdateat as parent_ot_lastupdateat " 
-      		+ " FROM " + TABLE + " ot left outer join " + TABLE + " parent on (ot." 
+          + " parent.ot_lastupdateat as parent_ot_lastupdateat "
+      		+ " FROM " + TABLE + " ot left outer join " + TABLE + " parent on (ot."
           + PARENT_ID + "= parent." + ID + ")"
           + " ORDER BY ot." + NAME;
       ResultSet rs = stmt.executeQuery(query);
@@ -1195,9 +1174,9 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static String getNewCode(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
       return StoreDB.getNewCode(stmt, TABLE, OBJECT_CODE, ID, CODE);
@@ -1225,7 +1204,7 @@ public class StoreDB {
     public static final String SHARED5 = "oa_shared5";
     public static final String USER_ID = "oa_user_id";
     public static final String LASTUPDATEDAT = "oa_lastupdateat";
-    
+
     /**
      * An auto-generated primary key for this object. This key will be a child
      * key of the owning surface's key.
@@ -1266,7 +1245,7 @@ public class StoreDB {
     private Unit unit;
 
     /**
-     * Shared values are used for specific styles (like reference, ...) 
+     * Shared values are used for specific styles (like reference, ...)
      */
     private int shared1;
     private int shared2;
@@ -1284,7 +1263,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new objectAttribute.
      *
@@ -1293,14 +1272,22 @@ public class StoreDB {
      * @param name
      * @param desc
      * @param otId
-     * @param typeId
+     * @param ot
+     * @param vtId
+     * @param vt
      * @param unitId
+     * @param unit
+     * @param shared1
+     * @param shared2
+     * @param shared3
+     * @param shared4
+     * @param shared5
      * @param userId
      *          the author who created this object type
      */
-    public ObjectAttribute(int id, String code, String name, String desc, 
-        int otId, ObjectType ot, int vtId, ValueType vt, int unitId, Unit unit, 
-        int shared1, int shared2, int shared3, int shared4, int shared5, 
+    public ObjectAttribute(int id, String code, String name, String desc,
+        int otId, ObjectType ot, int vtId, ValueType vt, int unitId, Unit unit,
+        int shared1, int shared2, int shared3, int shared4, int shared5,
         int userId) {
       setId(id);
       setCode(code);
@@ -1324,9 +1311,9 @@ public class StoreDB {
      * Create a new objectAttribute.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
-    public ObjectAttribute(ResultSet rs) 
+    public ObjectAttribute(ResultSet rs)
         throws SQLException {
       setId(rs.getInt(ID));
       setCode(rs.getString(CODE));
@@ -1492,9 +1479,9 @@ public class StoreDB {
         setCode(getNewCode(c));
         stmt.execute(
           "INSERT INTO " + TABLE + " ("
-            + CODE + ", " + NAME + ", " + DESC + ", " + OT_ID + ", " + TYPE_ID + ", " 
-            + UNIT_ID + "," + SHARED1 + ", " + SHARED2 + ", " + SHARED3 + ", " 
-            + SHARED4 + "," + SHARED5 + ", " + USER_ID + ")" 
+            + CODE + ", " + NAME + ", " + DESC + ", " + OT_ID + ", " + TYPE_ID + ", "
+            + UNIT_ID + "," + SHARED1 + ", " + SHARED2 + ", " + SHARED3 + ", "
+            + SHARED4 + "," + SHARED5 + ", " + USER_ID + ")"
           + " VALUES ('" + getCode() + "'"
           + ",'" + ServerUtils.mySQLFilter(getName()) + "'"
           + "," + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "'" : "null")
@@ -1512,12 +1499,12 @@ public class StoreDB {
       // update an existing record
       else {
         stmt.executeUpdate(
-          "UPDATE " + TABLE + " SET "  
+          "UPDATE " + TABLE + " SET "
             + NAME + "='" + ServerUtils.mySQLFilter(getName()) + "', "
             + DESC + "=" + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "', " : "null, ")
             + OT_ID + "=" + getOtId() + ", "
             + TYPE_ID + "=" + getVtId() + ", "
-            + UNIT_ID + "=" + (getUnitId() == 0 ? "null, " : getUnitId() + ", ") 
+            + UNIT_ID + "=" + (getUnitId() == 0 ? "null, " : getUnitId() + ", ")
             + SHARED1 + "=" + (getShared1() > 0 ? ""+getShared1() : "null") + ", "
             + SHARED2 + "=" + (getShared2() > 0 ? ""+getShared2() : "null") + ", "
             + SHARED3 + "=" + (getShared3() > 0 ? ""+getShared3() : "null") + ", "
@@ -1531,7 +1518,7 @@ public class StoreDB {
       return this;
     }
 
-    public static ArrayList<ObjectAttribute> loadObjectAttributes(Connection c, int otId) 
+    public static ArrayList<ObjectAttribute> loadObjectAttributes(Connection c, int otId)
         throws SQLException {
       ArrayList<ObjectAttribute> result = new ArrayList<ObjectAttribute>();
 
@@ -1542,9 +1529,9 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static String getNewCode(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
       return StoreDB.getNewCode(stmt, TABLE, OBJECT_CODE, ID, CODE);
@@ -1568,7 +1555,7 @@ public class StoreDB {
     public static final String COMPREL_ID = "or_or_id";
     public static final String USER_ID = "or_user_id";
     public static final String LASTUPDATEDAT = "or_lastupdateat";
-    
+
     /**
      * An auto-generated primary key for this object. This key will be a child
      * key of the owning surface's key.
@@ -1623,7 +1610,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new objectAttribute.
      *
@@ -1635,14 +1622,14 @@ public class StoreDB {
      * @param ot1
      * @param ot2Id
      * @param ot2
-     * @param typeId
      * @param type
      * @param orId
+     * @param or
      * @param userId
      *          the author who created this object type
      */
-    public ObjectRelation(int id, String code, String name, String desc, 
-        int ot1Id, ObjectType ot1, int ot2Id, ObjectType ot2, int type, 
+    public ObjectRelation(int id, String code, String name, String desc,
+        int ot1Id, ObjectType ot1, int ot2Id, ObjectType ot2, int type,
         int orId, ObjectRelation or, int userId) {
       setId(id);
       setCode(code);
@@ -1662,7 +1649,7 @@ public class StoreDB {
      * Create a new objectAttribute.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public ObjectRelation(ResultSet rs) throws SQLException {
       setId(rs.getInt(ID));
@@ -1695,7 +1682,7 @@ public class StoreDB {
         setOr(new ObjectRelation(rs, "comprel", false));
       }
     }
-    
+
     public int getId() {
       return id;
     }
@@ -1807,8 +1794,8 @@ public class StoreDB {
         setCode(getNewCode(c));
         stmt.execute(
           "INSERT INTO " + TABLE + " ("
-            + CODE + ", " + NAME + ", " + DESC + ", " + OT1_ID + ", " 
-            + OT2_ID + ", " + TYPE + ", " + COMPREL_ID + ", " + USER_ID + ")" 
+            + CODE + ", " + NAME + ", " + DESC + ", " + OT1_ID + ", "
+            + OT2_ID + ", " + TYPE + ", " + COMPREL_ID + ", " + USER_ID + ")"
           + " VALUES ('" + getCode() + "'"
           + ",'" + ServerUtils.mySQLFilter(getName()) + "'"
           + "," + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "'" : "null")
@@ -1822,13 +1809,13 @@ public class StoreDB {
       // update an existing record
       else {
         stmt.executeUpdate(
-          "UPDATE " + TABLE + " SET "  
+          "UPDATE " + TABLE + " SET "
             + NAME + "='" + ServerUtils.mySQLFilter(getName()) + "', "
             + DESC + "=" + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "', " : "null, ")
             + OT1_ID + "=" + getOt1Id() + ", "
             + OT2_ID + "=" + getOt2Id() + ", "
             + TYPE + "=" + getType() + ", "
-            + COMPREL_ID + "=" + (getOrId() == 0 ? "null, " : getOrId() + ", ") 
+            + COMPREL_ID + "=" + (getOrId() == 0 ? "null, " : getOrId() + ", ")
             + USER_ID + "=" + getUserId() + ", "
             + LASTUPDATEDAT + "= now()"
           + " WHERE " + ID + "=" + getId());
@@ -1842,27 +1829,27 @@ public class StoreDB {
       ArrayList<ObjectRelation> result = new ArrayList<ObjectRelation>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT orel.or_id as orel_or_id, orel.or_code as orel_or_code, "
-            + " orel.or_name as orel_or_name, orel.or_desc as orel_or_desc, " 
+            + " orel.or_name as orel_or_name, orel.or_desc as orel_or_desc, "
             + " orel.or_ot1_id as orel_or_ot1_id, orel.or_ot2_id as orel_or_ot2_id, "
             + " orel.or_type as orel_or_type, orel.or_or_id as orel_or_or_id, "
             + " orel.or_user_id as orel_or_user_id, "
           + " comprel.or_id as comprel_or_id, comprel.or_code as comprel_or_code, "
-            + " comprel.or_name as comprel_or_name, comprel.or_desc as comprel_or_desc, " 
+            + " comprel.or_name as comprel_or_name, comprel.or_desc as comprel_or_desc, "
             + " comprel.or_ot1_id as comprel_or_ot1_id, comprel.or_ot2_id as comprel_or_ot2_id, "
             + " comprel.or_type as comprel_or_type, comprel.or_or_id as comprel_or_or_id, "
             + " comprel.or_user_id as comprel_or_user_id, "
           + " ot1.ot_id as ot1_ot_id, ot1.ot_ot_id as ot1_ot_ot_id, "
           + " ot1.ot_code as ot1_ot_code, ot1.ot_name as ot1_ot_name, "
           + " ot1.ot_desc as ot1_ot_desc, ot1.ot_user_id as ot1_ot_user_id, "
-          + " ot1.ot_lastupdateat as ot1_ot_lastupdateat, " 
+          + " ot1.ot_lastupdateat as ot1_ot_lastupdateat, "
           + " ot2.ot_id as ot2_ot_id, ot2.ot_ot_id as ot2_ot_ot_id, "
           + " ot2.ot_code as ot2_ot_code, ot2.ot_name as ot2_ot_name, "
           + " ot2.ot_desc as ot2_ot_desc, ot2.ot_user_id as ot2_ot_user_id, "
-          + " ot2.ot_lastupdateat as ot2_ot_lastupdateat" 
-          + " FROM " + TABLE + " orel left outer join " + TABLE + " comprel on (orel." 
-          + COMPREL_ID + "=comprel." + ID + "), " + ObjectType.TABLE + " ot1" + ", " 
+          + " ot2.ot_lastupdateat as ot2_ot_lastupdateat"
+          + " FROM " + TABLE + " orel left outer join " + TABLE + " comprel on (orel."
+          + COMPREL_ID + "=comprel." + ID + "), " + ObjectType.TABLE + " ot1" + ", "
           + ObjectType.TABLE + " ot2"
           + " WHERE orel." + OT1_ID + "=" + "ot1." + ObjectType.ID
           + " AND orel." + OT2_ID + "=" + "ot2." + ObjectType.ID
@@ -1874,9 +1861,9 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static String getNewCode(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
       return StoreDB.getNewCode(stmt, TABLE, OBJECT_CODE, ID, CODE);
@@ -1910,7 +1897,7 @@ public class StoreDB {
     public static final String FLAGS = "vt_flags";
     public static final String USER_ID = "vt_user_id";
     public static final String LASTUPDATEDAT = "vt_lastupdateat";
-    
+
     /**
      * An auto-generated primary key for this object. This key will be a child
      * key of the owning surface's key.
@@ -1952,7 +1939,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new value type.
      *
@@ -1963,7 +1950,7 @@ public class StoreDB {
      * @param userId
      *          the author who created/updated this value type
      */
-    public ValueType(int id, String code, String name, String desc, int type, 
+    public ValueType(int id, String code, String name, String desc, int type,
         int flags, int userId) {
       setId(id);
       setCode(code);
@@ -1978,7 +1965,7 @@ public class StoreDB {
      * Create a new value type.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public ValueType(ResultSet rs) throws SQLException {
       setId(rs.getInt(ID));
@@ -2058,8 +2045,8 @@ public class StoreDB {
       ValueType result = null;
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
         + " WHERE " + ID + "=" + id;
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) {
@@ -2067,7 +2054,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public ValueType save(Connection c) throws SQLException {
@@ -2078,7 +2065,7 @@ public class StoreDB {
         stmt.execute(
           "INSERT INTO " + TABLE + " ("
             + CODE + ", " + NAME + ", " + DESC + ", " + TYPE + ", " + FLAGS + ", "
-            + USER_ID + ")" 
+            + USER_ID + ")"
           + " VALUES ('" + getCode() + "'"
           + ",'" + ServerUtils.mySQLFilter(getName()) + "'"
           + "," + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "'" : "null")
@@ -2090,11 +2077,11 @@ public class StoreDB {
       // update an existing record
       else {
         stmt.executeUpdate(
-          "UPDATE " + TABLE + " SET "  
+          "UPDATE " + TABLE + " SET "
             + NAME + "='" + ServerUtils.mySQLFilter(getName()) + "', "
             + DESC + "=" + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "', " : "null, ")
-            + TYPE + "=" + getType() + ", " 
-            + FLAGS + "=" + getFlags() + ", " 
+            + TYPE + "=" + getType() + ", "
+            + FLAGS + "=" + getFlags() + ", "
             + USER_ID + "=" + getUserId() + ", "
             + LASTUPDATEDAT + "= now()"
           + " WHERE " + ID + "=" + getId());
@@ -2107,7 +2094,7 @@ public class StoreDB {
       ArrayList<ValueType> result = new ArrayList<ValueType>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT * FROM " + TABLE;
       ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
@@ -2115,15 +2102,15 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static String getNewCode(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
       return StoreDB.getNewCode(stmt, TABLE, OBJECT_CODE, ID, CODE);
     }
   }
-  
+
   /**
    * An ORM object representing a unit.
    */
@@ -2140,7 +2127,7 @@ public class StoreDB {
     public static final String CONVERSION = "unit_conversion";
     public static final String USER_ID = "unit_user_id";
     public static final String LASTUPDATEDAT = "unit_lastupdateat";
-    
+
     /**
      * An auto-generated primary key for this object. This key will be a child
      * key of the owning surface's key.
@@ -2187,7 +2174,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new unit.
      *
@@ -2199,7 +2186,7 @@ public class StoreDB {
      * @param userId
      *          the author who created/updated this unit
      */
-    public Unit(int id, String code, String name, String desc, String symbol, 
+    public Unit(int id, String code, String name, String desc, String symbol,
         int type, float conversion, int userId) {
       setId(id);
       setCode(code);
@@ -2215,7 +2202,7 @@ public class StoreDB {
      * Create a new objectType.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public Unit(ResultSet rs) throws SQLException {
       setId(rs.getInt(ID));
@@ -2307,21 +2294,21 @@ public class StoreDB {
         setCode(getNewCode(c));
         stmt.execute(
           "INSERT INTO " + TABLE + " ("
-            + CODE + ", " + NAME + ", " + DESC + ", " + SYMBOL + ", " 
-            + TYPE + ", " + CONVERSION + ", " + USER_ID + ")" 
+            + CODE + ", " + NAME + ", " + DESC + ", " + SYMBOL + ", "
+            + TYPE + ", " + CONVERSION + ", " + USER_ID + ")"
           + " VALUES ('" + getCode() + "'"
           + ",'" + ServerUtils.mySQLFilter(getName()) + "'"
           + "," + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "'" : "null")
           + ",'" + ServerUtils.mySQLFilter(getSymbol()) + "'"
-          + "," + getType()  
-          + "," + getConversion()  
+          + "," + getType()
+          + "," + getConversion()
           + "," + getUserId() + ")");
         setId(getIdentity(stmt));
       }
       // update an existing record
       else {
         stmt.executeUpdate(
-          "UPDATE " + TABLE + " SET "  
+          "UPDATE " + TABLE + " SET "
             + NAME + "='" + ServerUtils.mySQLFilter(getName()) + "', "
             + DESC + "=" + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "', " : "null, ")
             + SYMBOL + "='" + ServerUtils.mySQLFilter(getSymbol()) + "', "
@@ -2339,7 +2326,7 @@ public class StoreDB {
       ArrayList<Unit> result = new ArrayList<Unit>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT * FROM " + TABLE + " ORDER BY " + NAME;
       ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
@@ -2347,9 +2334,9 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static String getNewCode(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
       return StoreDB.getNewCode(stmt, TABLE, OBJECT_CODE, ID, CODE);
@@ -2371,7 +2358,7 @@ public class StoreDB {
     public static final String OA_ID = "t_oa_id";
     public static final String USER_ID = "t_user_id";
     public static final String LASTUPDATEDAT = "t_lastupdateat";
-    
+
     /**
      * An auto-generated primary key for this object. This key will be a child
      * key of the owning surface's key.
@@ -2415,7 +2402,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new template.
      *
@@ -2424,11 +2411,11 @@ public class StoreDB {
      * @param name
      * @param desc
      * @param otId
-     * @param oaId
+     * @param oa
      * @param userId
      *          the author who created this template
      */
-    public Template(int id, String code, String name, String desc, int otId, 
+    public Template(int id, String code, String name, String desc, int otId,
         ObjectType ot, int taId, ObjectAttribute oa, int userId) {
       setId(id);
       setCode(code);
@@ -2445,7 +2432,8 @@ public class StoreDB {
      * Create a new template.
      *
      * @param rs
-     * @throws SQLException 
+     * @param withTables
+     * @throws SQLException
      */
     public Template(ResultSet rs, boolean withTables) throws SQLException {
       setId(rs.getInt(ID));
@@ -2555,8 +2543,8 @@ public class StoreDB {
       Template result = null;
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
         + " WHERE " + ID + "=" + id;
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) {
@@ -2564,18 +2552,18 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public Template save(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
-      StringBuffer query = new StringBuffer(BUFFER_SIZE);
+      StringBuilder query = new StringBuilder(BUFFER_SIZE);
       if (this.getId() == 0) {
         // insert new record
         setCode(getNewCode(c));
         query.append("INSERT INTO " + TABLE + " ("
-            + CODE + ", " + NAME + ", " + DESC + ", " + OT_ID + ", " + OA_ID + ", " 
-            + USER_ID + ")"); 
+            + CODE + ", " + NAME + ", " + DESC + ", " + OT_ID + ", " + OA_ID + ", "
+            + USER_ID + ")");
         query.append(" VALUES (");
         query.append("'").append(getCode()).append("'");
         query.append(",'").append(ServerUtils.mySQLFilter(getName())).append("'");
@@ -2587,11 +2575,11 @@ public class StoreDB {
         setId(getIdentity(stmt));
       } else {
         // update an existing record
-        query.append("UPDATE " + TABLE + " SET ");  
+        query.append("UPDATE " + TABLE + " SET ");
         query.append(NAME + "='").append(ServerUtils.mySQLFilter(getName())).append("', ");
         query.append(DESC + "=").append(getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "', " : "null, ");
-        query.append(OT_ID + "=").append(getOtId() == 0 ? "null, " : getOtId() + ", "); 
-        query.append(OA_ID + "=").append(getOaId() == 0 ? "null, " : getOaId() + ", "); 
+        query.append(OT_ID + "=").append(getOtId() == 0 ? "null, " : getOtId() + ", ");
+        query.append(OA_ID + "=").append(getOaId() == 0 ? "null, " : getOaId() + ", ");
         query.append(USER_ID + "=").append(getUserId()).append(", ");
         query.append(LASTUPDATEDAT + "= now()");
         query.append(" WHERE " + ID + "=").append(getId());
@@ -2606,13 +2594,13 @@ public class StoreDB {
       ArrayList<Template> result = new ArrayList<Template>();
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE + " left outer join " 
-          + ObjectAttribute.TABLE + " on (" + OA_ID + "=" 
+
+      String query = "SELECT * FROM " + TABLE + " left outer join "
+          + ObjectAttribute.TABLE + " on (" + OA_ID + "="
           + ObjectAttribute.ID + ") left outer join " + ObjectType.TABLE
-          + " on (" + OT_ID + "=" + ObjectType.ID 
+          + " on (" + OT_ID + "=" + ObjectType.ID
           + ") left outer join " + ValueType.TABLE
-            + " on (" + ObjectAttribute.TYPE_ID + "=" + ValueType.ID 
+            + " on (" + ObjectAttribute.TYPE_ID + "=" + ValueType.ID
           + ") left outer join " + Unit.TABLE
             + " on (" + ObjectAttribute.UNIT_ID + "=" + Unit.ID + ")"
           + " ORDER BY " + NAME ;
@@ -2623,9 +2611,9 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static String getNewCode(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
       return StoreDB.getNewCode(stmt, TABLE, OBJECT_CODE, ID, CODE);
@@ -2651,7 +2639,7 @@ public class StoreDB {
     public static final String SUBRANK = "tr_subrank";
     public static final String USER_ID = "tr_user_id";
     public static final String LASTUPDATEDAT = "tr_lastupdateat";
-    
+
     /**
      * An auto-generated primary key for this object. This key will be a child
      * key of the owning surface's key.
@@ -2716,7 +2704,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new template.
      *
@@ -2736,8 +2724,8 @@ public class StoreDB {
      * @param userId
      *          the author who created this template
      */
-    public TemplateRelation(int id, String code, String name, String desc, 
-        int t1Id, Template t1, int t2Id, Template t2, int orId, 
+    public TemplateRelation(int id, String code, String name, String desc,
+        int t1Id, Template t1, int t2Id, Template t2, int orId,
         ObjectRelation or, int flags, int rank, int subrank, int userId) {
       setId(id);
       setCode(code);
@@ -2759,7 +2747,7 @@ public class StoreDB {
      * Create a new template.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public TemplateRelation(ResultSet rs) throws SQLException {
       setId(rs.getInt(ID));
@@ -2924,8 +2912,8 @@ public class StoreDB {
         stmt.execute(
           "INSERT INTO " + TABLE + " ("
             + CODE + ", " + NAME + ", " + DESC + ", " + T1_ID + ", " + T2_ID + ", "
-            + OR_ID + ", " + FLAGS + ", "  + RANK + ", " + SUBRANK + ", " 
-            + USER_ID + ")" 
+            + OR_ID + ", " + FLAGS + ", "  + RANK + ", " + SUBRANK + ", "
+            + USER_ID + ")"
           + " VALUES ('" + getCode() + "'"
           + ",'" + ServerUtils.mySQLFilter(getName()) + "'"
           + "," + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "'" : "null")
@@ -2941,7 +2929,7 @@ public class StoreDB {
       // update an existing record
       else {
         stmt.executeUpdate(
-          "UPDATE " + TABLE + " SET "  
+          "UPDATE " + TABLE + " SET "
             + NAME + "='" + ServerUtils.mySQLFilter(getName()) + "', "
             + DESC + "=" + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "', " : "null, ")
             + T1_ID + "=" + getT1Id() + ", "
@@ -2962,13 +2950,13 @@ public class StoreDB {
       ArrayList<TemplateRelation> result = new ArrayList<TemplateRelation>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT trel.*, orel.*, rt.*, "
           + " t1.t_id as t1_t_id, t1.t_ot_id as t1_t_ot_id, "
           + " t1.t_code as t1_t_code, t1.t_name as t1_t_name, "
           + " t1.t_desc as t1_t_desc, t1.t_user_id as t1_t_user_id, "
           + " t1.t_oa_id as t1_t_oa_id, "
-          + " t1.t_lastupdateat as t1_t_lastupdateat, " 
+          + " t1.t_lastupdateat as t1_t_lastupdateat, "
           + " t2.t_id as t2_t_id, t2.t_ot_id as t2_t_ot_id, "
           + " t2.t_code as t2_t_code, t2.t_name as t2_t_name, "
           + " t2.t_desc as t2_t_desc, t2.t_user_id as t2_t_user_id, "
@@ -2977,14 +2965,14 @@ public class StoreDB {
           + " ot1.ot_id as ot1_ot_id, ot1.ot_ot_id as ot1_ot_ot_id, "
           + " ot1.ot_code as ot1_ot_code, ot1.ot_name as ot1_ot_name, "
           + " ot1.ot_desc as ot1_ot_desc, ot1.ot_user_id as ot1_ot_user_id, "
-          + " ot1.ot_lastupdateat as ot1_ot_lastupdateat, " 
+          + " ot1.ot_lastupdateat as ot1_ot_lastupdateat, "
           + " ot2.ot_id as ot2_ot_id, ot2.ot_ot_id as ot2_ot_ot_id, "
           + " ot2.ot_code as ot2_ot_code, ot2.ot_name as ot2_ot_name, "
           + " ot2.ot_desc as ot2_ot_desc, ot2.ot_user_id as ot2_ot_user_id, "
           + " ot2.ot_lastupdateat as ot2_ot_lastupdateat"
-          + " FROM " + TABLE + " trel, " + ObjectRelation.TABLE + " orel, " 
-          + Template.TABLE + " t1, " 
-          + Template.TABLE + " t2, " + ObjectType.TABLE + " ot1, " 
+          + " FROM " + TABLE + " trel, " + ObjectRelation.TABLE + " orel, "
+          + Template.TABLE + " t1, "
+          + Template.TABLE + " t2, " + ObjectType.TABLE + " ot1, "
           + ObjectType.TABLE + " ot2"
           + " WHERE " + OR_ID + "=" + ObjectRelation.ID
           + " AND " + T1_ID + "=" + "t1." + Template.ID
@@ -2997,20 +2985,20 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static ArrayList<TemplateRelation> loadTemplateRelations(Connection c, int tId) throws SQLException {
       ArrayList<TemplateRelation> result = new ArrayList<TemplateRelation>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT trel.*, orel.*, "
           + " t1.t_id as t1_t_id, t1.t_ot_id as t1_t_ot_id, "
           + " t1.t_code as t1_t_code, t1.t_name as t1_t_name, "
           + " t1.t_desc as t1_t_desc, t1.t_user_id as t1_t_user_id, "
           + " t1.t_oa_id as t1_t_oa_id, "
-          + " t1.t_lastupdateat as t1_t_lastupdateat, " 
+          + " t1.t_lastupdateat as t1_t_lastupdateat, "
           + " t2.t_id as t2_t_id, t2.t_ot_id as t2_t_ot_id, "
           + " t2.t_code as t2_t_code, t2.t_name as t2_t_name, "
           + " t2.t_desc as t2_t_desc, t2.t_user_id as t2_t_user_id, "
@@ -3019,16 +3007,16 @@ public class StoreDB {
           + " ot1.ot_id as ot1_ot_id, ot1.ot_ot_id as ot1_ot_ot_id, "
           + " ot1.ot_code as ot1_ot_code, ot1.ot_name as ot1_ot_name, "
           + " ot1.ot_desc as ot1_ot_desc, ot1.ot_user_id as ot1_ot_user_id, "
-          + " ot1.ot_lastupdateat as ot1_ot_lastupdateat, " 
+          + " ot1.ot_lastupdateat as ot1_ot_lastupdateat, "
           + " ot2.ot_id as ot2_ot_id, ot2.ot_ot_id as ot2_ot_ot_id, "
           + " ot2.ot_code as ot2_ot_code, ot2.ot_name as ot2_ot_name, "
           + " ot2.ot_desc as ot2_ot_desc, ot2.ot_user_id as ot2_ot_user_id, "
           + " ot2.ot_lastupdateat as ot2_ot_lastupdateat"
-          + " FROM " + TABLE + " trel, " + ObjectRelation.TABLE + " orel, " 
-          + ObjectType.TABLE + " ot1, " 
-          + ObjectType.TABLE + " ot2, " + Template.TABLE + " t1, " 
-          + Template.TABLE + " t2 " 
-          + " WHERE " + T1_ID + "=" + tId 
+          + " FROM " + TABLE + " trel, " + ObjectRelation.TABLE + " orel, "
+          + ObjectType.TABLE + " ot1, "
+          + ObjectType.TABLE + " ot2, " + Template.TABLE + " t1, "
+          + Template.TABLE + " t2 "
+          + " WHERE " + T1_ID + "=" + tId
           + " AND " + T1_ID + "=" + "t1." + Template.ID
           + " AND " + T2_ID + "=" + "t2." + Template.ID
           + " AND " + OR_ID + "=" + ObjectRelation.ID
@@ -3041,15 +3029,15 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static String getNewCode(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
       return StoreDB.getNewCode(stmt, TABLE, OBJECT_CODE, ID, CODE);
     }
   }
-  
+
   /**
    * An ORM object representing a template group.
    */
@@ -3072,7 +3060,7 @@ public class StoreDB {
     public static final String LABELALIGN = "tg_label_align";
     public static final String USER_ID = "tg_user_id";
     public static final String LASTUPDATEDAT = "tg_lastupdateat";
-    
+
     /**
      * An auto-generated primary key for this object. This key will be a child
      * key of the owning surface's key.
@@ -3150,7 +3138,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new template.
      *
@@ -3170,8 +3158,8 @@ public class StoreDB {
      * @param userId
      *          the author who created this template
      */
-    public TemplateGroup(int id, String code, String name, String desc, int tId, 
-        Template t, int flags, int rank, int subrank, int labelTop, int labelLeft, 
+    public TemplateGroup(int id, String code, String name, String desc, int tId,
+        Template t, int flags, int rank, int subrank, int labelTop, int labelLeft,
         int labelWidth, String labelWidthUnit, String labelAlign, int userId) {
       setId(id);
       setCode(code);
@@ -3194,7 +3182,7 @@ public class StoreDB {
      * Create a new template.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public TemplateGroup(ResultSet rs, boolean withTables) throws SQLException {
       setId(rs.getInt(ID));
@@ -3211,7 +3199,7 @@ public class StoreDB {
       setLabelWidthUnit(rs.getString(LABELWIDTHUNIT));
       setLabelAlign(rs.getString(LABELALIGN));
       setUserId(rs.getInt(USER_ID));
-      
+
       if (withTables)
         setT(new Template(rs, false));
     }
@@ -3396,8 +3384,8 @@ public class StoreDB {
       TemplateGroup result = null;
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
         + " WHERE " + ID + "=" + id;
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) {
@@ -3405,7 +3393,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public TemplateGroup save(Connection c) throws SQLException {
@@ -3415,10 +3403,10 @@ public class StoreDB {
         setCode(getNewCode(c));
         stmt.execute(
           "INSERT INTO " + TABLE + " ("
-            + CODE + ", " + NAME + ", " + DESC + ", " + T_ID + ", " + FLAGS + ", " 
-            + RANK + ", " + SUBRANK + ", " + LABELTOP + ", " + LABELLEFT + ", " 
-            + LABELWIDTH + ", " + LABELWIDTHUNIT + ", " + LABELALIGN + ", " 
-            + USER_ID + ")" 
+            + CODE + ", " + NAME + ", " + DESC + ", " + T_ID + ", " + FLAGS + ", "
+            + RANK + ", " + SUBRANK + ", " + LABELTOP + ", " + LABELLEFT + ", "
+            + LABELWIDTH + ", " + LABELWIDTHUNIT + ", " + LABELALIGN + ", "
+            + USER_ID + ")"
           + " VALUES ('" + getCode() + "'"
           + ",'" + ServerUtils.mySQLFilter(getName()) + "'"
           + "," + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "'" : "null")
@@ -3437,7 +3425,7 @@ public class StoreDB {
       // update an existing record
       else {
         stmt.executeUpdate(
-          "UPDATE " + TABLE + " SET "  
+          "UPDATE " + TABLE + " SET "
             + NAME + "='" + ServerUtils.mySQLFilter(getName()) + "', "
             + DESC + "=" + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "', " : "null, ")
             + T_ID + "=" + getTId() + ", "
@@ -3461,7 +3449,7 @@ public class StoreDB {
       ArrayList<TemplateGroup> result = new ArrayList<TemplateGroup>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT * FROM " + TABLE + ", " + Template.TABLE
           + " WHERE " + T_ID + "=" + Template.ID;
       ResultSet rs = stmt.executeQuery(query);
@@ -3470,17 +3458,17 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
-    public static ArrayList<TemplateGroup> loadTemplateGroups(Connection c, 
+
+    public static ArrayList<TemplateGroup> loadTemplateGroups(Connection c,
         int tId) throws SQLException {
       ArrayList<TemplateGroup> result = new ArrayList<TemplateGroup>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT * FROM " + TABLE + ", " + Template.TABLE
-          + " WHERE " + T_ID + "=" + tId 
+          + " WHERE " + T_ID + "=" + tId
           + " AND " + T_ID + "=" + Template.ID
           + " ORDER BY " + RANK + ", " + SUBRANK;
       ResultSet rs = stmt.executeQuery(query);
@@ -3489,9 +3477,9 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static String getNewCode(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
       return StoreDB.getNewCode(stmt, TABLE, OBJECT_CODE, ID, CODE);
@@ -3677,9 +3665,9 @@ public class StoreDB {
      * The align of the template attribute's unit.
      */
     private String unitAlign;
-    
+
     /**
-     * Shared values are used for specific styles (like dynamic combos, tables, ...) 
+     * Shared values are used for specific styles (like dynamic combos, tables, ...)
      */
     private int shared1;
     private int shared2;
@@ -3697,7 +3685,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new template attribute.
      *
@@ -3712,7 +3700,7 @@ public class StoreDB {
      * @param flags
      * @param style
      * @param tabIndex
-     * @param default
+     * @param def
      * @param length
      * @param labelTop
      * @param labelLeft
@@ -3737,11 +3725,11 @@ public class StoreDB {
      * @param userId
      *          the author who created this template
      */
-    public TemplateAttribute(int id, String code, String name, String desc, 
-        int tgId, TemplateGroup tg, int oaId, ObjectAttribute oa, int flags, 
-        int style, int tabIndex, String def, int length, int labelTop, 
-        int labelLeft, int labelWidth, String labelWidthUnit, String labelAlign, 
-        int top, int left, int width, String widthUnit, String align, int unitTop, 
+    public TemplateAttribute(int id, String code, String name, String desc,
+        int tgId, TemplateGroup tg, int oaId, ObjectAttribute oa, int flags,
+        int style, int tabIndex, String def, int length, int labelTop,
+        int labelLeft, int labelWidth, String labelWidthUnit, String labelAlign,
+        int top, int left, int width, String widthUnit, String align, int unitTop,
         int unitLeft, int unitWidth, String unitWidthUnit, String unitAlign,
         int shared1, int shared2, int shared3, int shared4, int shared5, int userId) {
       setId(id);
@@ -3784,9 +3772,9 @@ public class StoreDB {
      * Create a new template.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
-    public TemplateAttribute(ResultSet rs, boolean withTablesDown, 
+    public TemplateAttribute(ResultSet rs, boolean withTablesDown,
         boolean withTablesUp) throws SQLException {
       setId(rs.getInt(ID));
       setCode(rs.getString(CODE));
@@ -4114,16 +4102,16 @@ public class StoreDB {
         setCode(getNewCode(c));
         stmt.execute(
           "INSERT INTO " + TABLE + " ("
-            + CODE + ", " + NAME + ", " + DESC + ", " + TG_ID + ", " + OA_ID + ", " 
-            + FLAGS + ", " + STYLE + ", " + TABINDEX + ", " + DEF + ", " + LENGTH + ", " 
-            + LABELTOP + ", " + LABELLEFT + ", " + LABELWIDTH + ", " 
-            + LABELWIDTHUNIT + ", " + LABELALIGN + ", " 
-            + TOP + ", " + LEFT + ", " + WIDTH + ", " 
-            + WIDTHUNIT + ", " + ALIGN + ", " 
-            + UNITTOP + ", " + UNITLEFT + ", " + UNITWIDTH + ", " 
+            + CODE + ", " + NAME + ", " + DESC + ", " + TG_ID + ", " + OA_ID + ", "
+            + FLAGS + ", " + STYLE + ", " + TABINDEX + ", " + DEF + ", " + LENGTH + ", "
+            + LABELTOP + ", " + LABELLEFT + ", " + LABELWIDTH + ", "
+            + LABELWIDTHUNIT + ", " + LABELALIGN + ", "
+            + TOP + ", " + LEFT + ", " + WIDTH + ", "
+            + WIDTHUNIT + ", " + ALIGN + ", "
+            + UNITTOP + ", " + UNITLEFT + ", " + UNITWIDTH + ", "
             + UNITWIDTHUNIT + ", " + UNITALIGN + ", "
             + SHARED1 + ", " + SHARED2 + ", " + SHARED3 + ", " + SHARED4 + ", "
-            + SHARED5 + ", " + USER_ID + ")" 
+            + SHARED5 + ", " + USER_ID + ")"
           + " VALUES ('" + getCode() + "'"
           + ",'" + ServerUtils.mySQLFilter(getName()) + "'"
           + "," + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "'" : "null")
@@ -4160,11 +4148,11 @@ public class StoreDB {
       // update an existing record
       else {
         stmt.executeUpdate(
-          "UPDATE " + TABLE + " SET "  
+          "UPDATE " + TABLE + " SET "
             + NAME + "='" + ServerUtils.mySQLFilter(getName()) + "', "
             + DESC + "=" + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "', " : "null, ")
             + TG_ID + "=" + getTgId() + ", "
-            + OA_ID + "=" + (getOaId() == 0 ? "null, " : getOaId() + ", ") 
+            + OA_ID + "=" + (getOaId() == 0 ? "null, " : getOaId() + ", ")
             + FLAGS + "=" + getFlags() + ", "
             + STYLE + "=" + getStyle() + ", "
             + TABINDEX + "=" + getTabIndex() + ", "
@@ -4202,15 +4190,15 @@ public class StoreDB {
       ArrayList<TemplateAttribute> result = new ArrayList<TemplateAttribute>();
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TemplateGroup.TABLE + ", " 
-          + Template.TABLE + ", " + TABLE    
+
+      String query = "SELECT * FROM " + TemplateGroup.TABLE + ", "
+          + Template.TABLE + ", " + TABLE
           + " left outer join " + ObjectAttribute.TABLE + " on ("
           + OA_ID + "=" + ObjectAttribute.ID + ") "
-          + " left outer join " + ObjectType.TABLE + " on (" 
-          + ObjectAttribute.OT_ID + "=" + ObjectType.ID + ") " 
-          + " left outer join " + Unit.TABLE + " on (" 
-          + ObjectAttribute.UNIT_ID + "=" + Unit.ID + ") " 
+          + " left outer join " + ObjectType.TABLE + " on ("
+          + ObjectAttribute.OT_ID + "=" + ObjectType.ID + ") "
+          + " left outer join " + Unit.TABLE + " on ("
+          + ObjectAttribute.UNIT_ID + "=" + Unit.ID + ") "
           + " left outer join " + ValueType.TABLE + " on ("
           + ObjectAttribute.TYPE_ID + "=" + ValueType.ID + ")"
           + " WHERE " + TG_ID + "=" + TemplateGroup.ID
@@ -4221,28 +4209,28 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static ArrayList<TemplateAttribute> loadTemplateAttributes(Connection c, int tId) throws SQLException {
       ArrayList<TemplateAttribute> result = new ArrayList<TemplateAttribute>();
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TemplateGroup.TABLE + ", " 
-          + Template.TABLE + ", " + TABLE  
+
+      String query = "SELECT * FROM " + TemplateGroup.TABLE + ", "
+          + Template.TABLE + ", " + TABLE
           + " left outer join " + ObjectAttribute.TABLE + " on ("
           + OA_ID + "=" + ObjectAttribute.ID + ") "
-          + " left outer join " + ObjectType.TABLE + " on (" 
-          + ObjectAttribute.OT_ID + "=" + ObjectType.ID + ") " 
-          + " left outer join " + Unit.TABLE + " on (" 
+          + " left outer join " + ObjectType.TABLE + " on ("
+          + ObjectAttribute.OT_ID + "=" + ObjectType.ID + ") "
+          + " left outer join " + Unit.TABLE + " on ("
           + ObjectAttribute.UNIT_ID + "=" + Unit.ID + ") "
           + " left outer join " + ValueType.TABLE + " on ("
           + ObjectAttribute.TYPE_ID + "=" + ValueType.ID + ")"
           + " WHERE " + Template.ID + "=" + tId
           + " AND " + TG_ID + "=" + TemplateGroup.ID
           + " AND " + TemplateGroup.T_ID + "=" + Template.ID
-          + " ORDER BY " + TemplateGroup.RANK + ", " + TemplateGroup.SUBRANK 
+          + " ORDER BY " + TemplateGroup.RANK + ", " + TemplateGroup.SUBRANK
           + ", " + TABINDEX;
       ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
@@ -4250,15 +4238,15 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static String getNewCode(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
       return StoreDB.getNewCode(stmt, TABLE, OBJECT_CODE, ID, CODE);
     }
   }
-  
+
   /**
    * An ORM object representing a template tree.
    */
@@ -4275,7 +4263,7 @@ public class StoreDB {
     public static final String RANK = "tt_rank";
     public static final String USER_ID = "tt_user_id";
     public static final String LASTUPDATEDAT = "tt_lastupdateat";
-    
+
     /**
      * An auto-generated primary key for this object. This key will be a child
      * key of the owning surface's key.
@@ -4322,7 +4310,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new template.
      *
@@ -4336,7 +4324,7 @@ public class StoreDB {
      * @param userId
      *          the author who created this template tree
      */
-    public TemplateTree(int id, String code, String name, String desc, int tId, 
+    public TemplateTree(int id, String code, String name, String desc, int tId,
         int flags, int rank, int userId) {
       setId(id);
       setCode(code);
@@ -4352,7 +4340,7 @@ public class StoreDB {
      * Create a new template tree.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public TemplateTree(ResultSet rs) throws SQLException {
       setId(rs.getInt(ID));
@@ -4447,8 +4435,8 @@ public class StoreDB {
       TemplateTree result = null;
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
         + " WHERE " + ID + "=" + id;
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) {
@@ -4456,7 +4444,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public TemplateTree save(Connection c) throws SQLException {
@@ -4466,8 +4454,8 @@ public class StoreDB {
         setCode(getNewCode(c));
         stmt.execute(
           "INSERT INTO " + TABLE + " ("
-            + CODE + ", " + NAME + ", " + DESC + ", " + T_ID + ", " + FLAGS + ", " 
-            + RANK + ", " + USER_ID + ")" 
+            + CODE + ", " + NAME + ", " + DESC + ", " + T_ID + ", " + FLAGS + ", "
+            + RANK + ", " + USER_ID + ")"
           + " VALUES ('" + getCode() + "'"
           + ",'" + ServerUtils.mySQLFilter(getName()) + "'"
           + "," + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "'" : "null")
@@ -4480,7 +4468,7 @@ public class StoreDB {
       // update an existing record
       else {
         stmt.executeUpdate(
-          "UPDATE " + TABLE + " SET "  
+          "UPDATE " + TABLE + " SET "
             + NAME + "='" + ServerUtils.mySQLFilter(getName()) + "', "
             + DESC + "=" + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "', " : "null, ")
             + T_ID + "=" + getTId() + ", "
@@ -4498,8 +4486,8 @@ public class StoreDB {
       ArrayList<TemplateTree> result = new ArrayList<TemplateTree>();
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
           + " WHERE " + T_ID + "=" + tId;
       ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
@@ -4507,9 +4495,9 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static String getNewCode(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
       return StoreDB.getNewCode(stmt, TABLE, OBJECT_CODE, ID, CODE);
@@ -4527,7 +4515,7 @@ public class StoreDB {
     public static final String TT_ID = "tti_tt_id";
     public static final String TA_ID = "tti_ta_id";
     public static final String RANK = "tti_rank";
-    
+
     /**
      * The key of the template tree item.
      */
@@ -4568,7 +4556,7 @@ public class StoreDB {
      * Create a new template tree item.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public TemplateTreeItem(ResultSet rs) throws SQLException {
       setTtId(rs.getInt(TT_ID));
@@ -4631,7 +4619,7 @@ public class StoreDB {
       // insert new record
       stmt.execute(
         "INSERT INTO " + TABLE + " ("
-          + TT_ID + ", " + TA_ID + ", " + RANK + ")" 
+          + TT_ID + ", " + TA_ID + ", " + RANK + ")"
           + " VALUES (" + getTtId() + "," + getTaId() + "," + getRank() + ")");
       stmt.close();
       return this;
@@ -4645,15 +4633,15 @@ public class StoreDB {
       stmt.close();
     }
 
-    public static ArrayList<TemplateTreeItem> loadTemplateTreeItems(Connection c, int ttId) 
+    public static ArrayList<TemplateTreeItem> loadTemplateTreeItems(Connection c, int ttId)
         throws SQLException {
       ArrayList<TemplateTreeItem> result = new ArrayList<TemplateTreeItem>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT * FROM " + TABLE + ", " + TemplateTree.TABLE
-          + ", " + TemplateAttribute.TABLE + ", " + ObjectType.TABLE + ", " 
-          + ObjectAttribute.TABLE + " left outer join " + Unit.TABLE 
+          + ", " + TemplateAttribute.TABLE + ", " + ObjectType.TABLE + ", "
+          + ObjectAttribute.TABLE + " left outer join " + Unit.TABLE
           + " on (" + ObjectAttribute.UNIT_ID + "=" + Unit.ID + "), " + ValueType.TABLE
           + " WHERE " + TT_ID + "=" + ttId
           + " AND " + TT_ID + "=" + TemplateTree.ID
@@ -4668,7 +4656,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
   }
 
@@ -4688,7 +4676,7 @@ public class StoreDB {
     public static final String RANK = "tl_rank";
     public static final String USER_ID = "tl_user_id";
     public static final String LASTUPDATEDAT = "tl_lastupdateat";
-    
+
     /**
      * An auto-generated primary key for this object. This key will be a child
      * key of the owning surface's key.
@@ -4735,7 +4723,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new template.
      *
@@ -4749,7 +4737,7 @@ public class StoreDB {
      * @param userId
      *          the author who created this template tree
      */
-    public TemplateList(int id, String code, String name, String desc, int tId, 
+    public TemplateList(int id, String code, String name, String desc, int tId,
         int flags, int rank, int userId) {
       setId(id);
       setCode(code);
@@ -4765,7 +4753,7 @@ public class StoreDB {
      * Create a new template list.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public TemplateList(ResultSet rs) throws SQLException {
       setId(rs.getInt(ID));
@@ -4860,8 +4848,8 @@ public class StoreDB {
       TemplateList result = null;
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
         + " WHERE " + ID + "=" + id;
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) {
@@ -4869,7 +4857,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public TemplateList save(Connection c) throws SQLException {
@@ -4879,8 +4867,8 @@ public class StoreDB {
         setCode(getNewCode(c));
         stmt.execute(
           "INSERT INTO " + TABLE + " ("
-            + CODE + ", " + NAME + ", " + DESC + ", " + T_ID + ", " + FLAGS + ", " 
-            + RANK + ", " + USER_ID + ")" 
+            + CODE + ", " + NAME + ", " + DESC + ", " + T_ID + ", " + FLAGS + ", "
+            + RANK + ", " + USER_ID + ")"
           + " VALUES ('" + getCode() + "'"
           + ",'" + ServerUtils.mySQLFilter(getName()) + "'"
           + "," + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "'" : "null")
@@ -4893,7 +4881,7 @@ public class StoreDB {
       // update an existing record
       else {
         stmt.executeUpdate(
-          "UPDATE " + TABLE + " SET "  
+          "UPDATE " + TABLE + " SET "
             + NAME + "='" + ServerUtils.mySQLFilter(getName()) + "', "
             + DESC + "=" + (getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "', " : "null, ")
             + T_ID + "=" + getTId() + ", "
@@ -4907,13 +4895,13 @@ public class StoreDB {
       return this;
     }
 
-    public static ArrayList<TemplateList> loadTemplateLists(Connection c, int tId) 
+    public static ArrayList<TemplateList> loadTemplateLists(Connection c, int tId)
         throws SQLException {
       ArrayList<TemplateList> result = new ArrayList<TemplateList>();
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
           + " WHERE " + T_ID + "=" + tId;
       ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
@@ -4921,9 +4909,9 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static String getNewCode(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
       return StoreDB.getNewCode(stmt, TABLE, OBJECT_CODE, ID, CODE);
@@ -4941,7 +4929,7 @@ public class StoreDB {
     public static final String TL_ID = "tli_tl_id";
     public static final String TA_ID = "tli_ta_id";
     public static final String RANK = "tli_rank";
-    
+
     /**
      * The key of the template list item.
      */
@@ -4982,7 +4970,7 @@ public class StoreDB {
      * Create a new template list item.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public TemplateListItem(ResultSet rs) throws SQLException {
       setTlId(rs.getInt(TL_ID));
@@ -5045,7 +5033,7 @@ public class StoreDB {
       // insert new record
       stmt.execute(
         "INSERT INTO " + TABLE + " ("
-          + TL_ID + ", " + TA_ID + ", " + RANK + ")" 
+          + TL_ID + ", " + TA_ID + ", " + RANK + ")"
           + " VALUES (" + getTlId() + "," + getTaId() + "," + getRank() + ")");
       stmt.close();
       return this;
@@ -5059,15 +5047,15 @@ public class StoreDB {
       stmt.close();
     }
 
-    public static ArrayList<TemplateListItem> loadTemplateListItems(Connection c, int tlId) 
+    public static ArrayList<TemplateListItem> loadTemplateListItems(Connection c, int tlId)
         throws SQLException {
       ArrayList<TemplateListItem> result = new ArrayList<TemplateListItem>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT * FROM " + TABLE + ", " + TemplateList.TABLE
-          + ", " + TemplateAttribute.TABLE + ", " + ObjectType.TABLE + ", " 
-          + ObjectAttribute.TABLE + " left outer join " + Unit.TABLE 
+          + ", " + TemplateAttribute.TABLE + ", " + ObjectType.TABLE + ", "
+          + ObjectAttribute.TABLE + " left outer join " + Unit.TABLE
           + " on (" + ObjectAttribute.UNIT_ID + "=" + Unit.ID + "), " + ValueType.TABLE
           + " WHERE " + TL_ID + "=" + tlId
           + " AND " + TL_ID + "=" + TemplateList.ID
@@ -5082,7 +5070,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
   }
 
@@ -5101,7 +5089,7 @@ public class StoreDB {
     public static final String FLAGS = "app_flags";
     public static final String USER_ID = "app_user_id";
     public static final String LASTUPDATEDAT = "app_lastupdateat";
-    
+
     /**
      * An auto-generated primary key for this object. This key will be a child
      * key of the owning surface's key.
@@ -5143,7 +5131,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new application.
      *
@@ -5155,7 +5143,7 @@ public class StoreDB {
      * @param userId
      *          the author who created this application
      */
-    public Application(int id, String code, String name, String desc, 
+    public Application(int id, String code, String name, String desc,
         String category, int flags, int userId) {
       setId(id);
       setCode(code);
@@ -5170,7 +5158,7 @@ public class StoreDB {
      * Create a new application.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public Application(ResultSet rs) throws SQLException {
       setId(rs.getInt(ID));
@@ -5250,8 +5238,8 @@ public class StoreDB {
       Application result = null;
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
         + " WHERE " + ID + "=" + id;
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) {
@@ -5259,20 +5247,20 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public Application save(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
-      StringBuffer query = new StringBuffer(BUFFER_SIZE);
+      StringBuilder query = new StringBuilder(BUFFER_SIZE);
       if (this.getId() == 0) {
         // insert new record
         setCode(getNewCode(c));
         query.append("INSERT INTO " + TABLE + " ("
-            + CODE + ", " + NAME + ", " + DESC + ", " + CATEGORY + ", " 
+            + CODE + ", " + NAME + ", " + DESC + ", " + CATEGORY + ", "
             + FLAGS + ", " + USER_ID + ")");
         query.append(" VALUES (");
-        query.append("'").append(getCode()).append("'"); 
+        query.append("'").append(getCode()).append("'");
         query.append(",'").append(ServerUtils.mySQLFilter(getName())).append("'");
         query.append(",").append(getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "'" : "null");
         query.append(",").append(getCategory() != null ? "'" + ServerUtils.mySQLFilter(getCategory()) + "'" : "null");
@@ -5283,11 +5271,11 @@ public class StoreDB {
         setId(getIdentity(stmt));
       } else {
         // update an existing record
-        query.append("UPDATE " + TABLE + " SET ");  
+        query.append("UPDATE " + TABLE + " SET ");
         query.append(NAME + "='").append(ServerUtils.mySQLFilter(getName())).append("', ");
         query.append(DESC + "=").append(getDesc() != null ? "'" + ServerUtils.mySQLFilter(getDesc()) + "', " : "null, ");
         query.append(CATEGORY + "=").append(getCategory() != null ? "'" + ServerUtils.mySQLFilter(getCategory()) + "', " : "null, ");
-        query.append(FLAGS + "=").append(getFlags()).append(", "); 
+        query.append(FLAGS + "=").append(getFlags()).append(", ");
         query.append(USER_ID + "=").append(getUserId()).append(", ");
         query.append(LASTUPDATEDAT + "= now()");
         query.append(" WHERE " + ID + "=").append(getId());
@@ -5302,7 +5290,7 @@ public class StoreDB {
       ArrayList<Application> result = new ArrayList<Application>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT * FROM " + TABLE + " ORDER BY " + NAME ;
       //log.info(TABLE + ": " + query);
       ResultSet rs = stmt.executeQuery(query);
@@ -5311,9 +5299,9 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static String getNewCode(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
       return StoreDB.getNewCode(stmt, TABLE, OBJECT_CODE, ID, CODE);
@@ -5333,7 +5321,7 @@ public class StoreDB {
     public static final String RANK = "appt_rank";
     public static final String USER_ID = "appt_user_id";
     public static final String LASTUPDATEDAT = "appt_lastupdateat";
-    
+
     /**
      * The key of the application.
      */
@@ -5371,7 +5359,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new application template.
      *
@@ -5397,7 +5385,7 @@ public class StoreDB {
      * Create a new application template.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public ApplicationTemplate(ResultSet rs) throws SQLException {
       setAppId(rs.getInt(APP_ID));
@@ -5486,8 +5474,8 @@ public class StoreDB {
       ApplicationTemplate result = null;
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
         + " WHERE " + APP_ID + "=" + appId + " AND " + T_ID + "=" + tId;
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) {
@@ -5495,7 +5483,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public ApplicationTemplate save(Connection c) throws SQLException {
@@ -5503,18 +5491,18 @@ public class StoreDB {
       // insert or update new record
       stmt.execute(
         "INSERT INTO " + TABLE + " ("
-          + APP_ID + ", " + T_ID + ", " + FLAGS + ", " 
-          + (getParentMenuId() > 0 ? PARENT_MENU + ", " : "") 
-          + RANK + ", " 
-          + USER_ID + ")" 
-          + " VALUES (" + getAppId() + "," + getTId() + "," + getFlags() + "," 
-          + (getParentMenuId() > 0 ? getParentMenuId() + ", " : "")  
-          + getRank() + ", " 
+          + APP_ID + ", " + T_ID + ", " + FLAGS + ", "
+          + (getParentMenuId() > 0 ? PARENT_MENU + ", " : "")
+          + RANK + ", "
+          + USER_ID + ")"
+          + " VALUES (" + getAppId() + "," + getTId() + "," + getFlags() + ","
+          + (getParentMenuId() > 0 ? getParentMenuId() + ", " : "")
+          + getRank() + ", "
           + getUserId() + ") "
           + "ON DUPLICATE KEY UPDATE "
           + FLAGS + "=" + getFlags() + ","
-          + PARENT_MENU + "=" + (getParentMenuId() > 0 ? getParentMenuId() : "null") + ","  
-          + RANK + "=" + getRank() + ","  
+          + PARENT_MENU + "=" + (getParentMenuId() > 0 ? getParentMenuId() : "null") + ","
+          + RANK + "=" + getRank() + ","
           + USER_ID + "=" + getUserId()
           );
       stmt.close();
@@ -5534,19 +5522,19 @@ public class StoreDB {
       ArrayList<ApplicationTemplate> result = new ArrayList<ApplicationTemplate>();
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM "  
-          + Template.TABLE + " left outer join " 
+
+      String query = "SELECT * FROM "
+          + Template.TABLE + " left outer join "
           + TABLE + " on (" + T_ID + "=" + Template.ID + ") left outer join "
           + Application.TABLE + " on (" + APP_ID + "=" + Application.ID + ") left outer join "
-          + ObjectAttribute.TABLE + " on (" + Template.OA_ID + "=" 
+          + ObjectAttribute.TABLE + " on (" + Template.OA_ID + "="
           + ObjectAttribute.ID + ") left outer join " + ObjectType.TABLE
-          + " on (" + Template.OT_ID + "=" + ObjectType.ID 
+          + " on (" + Template.OT_ID + "=" + ObjectType.ID
           + ") left outer join " + ValueType.TABLE
-            + " on (" + ObjectAttribute.TYPE_ID + "=" + ValueType.ID 
+            + " on (" + ObjectAttribute.TYPE_ID + "=" + ValueType.ID
           + ") left outer join " + Unit.TABLE
-            + " on (" + ObjectAttribute.UNIT_ID + "=" + Unit.ID + ")" 
-          + " WHERE " + APP_ID + (appId == 0 ? " is null" : "=" + appId) 
+            + " on (" + ObjectAttribute.UNIT_ID + "=" + Unit.ID + ")"
+          + " WHERE " + APP_ID + (appId == 0 ? " is null" : "=" + appId)
           + " ORDER BY " + PARENT_MENU + ", " + RANK;
       ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
@@ -5554,28 +5542,28 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static ArrayList<ApplicationTemplate> loadAppTemplatesByTemplate(
         Connection c, int tId) throws SQLException {
       ArrayList<ApplicationTemplate> result = new ArrayList<ApplicationTemplate>();
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE + ", " 
-          + Application.TABLE + ", " + Template.TABLE 
-          + " left outer join " + ObjectAttribute.TABLE 
-          + " on (" + Template.OA_ID + "=" + ObjectAttribute.ID 
+
+      String query = "SELECT * FROM " + TABLE + ", "
+          + Application.TABLE + ", " + Template.TABLE
+          + " left outer join " + ObjectAttribute.TABLE
+          + " on (" + Template.OA_ID + "=" + ObjectAttribute.ID
           + ") left outer join " + ObjectType.TABLE
-          + " on (" + Template.OT_ID + "=" + ObjectType.ID 
+          + " on (" + Template.OT_ID + "=" + ObjectType.ID
           + ") left outer join " + ValueType.TABLE
-            + " on (" + ObjectAttribute.TYPE_ID + "=" + ValueType.ID 
+            + " on (" + ObjectAttribute.TYPE_ID + "=" + ValueType.ID
           + ") left outer join " + Unit.TABLE
-            + " on (" + ObjectAttribute.UNIT_ID + "=" + Unit.ID + ")" 
+            + " on (" + ObjectAttribute.UNIT_ID + "=" + Unit.ID + ")"
           + " WHERE " + T_ID + "=" + tId
-          + " AND " + APP_ID + "=" + Application.ID  
-          + " AND " + T_ID + "=" + Template.ID  
+          + " AND " + APP_ID + "=" + Application.ID
+          + " AND " + T_ID + "=" + Template.ID
           + " ORDER BY " + Application.NAME;
       ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
@@ -5583,11 +5571,11 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
   }
 
-  
+
   /**
    * An ORM object representing an application user.
    */
@@ -5605,7 +5593,7 @@ public class StoreDB {
     public static final String SUBSCRIBEDAT = "appu_subscribedat";
     public static final String USER_ID = "appu_user_id";
     public static final String LASTUPDATEDAT = "appu_lastupdateat";
-    
+
 
     /**
      * The key of the application's user.
@@ -5664,7 +5652,7 @@ public class StoreDB {
      */
     private Date subscribedat = new Date();
 
-    
+
     /**
      * Create a new application user.
      *
@@ -5679,7 +5667,7 @@ public class StoreDB {
      * @param userId
      *          the author who created this application template
      */
-    public ApplicationUser(int id, int appId, int appUserId, int flags, 
+    public ApplicationUser(int id, int appId, int appUserId, int flags,
         int top, int left, int width, int height, int userId) {
       setId(id);
       setAppId(appId);
@@ -5696,7 +5684,7 @@ public class StoreDB {
      * Create a new application user.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public ApplicationUser(ResultSet rs) throws SQLException {
       setId(rs.getInt(ID));
@@ -5802,8 +5790,8 @@ public class StoreDB {
       ApplicationUser result = null;
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
         + " WHERE " + ID + "=" + id;
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) {
@@ -5811,7 +5799,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public ApplicationUser save(Connection c) throws SQLException {
@@ -5820,11 +5808,11 @@ public class StoreDB {
       if (this.getId() == 0) {
         stmt.execute(
           "INSERT INTO " + TABLE + " ("
-            + APP_ID + ", " + APPUSER_ID + ", " + FLAGS + ", " + TOP + ", " 
-            + LEFT + ", " + WIDTH + ", " + HEIGHT + ", " 
-            + SUBSCRIBEDAT + ", " + USER_ID + ")" 
+            + APP_ID + ", " + APPUSER_ID + ", " + FLAGS + ", " + TOP + ", "
+            + LEFT + ", " + WIDTH + ", " + HEIGHT + ", "
+            + SUBSCRIBEDAT + ", " + USER_ID + ")"
           + " VALUES (" + getAppId()
-          + "," + getAppUserId() 
+          + "," + getAppUserId()
           + "," + getFlags()
           + "," + (getTop() == 0 ? "null" : ""+getTop())
           + "," + (getLeft() == 0 ? "null" : ""+getLeft())
@@ -5837,26 +5825,26 @@ public class StoreDB {
       // update an existing record
       else {
         stmt.executeUpdate(
-          "UPDATE " + TABLE + " SET "  
+          "UPDATE " + TABLE + " SET "
             + FLAGS + "=" + getFlags() + ", "
-            + TOP + "=" + (getTop() == 0 ? "null, " : getTop() + ", ") 
-            + LEFT + "=" + (getLeft() == 0 ? "null, " : getLeft() + ", ") 
-            + WIDTH + "=" + (getWidth() == 0 ? "null, " : getWidth() + ", ") 
-            + HEIGHT + "=" + (getHeight() == 0 ? "null, " : getHeight() + ", ") 
+            + TOP + "=" + (getTop() == 0 ? "null, " : getTop() + ", ")
+            + LEFT + "=" + (getLeft() == 0 ? "null, " : getLeft() + ", ")
+            + WIDTH + "=" + (getWidth() == 0 ? "null, " : getWidth() + ", ")
+            + HEIGHT + "=" + (getHeight() == 0 ? "null, " : getHeight() + ", ")
             + USER_ID + "=" + getUserId() + ", "
             + LASTUPDATEDAT + "= now()"
           + " WHERE " + ID + "=" + getId());
       }
       stmt.close();
       return this;
-    }    
+    }
 
-    public static ArrayList<ApplicationUser> loadApplicationUsers(Connection c, int appId) 
+    public static ArrayList<ApplicationUser> loadApplicationUsers(Connection c, int appId)
         throws SQLException {
       ArrayList<ApplicationUser> result = new ArrayList<ApplicationUser>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT * FROM " + TABLE
           + " WHERE " + APP_ID + "=" + appId;
       ResultSet rs = stmt.executeQuery(query);
@@ -5865,15 +5853,15 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
-    public static ArrayList<ApplicationUser> loadUserApplications(Connection c, int userId) 
+    public static ArrayList<ApplicationUser> loadUserApplications(Connection c, int userId)
         throws SQLException {
       ArrayList<ApplicationUser> result = new ArrayList<ApplicationUser>();
 
       Statement stmt = c.createStatement();
-        
+
       String query = "SELECT * FROM " + TABLE
           + " WHERE " + APPUSER_ID + "=" + userId;
       ResultSet rs = stmt.executeQuery(query);
@@ -5882,7 +5870,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
   }
 
@@ -5907,7 +5895,7 @@ public class StoreDB {
      * key of the owning surface's key.
      */
     private int id;
-    
+
     /**
      * The key of the object type.
      */
@@ -5934,7 +5922,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new object.
      *
@@ -5956,7 +5944,7 @@ public class StoreDB {
      * Create a new object.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public AObject(ResultSet rs, boolean withLevel, boolean withUser) throws SQLException {
       setId(rs.getInt(ID));
@@ -6033,8 +6021,8 @@ public class StoreDB {
       AObject result = null;
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
           + " WHERE " + ID + "=" + id;
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) {
@@ -6042,7 +6030,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public AObject save(Connection c) throws SQLException {
@@ -6050,16 +6038,16 @@ public class StoreDB {
       // insert new record
       if (getId() == 0) {
         stmt.execute(
-          "INSERT INTO " + TABLE + " (" + OT_ID + ", " + USER_ID + ")" 
+          "INSERT INTO " + TABLE + " (" + OT_ID + ", " + USER_ID + ")"
           + " VALUES (" + getOtId() + ", " + getUserId() + ")");
         setId(getIdentity(stmt));
       }
-      
+
       /*
       // update an existing record
       else {
         stmt.executeUpdate(
-          "UPDATE " + TABLE + " SET "  
+          "UPDATE " + TABLE + " SET "
             + OT_ID + "=" + getOtId() + ", "
             + USER_ID + "=" + getUserId() + ", "
             + LASTUPDATEDAT + "= now()"
@@ -6069,28 +6057,28 @@ public class StoreDB {
       return this;
     }
 
-    public static int delete(Connection c, int otId, int objectId, int userId) 
+    public static int delete(Connection c, int otId, int objectId, int userId)
         throws SQLException {
       Statement stmt = c.createStatement();
       int result = stmt.executeUpdate(
           "DELETE FROM " + TABLE + " WHERE " + ID + "=" + objectId);
-      stmt.execute("CALL log_delete(" + otId + ", " + objectId + ", " 
+      stmt.execute("CALL log_delete(" + otId + ", " + objectId + ", "
           + LOG_OBJECT_DELETE + "," + userId +")");
       stmt.close();
       return result;
     }
-    
+
     public static List<AObject> loadObjects(Connection c, int langId, int tId,
         List<TreeLevel> path, int oaId) throws SQLException {
       List<AObject> result = new ArrayList<AObject>();
 
       Statement stmt = c.createStatement();
 
-      String[] hlp = getTablesAndWheres(path); 
-      String query = "SELECT * FROM " + AValue.TABLE + " av left outer join " 
+      String[] hlp = getTablesAndWheres(path);
+      String query = "SELECT * FROM " + AValue.TABLE + " av left outer join "
           + AValue.TABLE_CHAR + " avc on (avc." + AValue.AVC_AV_ID + "= av." + AValue.ID + ") left outer join "
           + AValue.TABLE_DATE + " avd on (avd." + AValue.AVD_AV_ID + "= av." + AValue.ID + ") left outer join "
-          + AValue.TABLE_NUMBER + " avn on (avn." + AValue.AVN_AV_ID + "= av." + AValue.ID + "), " 
+          + AValue.TABLE_NUMBER + " avn on (avn." + AValue.AVN_AV_ID + "= av." + AValue.ID + "), "
           + AppUser.TABLE + ", " + Template.TABLE + ", " + TABLE + ", " + TABLE_PARENTS + hlp[0]
           + " WHERE " + Template.ID + "=" + tId
           + " AND " + P_OT_ID + "=" + Template.OT_ID
@@ -6100,7 +6088,7 @@ public class StoreDB {
           + " AND av." + AValue.OA_ID + "=" + oaId
           + hlp[1]
           + " ORDER BY avc." + AValue.AVC_AV_ID + ", avc." + AValue.AVC_LANG_ID;
-      log.info(query);      
+      log.info(query);
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) {
         AObject defObject = new AObject(rs, true, true);
@@ -6119,26 +6107,26 @@ public class StoreDB {
       rs.close();
       stmt.close();
       Collections.sort(result, new AObjectComparator());
-      return result;    
+      return result;
     }
 
-    public static HashMap<Template, Integer> loadSearchObjectCounts(Connection c, 
+    public static HashMap<Template, Integer> loadSearchObjectCounts(Connection c,
         int appId, String searchString) throws SQLException {
       HashMap<Template, Integer> result = new LinkedHashMap<Template, Integer>();
       Statement stmt = c.createStatement();
 
       String query = "SELECT counts.c, t.* FROM " + Template.TABLE + " t, "
-          + " (SELECT COUNT(distinct " + ID + ") c, "  + Template.ID 
-          + " FROM " + TABLE + ", " + Template.TABLE + ", " + ApplicationTemplate.TABLE 
-          + (searchString.length() > 0 ? ", " + AValue.TABLE + ", " + AValue.TABLE_CHAR : "") 
+          + " (SELECT COUNT(distinct " + ID + ") c, "  + Template.ID
+          + " FROM " + TABLE + ", " + Template.TABLE + ", " + ApplicationTemplate.TABLE
+          + (searchString.length() > 0 ? ", " + AValue.TABLE + ", " + AValue.TABLE_CHAR : "")
           + " WHERE " + OT_ID + "=" + Template.OT_ID
-          + " AND " + Template.ID + "=" + ApplicationTemplate.T_ID 
+          + " AND " + Template.ID + "=" + ApplicationTemplate.T_ID
           + " AND " + ApplicationTemplate.APP_ID + "=" + appId
-          + (searchString.length() > 0 ? " AND " + ID + "=" + AValue.AO_ID 
+          + (searchString.length() > 0 ? " AND " + ID + "=" + AValue.AO_ID
               + " AND " + AValue.ID + "=" + AValue.AVC_AV_ID
               + " AND " + AValue.VALUE_STRING + " like '" + searchString + "%'" : "")
           + " GROUP BY " + Template.ID + ") counts "
-          + " WHERE t." + Template.ID + "= counts." + Template.ID 
+          + " WHERE t." + Template.ID + "= counts." + Template.ID
           + " ORDER BY " + Template.NAME;
       ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
@@ -6146,53 +6134,53 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public static HashMap<AObject, ArrayList<AValue>> loadSearchObjects(Connection c,
-        int langId, String searchString, int tlId, int from, int perPage) 
+        int langId, String searchString, int tlId, int from, int perPage)
             throws SQLException {
       Statement stmt = c.createStatement();
-      
-      // query could return less then "perPage" records if it hits an object 
+
+      // query could return less then "perPage" records if it hits an object
       // more than x times on average
       int x = 4;
-      
+
       String query = "SELECT distinct ao_id, ao_ot_id, ao_user_id, "
-          + " ao_lastupdateat, ta_flags, tli_rank, main_val.av_id, main_val.av_ao_id, " 
-          + " main_val.av_oa_id, main_val.av_rank, main_val.av_lastupdateat, " 
-          + " main_char.avc_value, main_text.avt_value, main_text.avt_lang_id, " 
-          + " CASE WHEN main_ref.avr_av_id is NULL THEN main_char.avc_lang_id ELSE ref_char.avc_lang_id END as avc_lang_id, " 
-          + " avd_value, avn_value, main_ref.avr_value, main_val.av_user_id, " 
+          + " ao_lastupdateat, ta_flags, tli_rank, main_val.av_id, main_val.av_ao_id, "
+          + " main_val.av_oa_id, main_val.av_rank, main_val.av_lastupdateat, "
+          + " main_char.avc_value, main_text.avt_value, main_text.avt_lang_id, "
+          + " CASE WHEN main_ref.avr_av_id is NULL THEN main_char.avc_lang_id ELSE ref_char.avc_lang_id END as avc_lang_id, "
+          + " avd_value, avn_value, main_ref.avr_value, main_val.av_user_id, "
           + " ref.av_ao_id as ao, ref.av_oa_id as oa, ref_char.avc_value as ao_leaf "
-          + " FROM (SELECT distinct * FROM (SELECT ao_id, ao_ot_id, " 
+          + " FROM (SELECT distinct * FROM (SELECT ao_id, ao_ot_id, "
           + " ao_user_id, ao_lastupdateat, ta_oa_id, ta_shared2, ta_flags, tli_rank "
-          + " FROM " + Template.TABLE + ", " + TemplateList.TABLE + ", " 
-          + TemplateListItem.TABLE + "," + TemplateAttribute.TABLE + ", " + TABLE  
-          + (searchString.length() > 0 ? ", " + AValue.TABLE + " search, " 
-          + AValue.TABLE_CHAR + " search_value " : "") 
-          + " WHERE " + TemplateList.ID + "=" + tlId 
+          + " FROM " + Template.TABLE + ", " + TemplateList.TABLE + ", "
+          + TemplateListItem.TABLE + "," + TemplateAttribute.TABLE + ", " + TABLE
+          + (searchString.length() > 0 ? ", " + AValue.TABLE + " search, "
+          + AValue.TABLE_CHAR + " search_value " : "")
+          + " WHERE " + TemplateList.ID + "=" + tlId
           + " AND " + Template.ID + "=" + TemplateList.T_ID
           + " AND " + OT_ID + "=" + Template.OT_ID
           + " AND " + TemplateList.ID + "=" + TemplateListItem.TL_ID
           + " AND " + TemplateListItem.TA_ID + "=" + TemplateAttribute.ID
-          + (searchString.length() > 0 ? " AND " + ID + "= search." + AValue.AO_ID 
+          + (searchString.length() > 0 ? " AND " + ID + "= search." + AValue.AO_ID
               + " AND search." + AValue.ID + " = search_value." + AValue.AVC_AV_ID
               + " AND search_value." + AValue.VALUE_STRING + " like '" + searchString + "%'" : "")
           + " ORDER BY " + ID + ", " + TemplateListItem.RANK
           + " LIMIT " + from + ", " + perPage*x + ") raw LIMIT 0, " + perPage
-          + ") objs left outer join " 
-          + AValue.TABLE + " main_val on  (main_val." + AValue.AO_ID + "=" + ID 
-          + " AND main_val." + AValue.OA_ID + "=" + TemplateAttribute.OA_ID + ") left outer join " 
+          + ") objs left outer join "
+          + AValue.TABLE + " main_val on  (main_val." + AValue.AO_ID + "=" + ID
+          + " AND main_val." + AValue.OA_ID + "=" + TemplateAttribute.OA_ID + ") left outer join "
           + AValue.TABLE_CHAR + " main_char on (main_char." + AValue.AVC_AV_ID + " = main_val." + AValue.ID + ") left outer join "
           + AValue.TABLE_DATE + " on (" + AValue.AVD_AV_ID + " = main_val." + AValue.ID + ") left outer join "
-          + AValue.TABLE_NUMBER + " on (" + AValue.AVN_AV_ID + " = main_val." + AValue.ID + ") left outer join " 
-          + AValue.TABLE_REF + " main_ref on (main_ref." + AValue.AVR_AV_ID + " = main_val." + AValue.ID + ") left outer join " 
-          + AValue.TABLE_TEXT + " main_text on (main_text." + AValue.AVT_AV_ID + " = main_val." + AValue.ID + ") " 
-          + " left outer join " + AValue.TABLE + " ref on (main_ref." + AValue.VALUE_REF + " = ref." + AValue.AO_ID 
+          + AValue.TABLE_NUMBER + " on (" + AValue.AVN_AV_ID + " = main_val." + AValue.ID + ") left outer join "
+          + AValue.TABLE_REF + " main_ref on (main_ref." + AValue.AVR_AV_ID + " = main_val." + AValue.ID + ") left outer join "
+          + AValue.TABLE_TEXT + " main_text on (main_text." + AValue.AVT_AV_ID + " = main_val." + AValue.ID + ") "
+          + " left outer join " + AValue.TABLE + " ref on (main_ref." + AValue.VALUE_REF + " = ref." + AValue.AO_ID
           + " AND " + TemplateAttribute.SHARED2 + " = ref." + AValue.OA_ID + ") left outer join "
           + AValue.TABLE_CHAR + " ref_char on (ref_char." + AValue.AVC_AV_ID + " = ref." + AValue.ID + ")"
-          + " ORDER BY " + ID + ", " + TemplateListItem.RANK + ", " 
+          + " ORDER BY " + ID + ", " + TemplateListItem.RANK + ", "
           + AValue.RANK  + ", main_char." + AValue.AVC_LANG_ID + ", ref_char." + AValue.AVC_LANG_ID;
       ResultSet rs = stmt.executeQuery(query);
       HashMap<AObject, ArrayList<AValue>> result = getRows(rs, langId);
@@ -6206,8 +6194,8 @@ public class StoreDB {
       int result = 0;
       Statement stmt = c.createStatement();
 
-      String query = "SELECT COUNT(*) " 
-          + " FROM " + Relation.TABLE 
+      String query = "SELECT COUNT(*) "
+          + " FROM " + Relation.TABLE
           + " WHERE " + Relation.OREL + "=" + rel
           + " AND " + Relation.OBJ1 + "=" + objId;
       ResultSet rs = stmt.executeQuery(query);
@@ -6216,27 +6204,27 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
-    public static LinkedHashMap<AObject, ArrayList<AValue>> loadRelatedObjects(Connection c, 
-        int langId, int objId, int rel, int tlId, int from, int perPage) 
+    public static LinkedHashMap<AObject, ArrayList<AValue>> loadRelatedObjects(Connection c,
+        int langId, int objId, int rel, int tlId, int from, int perPage)
             throws SQLException {
       Statement stmt = c.createStatement();
 
       String query = "SELECT ao_id, ao_ot_id, ao_user_id, ao_lastupdateat, "
-      		+ " ta_flags, tli_rank, main_val.av_id, main_val.av_ao_id, " 
-      		+ " main_val.av_oa_id, main_val.av_rank, main_val.av_lastupdateat, " 
-      		+ " main_char.avc_value, main_text.avt_value, main_text.avt_lang_id, " 
-          + " CASE WHEN main_ref.avr_av_id is NULL THEN main_char.avc_lang_id ELSE ref_char.avc_lang_id END as avc_lang_id, " 
+      		+ " ta_flags, tli_rank, main_val.av_id, main_val.av_ao_id, "
+      		+ " main_val.av_oa_id, main_val.av_rank, main_val.av_lastupdateat, "
+      		+ " main_char.avc_value, main_text.avt_value, main_text.avt_lang_id, "
+          + " CASE WHEN main_ref.avr_av_id is NULL THEN main_char.avc_lang_id ELSE ref_char.avc_lang_id END as avc_lang_id, "
       		+ " avd_value, avn_value, main_ref.avr_value, "
       		+ " main_val.av_user_id, ref.av_ao_id as ao, ref.av_oa_id as oa, "
       		+ " ref_char.avc_value as ao_leaf "
           + " FROM (SELECT ao_id, ao_ot_id, ao_user_id, "
-          + " ao_lastupdateat, ta_oa_id, ta_shared2, ta_flags, tli_rank FROM " 
-          + Template.TABLE + "," + TemplateList.TABLE + "," + TemplateListItem.TABLE + "," 
+          + " ao_lastupdateat, ta_oa_id, ta_shared2, ta_flags, tli_rank FROM "
+          + Template.TABLE + "," + TemplateList.TABLE + "," + TemplateListItem.TABLE + ","
           + TemplateAttribute.TABLE + "," + TABLE + "," + Relation.TABLE
-          + " WHERE " + TemplateList.ID + "=" + tlId 
+          + " WHERE " + TemplateList.ID + "=" + tlId
           + " AND " + Template.ID + "=" + TemplateList.T_ID
           + " AND " + OT_ID + "=" + Template.OT_ID
           + " AND " + TemplateList.ID + "=" + TemplateListItem.TL_ID
@@ -6246,18 +6234,18 @@ public class StoreDB {
           + " AND " + Relation.OBJ2 + "=" + ID
           + " ORDER BY " + ID + ", " + TemplateListItem.RANK
           + " LIMIT " + from + ", " + perPage
-          + ") objs left outer join " 
-          + AValue.TABLE + " main_val on  (" + AValue.AO_ID + "=" + ID 
-          + " AND " + AValue.OA_ID + "=" + TemplateAttribute.OA_ID + ") left outer join " 
+          + ") objs left outer join "
+          + AValue.TABLE + " main_val on  (" + AValue.AO_ID + "=" + ID
+          + " AND " + AValue.OA_ID + "=" + TemplateAttribute.OA_ID + ") left outer join "
           + AValue.TABLE_CHAR + " main_char on (main_char." + AValue.AVC_AV_ID + " = main_val." + AValue.ID + ") left outer join "
           + AValue.TABLE_DATE + " on (" + AValue.AVD_AV_ID + " = main_val." + AValue.ID + ") left outer join "
-          + AValue.TABLE_NUMBER + " on (" + AValue.AVN_AV_ID + " = main_val." + AValue.ID + ") left outer join " 
-          + AValue.TABLE_REF + " main_ref on (main_ref." + AValue.AVR_AV_ID + " = main_val." + AValue.ID + ") left outer join " 
-          + AValue.TABLE_TEXT + " main_text on (main_text." + AValue.AVT_AV_ID + " = main_val." + AValue.ID + ") " 
-          + " left outer join " + AValue.TABLE + " ref on (main_ref." + AValue.VALUE_REF + " = ref." + AValue.AO_ID 
+          + AValue.TABLE_NUMBER + " on (" + AValue.AVN_AV_ID + " = main_val." + AValue.ID + ") left outer join "
+          + AValue.TABLE_REF + " main_ref on (main_ref." + AValue.AVR_AV_ID + " = main_val." + AValue.ID + ") left outer join "
+          + AValue.TABLE_TEXT + " main_text on (main_text." + AValue.AVT_AV_ID + " = main_val." + AValue.ID + ") "
+          + " left outer join " + AValue.TABLE + " ref on (main_ref." + AValue.VALUE_REF + " = ref." + AValue.AO_ID
           + " AND " + TemplateAttribute.SHARED2 + " = ref." + AValue.OA_ID + ") left outer join "
           + AValue.TABLE_CHAR + " ref_char on (ref_char." + AValue.AVC_AV_ID + " = ref." + AValue.ID + ")"
-          + " ORDER BY " + ID + ", " + TemplateListItem.RANK + ", " 
+          + " ORDER BY " + ID + ", " + TemplateListItem.RANK + ", "
           + AValue.RANK + ", main_char." + AValue.AVC_LANG_ID + ", ref_char." + AValue.AVC_LANG_ID;
       ResultSet rs = stmt.executeQuery(query);
       LinkedHashMap<AObject, ArrayList<AValue>> result = getRows(rs, langId);
@@ -6266,27 +6254,27 @@ public class StoreDB {
       return result;
     }
 
-    public static AObject find(Connection c, int tId, ArrayList<AValue> filter) 
+    public static AObject find(Connection c, int tId, ArrayList<AValue> filter)
         throws SQLException {
       AObject result = null;
-      
+
       Statement stmt = c.createStatement();
 
-      String[] hlp = getTablesAndWheresForFilter(filter); 
+      String[] hlp = getTablesAndWheresForFilter(filter);
 
-      String query = "SELECT * FROM " + TABLE + ", " + TABLE_PARENTS + ", " 
+      String query = "SELECT * FROM " + TABLE + ", " + TABLE_PARENTS + ", "
           + Template.TABLE + hlp[0]
           + " WHERE " + Template.ID + "=" + tId
-          + " AND " + P_OT_ID + "=" + Template.OT_ID 
-          + " AND " + ID + "=" + P_AO_ID 
+          + " AND " + P_OT_ID + "=" + Template.OT_ID
+          + " AND " + ID + "=" + P_AO_ID
           + hlp[1];
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) result = new AObject(rs, false, false);
       if (rs.next()) result = new AObject(0,0,0,null,0);
-      
+
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
   }
 
@@ -6319,15 +6307,12 @@ public class StoreDB {
      * The reference value.
      */
     private int valueRef;
-    
+
     /**
      * Create a new tree level item.
      *
      * @param ta
      * @param valueString
-     * @param valueDate
-     * @param valueDouble
-     * @param valueRef
      */
     public TreeLevel(TemplateAttribute ta, String valueString) {
       setTa(ta);
@@ -6357,7 +6342,7 @@ public class StoreDB {
       setValueDate(valueDate);
     }
 
-    public TreeLevel(TemplateAttribute ta, String valueString, Date valueDate, 
+    public TreeLevel(TemplateAttribute ta, String valueString, Date valueDate,
         Double valueDouble, int valueRef) {
       setTa(ta);
       setValueString(valueString);
@@ -6411,27 +6396,27 @@ public class StoreDB {
       List<TreeLevel> result = new ArrayList<TreeLevel>();
 
       Statement stmt = c.createStatement();
-      String[] hlp = getTablesAndWheres(path); 
+      String[] hlp = getTablesAndWheres(path);
       String[] hlpFilter =  getTablesAndWheresForFilter(filter);
-      
+
       String avc = "avc." + AValue.VALUE_STRING;
-      boolean isDerived = ta.getDef() != null && 
-          (ta.getFlags() & (1<<TemplateAttribute.FLAG_DERIVED)) > 0; 
+      boolean isDerived = ta.getDef() != null &&
+          (ta.getFlags() & (1<<TemplateAttribute.FLAG_DERIVED)) > 0;
       if (isDerived) {
-        avc = String.format(ta.getDef(), avc) + " as " + AValue.VALUE_STRING; 
+        avc = String.format(ta.getDef(), avc) + " as " + AValue.VALUE_STRING;
       }
-      
-      String query = "SELECT distinct av." + AValue.OA_ID + ", " + avc 
-          + " FROM " + Template.TABLE +  ", " + AObject.TABLE_PARENTS  
-          + " left outer join " + AValue.TABLE + " av on (av." + AValue.AO_ID 
+
+      String query = "SELECT distinct av." + AValue.OA_ID + ", " + avc
+          + " FROM " + Template.TABLE +  ", " + AObject.TABLE_PARENTS
+          + " left outer join " + AValue.TABLE + " av on (av." + AValue.AO_ID
             + "=" + AObject.P_AO_ID + " AND av." + AValue.OA_ID + "=" + ta.getOaId() + ") "
-          + " left outer join " + AValue.TABLE_CHAR + " avc on (avc." 
-            + AValue.AVC_AV_ID + "= av." + AValue.ID + ") " 
-          + hlp[0] 
+          + " left outer join " + AValue.TABLE_CHAR + " avc on (avc."
+            + AValue.AVC_AV_ID + "= av." + AValue.ID + ") "
+          + hlp[0]
           + hlpFilter[0]
           + " WHERE " + Template.ID + "=" + tId
           + " AND " + AObject.P_OT_ID + "=" + Template.OT_ID
-          + " AND " + AValue.AVC_LANG_ID + "=" + langId 
+          + " AND " + AValue.AVC_LANG_ID + "=" + langId
           + hlp[1]
           + hlpFilter[1]
           + " ORDER BY avc." + AValue.VALUE_STRING;
@@ -6441,30 +6426,30 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static List<TreeLevel> loadTreeLevelDate(Connection c, List<AValue> filter, int tId, List<TreeLevel> path,
         TemplateAttribute ta) throws SQLException {
       List<TreeLevel> result = new ArrayList<TreeLevel>();
 
       Statement stmt = c.createStatement();
-      String[] hlp = getTablesAndWheres(path); 
+      String[] hlp = getTablesAndWheres(path);
       String[] hlpFilter =  getTablesAndWheresForFilter(filter);
-      
+
       String avd = "avd." + AValue.VALUE_DATE;
-      boolean isDerived = ta.getDef() != null && 
-          (ta.getFlags() & (1<<TemplateAttribute.FLAG_DERIVED)) > 0; 
+      boolean isDerived = ta.getDef() != null &&
+          (ta.getFlags() & (1<<TemplateAttribute.FLAG_DERIVED)) > 0;
       if (isDerived) {
-        avd = String.format(ta.getDef(), avd) + " as " + AValue.VALUE_DATE; 
+        avd = String.format(ta.getDef(), avd) + " as " + AValue.VALUE_DATE;
       }
-      
+
       String query = "SELECT distinct av." + AValue.OA_ID + ", " + avd
-          + " FROM " + Template.TABLE +  ", " + AObject.TABLE_PARENTS  
+          + " FROM " + Template.TABLE +  ", " + AObject.TABLE_PARENTS
           + " left outer join " + AValue.TABLE + " av on (av." + AValue.AO_ID + "=" + AObject.P_AO_ID
             + " AND av." + AValue.OA_ID + "=" + ta.getOaId() + ") "
-          + " left outer join " + AValue.TABLE_DATE + " avd on (avd." + AValue.AVD_AV_ID + "= av." + AValue.ID + ") " 
-          + hlp[0] 
+          + " left outer join " + AValue.TABLE_DATE + " avd on (avd." + AValue.AVD_AV_ID + "= av." + AValue.ID + ") "
+          + hlp[0]
           + hlpFilter[0]
           + " WHERE " + Template.ID + "=" + tId
           + " AND " + AObject.P_OT_ID + "=" + Template.OT_ID
@@ -6477,7 +6462,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public static List<TreeLevel> loadTreeLevelNumber(Connection c, List<AValue> filter, int tId, List<TreeLevel> path,
@@ -6485,15 +6470,15 @@ public class StoreDB {
       List<TreeLevel> result = new ArrayList<TreeLevel>();
 
       Statement stmt = c.createStatement();
-      String[] hlp = getTablesAndWheres(path); 
+      String[] hlp = getTablesAndWheres(path);
       String[] hlpFilter =  getTablesAndWheresForFilter(filter);
-      String query = "SELECT distinct av." + AValue.OA_ID + ", avn." + AValue.VALUE_NUMBER 
-          + " FROM " + Template.TABLE +  ", " + AObject.TABLE_PARENTS  
+      String query = "SELECT distinct av." + AValue.OA_ID + ", avn." + AValue.VALUE_NUMBER
+          + " FROM " + Template.TABLE +  ", " + AObject.TABLE_PARENTS
           + " left outer join " + AValue.TABLE + " av on (av." + AValue.AO_ID + "=" + AObject.P_AO_ID
             + " AND av." + AValue.OA_ID + "=" + ta.getOaId() + ") "
-          + " left outer join " + AValue.TABLE_NUMBER + " avn on (avn." 
-            + AValue.AVC_AV_ID + "= av." + AValue.ID + ") " 
-          + hlp[0] 
+          + " left outer join " + AValue.TABLE_NUMBER + " avn on (avn."
+            + AValue.AVC_AV_ID + "= av." + AValue.ID + ") "
+          + hlp[0]
           + hlpFilter[0]
           + " WHERE " + Template.ID + "=" + tId
           + " AND " + AObject.P_OT_ID + "=" + Template.OT_ID
@@ -6506,7 +6491,7 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public static List<TreeLevel> loadTreeLevelRef(Connection c, int langId, List<AValue> filter, int tId,
@@ -6515,43 +6500,43 @@ public class StoreDB {
       List<TreeLevel> result = new ArrayList<TreeLevel>();
 
       Statement stmt = c.createStatement();
-      String[] hlp = getTablesAndWheres(path); 
+      String[] hlp = getTablesAndWheres(path);
       String[] hlpFilter =  getTablesAndWheresForFilter(filter);
-//      String query = "SELECT distinct av." + AValue.OA_ID 
-//          + ", avr." + AValue.VALUE_REF + ", avcref." + AValue.AVC_AV_ID 
-//          + ", avcref." + AValue.AVC_LANG_ID + ", avcref." + AValue.VALUE_STRING 
-//          + " FROM " + Template.TABLE +  ", " + AObject.TABLE_PARENTS  
+//      String query = "SELECT distinct av." + AValue.OA_ID
+//          + ", avr." + AValue.VALUE_REF + ", avcref." + AValue.AVC_AV_ID
+//          + ", avcref." + AValue.AVC_LANG_ID + ", avcref." + AValue.VALUE_STRING
+//          + " FROM " + Template.TABLE +  ", " + AObject.TABLE_PARENTS
 //          + " left outer join " + AValue.TABLE + " av on (av." + AValue.AO_ID + "=" + AObject.P_AO_ID
 //            + " AND av." + AValue.OA_ID + "=" + oaId + ") "
-//          + " left outer join " + AValue.TABLE_REF + " avr on (avr." + AValue.AVR_AV_ID + "= av." + AValue.ID + ") " 
+//          + " left outer join " + AValue.TABLE_REF + " avr on (avr." + AValue.AVR_AV_ID + "= av." + AValue.ID + ") "
 //          + " left outer join " + AValue.TABLE + " avref on (avr." + AValue.VALUE_REF + "= avref." + AValue.AO_ID
-//            + " AND avref." + AValue.OA_ID + "=" + refoaId + ") " 
+//            + " AND avref." + AValue.OA_ID + "=" + refoaId + ") "
 //          + " left outer join " + AValue.TABLE_CHAR + " avcref on (avcref." + AValue.AVC_AV_ID + "= avref." + AValue.ID + ") "
-//          + hlp[0] 
-//          + hlpfilter[0] 
+//          + hlp[0]
+//          + hlpfilter[0]
 //          + " WHERE " + Template.ID + "=" + tId
 //          + " AND " + AObject.P_OT_ID + "=" + Template.OT_ID
 //          + hlp[1]
 //          + hlpfilter[1]
-//          + " ORDER BY avcref." + AValue.AVC_AV_ID + ", avcref." 
+//          + " ORDER BY avcref." + AValue.AVC_AV_ID + ", avcref."
 //          + AValue.AVC_LANG_ID + ", avcref." + AValue.VALUE_STRING;
-      String query = "SELECT distinct " 
-          + Relation.OBJ2 + ", avcref." + AValue.AVC_AV_ID 
-          + ", avcref." + AValue.AVC_LANG_ID + ", avcref." + AValue.VALUE_STRING 
-          + " FROM " + Template.TABLE +  ", " + AObject.TABLE_PARENTS 
-          + " left outer join " + Relation.TABLE + " on (" + AObject.P_AO_ID 
-            + "=" + Relation.OBJ1 + " AND " + Relation.OREL + "=" + ta.getOa().getShared2() + ") "  
-          + " left outer join " + AValue.TABLE + " av on (av." + AValue.AO_ID 
+      String query = "SELECT distinct "
+          + Relation.OBJ2 + ", avcref." + AValue.AVC_AV_ID
+          + ", avcref." + AValue.AVC_LANG_ID + ", avcref." + AValue.VALUE_STRING
+          + " FROM " + Template.TABLE +  ", " + AObject.TABLE_PARENTS
+          + " left outer join " + Relation.TABLE + " on (" + AObject.P_AO_ID
+            + "=" + Relation.OBJ1 + " AND " + Relation.OREL + "=" + ta.getOa().getShared2() + ") "
+          + " left outer join " + AValue.TABLE + " av on (av." + AValue.AO_ID
             + "=" + Relation.OBJ2 + " AND av." + AValue.OA_ID + "=" + ta.getShared2() + ") "
-          + " left outer join " + AValue.TABLE_CHAR + " avcref on (avcref." 
+          + " left outer join " + AValue.TABLE_CHAR + " avcref on (avcref."
             + AValue.AVC_AV_ID + "= av." + AValue.ID + ") "
-          + hlp[0] 
+          + hlp[0]
           + hlpFilter[0]
           + " WHERE " + Template.ID + "=" + tId
           + " AND " + AObject.P_OT_ID + "=" + Template.OT_ID
           + hlp[1]
           + hlpFilter[1]
-          + " ORDER BY avcref." + AValue.AVC_AV_ID + ", avcref." 
+          + " ORDER BY avcref." + AValue.AVC_AV_ID + ", avcref."
           + AValue.AVC_LANG_ID + ", avcref." + AValue.VALUE_STRING;
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) {
@@ -6577,10 +6562,10 @@ public class StoreDB {
       rs.close();
       stmt.close();
       Collections.sort(result, new TreeLevelComparator());
-      return result;    
+      return result;
     }
   }
-  
+
   /**
    * An ORM object representing a value.
    */
@@ -6666,7 +6651,7 @@ public class StoreDB {
      */
     private Date lastupdatedat = new Date();
 
-    
+
     /**
      * Create a new value.
      *
@@ -6681,8 +6666,8 @@ public class StoreDB {
      * @param userId
      *          the author who created this object
      */
-    public AValue(int id, int oId, int oaId, int rank, String valueString, 
-        int langId, Date valueDate, Date valueTimestamp, Double valueDouble, 
+    public AValue(int id, int oId, int oaId, int rank, String valueString,
+        int langId, Date valueDate, Date valueTimestamp, Double valueDouble,
         int valueRef, int userId) {
       setId(id);
       setOId(oId);
@@ -6701,7 +6686,7 @@ public class StoreDB {
      * Create a new object.
      *
      * @param rs
-     * @throws SQLException 
+     * @throws SQLException
      */
     public AValue(ResultSet rs) throws SQLException {
       setId(rs.getInt(ID));
@@ -6712,7 +6697,7 @@ public class StoreDB {
       if (sstring != null) {
         setValueString(rs.getString(VALUE_STRING));
         setLangId(rs.getInt(AVC_LANG_ID));
-      } else { 
+      } else {
         setValueString(rs.getString(VALUE_TEXT));
         setLangId(rs.getInt(AVT_LANG_ID));
       }
@@ -6828,8 +6813,8 @@ public class StoreDB {
       AValue result = null;
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE 
+
+      String query = "SELECT * FROM " + TABLE
         + " WHERE " + ID + "=" + id;
       ResultSet rs = stmt.executeQuery(query);
       if (rs.next()) {
@@ -6837,31 +6822,31 @@ public class StoreDB {
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
     public AValue save(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
-      if ((getValueString() == null || getValueString().length() == 0) 
+      if ((getValueString() == null || getValueString().length() == 0)
           && getValueDate() == null && getValueDouble() == null
           && getValueRef() == 0) {
         if (getId() > 0 ) {
           // delete empty record
           // delete avalues_ref to invoke triggers
-          stmt.execute("DELETE FROM " + TABLE_REF 
+          stmt.execute("DELETE FROM " + TABLE_REF
               + " WHERE " + AVR_AV_ID + "=" + getId());
-          stmt.execute("DELETE FROM " + TABLE 
+          stmt.execute("DELETE FROM " + TABLE
               + " WHERE " + ID + "=" + getId());
-          stmt.execute("CALL clean_multivalues(" + getOId() + ", " 
+          stmt.execute("CALL clean_multivalues(" + getOId() + ", "
               + getRank() + ")");
-          stmt.execute("CALL log_delete(" + getOaId() + ", " + getOId() + ", " 
+          stmt.execute("CALL log_delete(" + getOaId() + ", " + getOId() + ", "
               + LOG_VALUE_DELETE + "," + getUserId() +")");
           setId(0);
         } else return this;
       } else {
         if (this.getId() == 0) {
           // find value if one was created by share_values routine
-          StringBuffer query = new StringBuffer(BUFFER_SIZE);
+          StringBuilder query = new StringBuilder(BUFFER_SIZE);
           query.append("SELECT " + ID + " FROM " + TABLE
               + " WHERE " + AO_ID + "=");
           query.append(getOId());
@@ -6875,8 +6860,8 @@ public class StoreDB {
           else {
             // insert new record
             stmt.execute(
-              "INSERT INTO " + TABLE + " (" + AO_ID + ", " + OA_ID + ", " 
-                  + RANK + ", " + USER_ID + ")" 
+              "INSERT INTO " + TABLE + " (" + AO_ID + ", " + OA_ID + ", "
+                  + RANK + ", " + USER_ID + ")"
                   + " VALUES ("
                   + getOId() + ", "
                   + getOaId() + ", "
@@ -6884,24 +6869,24 @@ public class StoreDB {
                   + getUserId() + ")");
             setId(getIdentity(stmt));
           }
-        } 
-        
+        }
+
         log.info("ao: " + getOId() + "  oa: " + getOaId() + "  rank: " + getRank());
         if (getValueString() != null && getValueString().length() > 0) {
-          StringBuffer query = new StringBuffer(BUFFER_SIZE);
-          query.append("SELECT " + ValueType.TYPE + " FROM " + ValueType.TABLE 
-              + ", " + ObjectAttribute.TABLE 
+          StringBuilder query = new StringBuilder(BUFFER_SIZE);
+          query.append("SELECT " + ValueType.TYPE + " FROM " + ValueType.TABLE
+              + ", " + ObjectAttribute.TABLE
               + " WHERE " + ObjectAttribute.TYPE_ID + "=" + ValueType.ID
               + " AND " + ObjectAttribute.ID + "=");
           query.append(getOaId());
           log.info(query.toString());
           ResultSet rs = stmt.executeQuery(query.toString());
-          if (rs.next()) 
+          if (rs.next())
             switch (rs.getInt(ValueType.TYPE)) {
             case ValueType.VT_STRING:
               stmt.execute(
-                  "INSERT INTO " + TABLE_CHAR + " (" + AVC_AV_ID + ", " 
-                      + VALUE_STRING + ", "  + AVC_LANG_ID + ")" 
+                  "INSERT INTO " + TABLE_CHAR + " (" + AVC_AV_ID + ", "
+                      + VALUE_STRING + ", "  + AVC_LANG_ID + ")"
                       + " VALUES ("
                       + getId() + ", "
                       + "'" + ServerUtils.mySQLFilter(getValueString()) + "', "
@@ -6911,8 +6896,8 @@ public class StoreDB {
               break;
             case ValueType.VT_TEXT:
               stmt.execute(
-                  "INSERT INTO " + TABLE_TEXT + " (" + AVT_AV_ID + ", " 
-                      + VALUE_TEXT + ", "  + AVT_LANG_ID + ")" 
+                  "INSERT INTO " + TABLE_TEXT + " (" + AVT_AV_ID + ", "
+                      + VALUE_TEXT + ", "  + AVT_LANG_ID + ")"
                       + " VALUES ("
                       + getId() + ", "
                       + "'" + ServerUtils.mySQLFilter(getValueString()) + "', "
@@ -6925,8 +6910,8 @@ public class StoreDB {
             }
         } else if (getValueDate() != null)
           stmt.execute(
-              "INSERT INTO " + TABLE_DATE + " (" + AVD_AV_ID + ", " 
-                  + VALUE_DATE + ")" 
+              "INSERT INTO " + TABLE_DATE + " (" + AVD_AV_ID + ", "
+                  + VALUE_DATE + ")"
                   + " VALUES ("
                   + getId() + ", "
                   + "'" + ServerUtils.MYSQLDATEFORMAT.format(getValueDate()) + "')"
@@ -6934,8 +6919,8 @@ public class StoreDB {
                   + VALUE_DATE + "='" + ServerUtils.MYSQLDATEFORMAT.format(getValueDate()) + "'");
         else if (getValueDouble() != null)
           stmt.execute(
-              "INSERT INTO " + TABLE_NUMBER + " (" + AVN_AV_ID + ", " 
-                  + VALUE_NUMBER + ")" 
+              "INSERT INTO " + TABLE_NUMBER + " (" + AVN_AV_ID + ", "
+                  + VALUE_NUMBER + ")"
                   + " VALUES ("
                   + getId() + ", "
                   + getValueDouble() + ")"
@@ -6943,19 +6928,19 @@ public class StoreDB {
                   + VALUE_NUMBER + "=" + getValueDouble());
         else if (getValueRef() > 0) {
           stmt.execute(
-              "INSERT INTO " + TABLE_REF + " (" + AVR_AV_ID + ", " 
-                  + VALUE_REF + ")" 
+              "INSERT INTO " + TABLE_REF + " (" + AVR_AV_ID + ", "
+                  + VALUE_REF + ")"
                   + " VALUES ("
                   + getId() + ", "
                   + getValueRef() + ")"
                   + " ON DUPLICATE KEY UPDATE "
                   + VALUE_REF + "=" + getValueRef());
-          stmt.execute("CALL share_values(" + getOId() + ", " 
+          stmt.execute("CALL share_values(" + getOId() + ", "
               + getValueRef() + ", " + getUserId() + ")");
         }
         // update an existing record
         stmt.executeUpdate(
-          "UPDATE " + TABLE + " SET "  
+          "UPDATE " + TABLE + " SET "
             + RANK + "=" + getRank() + ", "
             + USER_ID + "=" + getUserId() + ", "
             + LASTUPDATEDAT + "= now()"
@@ -6965,34 +6950,34 @@ public class StoreDB {
       return this;
     }
 
-    public static HashMap<String, AValue> loadSingleValues(Connection c, int oId) 
+    public static HashMap<String, AValue> loadSingleValues(Connection c, int oId)
         throws SQLException {
       HashMap<String, AValue> result = new HashMap<String, AValue>();
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE + " left outer join " 
+
+      String query = "SELECT * FROM " + TABLE + " left outer join "
           + TABLE_CHAR + " on (" + AVC_AV_ID + "=" + ID + ") left outer join "
           + TABLE_TEXT + " on (" + AVT_AV_ID + "=" + ID + ") left outer join "
           + TABLE_DATE + " on (" + AVD_AV_ID + "=" + ID + ") left outer join "
           + TABLE_NUMBER + " on (" + AVN_AV_ID + "=" + ID + ") left outer join "
           + TABLE_REF + " on (" + AVR_AV_ID + "=" + ID + ")"
-          + " WHERE " + AO_ID + "=" + oId; 
+          + " WHERE " + AO_ID + "=" + oId;
       ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
         result.put(rs.getInt(OA_ID)+"_"+rs.getInt(RANK), new AValue(rs));
       }
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
-    
+
     public static Map<Integer, List<AValue>> loadValues(Connection c, int oId) throws SQLException {
       Map<Integer, List<AValue>> result = new HashMap<Integer, List<AValue>>();
 
       Statement stmt = c.createStatement();
-        
-      String query = "SELECT * FROM " + TABLE + " left outer join " 
+
+      String query = "SELECT * FROM " + TABLE + " left outer join "
           + TABLE_CHAR + " on (" + AVC_AV_ID + "=" + ID + ") left outer join "
           + TABLE_DATE + " on (" + AVD_AV_ID + "=" + ID + ") left outer join "
           + TABLE_NUMBER + " on (" + AVN_AV_ID + "=" + ID + ") left outer join "
@@ -7016,7 +7001,7 @@ public class StoreDB {
       result.put(oaId, values);
       rs.close();
       stmt.close();
-      return result;    
+      return result;
     }
 
   }
@@ -7033,7 +7018,7 @@ public class StoreDB {
     public static final String OREL = "ar_or_id";
     public static final String USER_ID = "ar_user_id";
   }
-  
+
   /**
    * An ORM object representing a import tables.
    */
@@ -7056,8 +7041,8 @@ public class StoreDB {
         String filename) throws SQLException {
       Statement stmt = c.createStatement();
       stmt.execute(
-          "INSERT INTO " + TABLE_HEADER + " (" + APP_ID + ", " + T_ID + ", " 
-              + FILENAME + ", " + USER_ID + ")" 
+          "INSERT INTO " + TABLE_HEADER + " (" + APP_ID + ", " + T_ID + ", "
+              + FILENAME + ", " + USER_ID + ")"
               + " VALUES ("
               + appId + ", "
               + tId + ", '"
@@ -7066,15 +7051,15 @@ public class StoreDB {
       return getIdentity(stmt);
     }
 
-    public static int saveRow(Connection c, int headerId, int rowNumber, String row[]) 
+    public static int saveRow(Connection c, int headerId, int rowNumber, String row[])
         throws SQLException {
       Statement stmt = c.createStatement();
-      
+
       String[] hlp = getColumnsAndValues(row);
 
       stmt.execute(
-          "INSERT INTO " + TABLE_ROW + " (" + ROW_HEADER + ", " + ROW_NUMBER 
-              + hlp[0] + ")" 
+          "INSERT INTO " + TABLE_ROW + " (" + ROW_HEADER + ", " + ROW_NUMBER
+              + hlp[0] + ")"
               + " VALUES ("
               + headerId + ", "
               + rowNumber
@@ -7092,12 +7077,12 @@ public class StoreDB {
         if (row != null)
           result[1] = result[1] + ", '" + ServerUtils.mySQLFilter(row[i]) + "'";
       }
-      
+
       return result;
     }
-    
+
     public static List<Integer> importObjects(Connection c, int userId,
-        Application app, Template t, String filename, 
+        Application app, Template t, String filename,
         Map<Integer, TemplateAttribute> map,
         Map<Integer, TemplateAttribute> keys, boolean onlyUpdate)
             throws SQLException {
@@ -7105,10 +7090,10 @@ public class StoreDB {
       Statement stmt = c.createStatement();
       Statement stmtDel = c.createStatement();
       String[] hlp = getColumnsAndValues(null);
-      ResultSet rs = stmt.executeQuery("SELECT " + ID + ", " + ROW_NUMBER + hlp[0] 
+      ResultSet rs = stmt.executeQuery("SELECT " + ID + ", " + ROW_NUMBER + hlp[0]
           + " FROM " + TABLE_HEADER + ", " + TABLE_ROW
           + " WHERE " + USER_ID + "=" + userId + " AND " + APP_ID + "=" + app.getId()
-          + " AND " + T_ID + "=" + t.getId() + " AND " + FILENAME + "='" + filename 
+          + " AND " + T_ID + "=" + t.getId() + " AND " + FILENAME + "='" + filename
           + "' AND " + ID + "=" + ROW_HEADER);
       int count = 0;
       boolean wrongKey = false;
@@ -7127,12 +7112,12 @@ public class StoreDB {
           setValue(c, value, ta, svalue, t.getId(), filter);
           filter.add(value);
         }
-        
+
         if (wrongKey) {
           wrongKey = false;
           continue;
         }
-        
+
         Map<String, AValue> dbvalues = new HashMap<String, AValue>();
         AObject ao = AObject.find(c, t.getId(), filter);
         // no match found - insert new object
@@ -7141,11 +7126,10 @@ public class StoreDB {
           ao = new AObject(0, t.getOtId(), 0, null, userId);
         // more than one match found - no update
         } else if (ao.getId() == 0) {
-          log.log(Level.WARNING, "More than one match found for " 
-              + rs.getString(ROW_COLUMN+"0"));
+          log.warn("More than one match found for " + rs.getString(ROW_COLUMN+"0"));
           continue;
         // exactly one match found - update object
-        } else  
+        } else
           dbvalues = AValue.loadSingleValues(c, ao.getId());
         ao.save(c);
 
@@ -7160,19 +7144,19 @@ public class StoreDB {
               rank = 0;
               taId = ta.getId();
             }
-  
+
             AValue value = dbvalues.get(ta.getOaId()+"_"+rank);
             if (value == null)
               value = new AValue(0,ao.getId(),ta.getOaId(),rank,null,0,
                   null,null, null,0,userId);
-            
+
             setValue(c, value, ta, svalue, t.getId(), dbvalues.values());
             value.save(c);
             dbvalues.put(ta.getOaId()+"_"+rank, value);
           }
-        }        
-        stmtDel.execute("delete from " + TABLE_ROW 
-            + " WHERE " + ROW_HEADER + "=" + headerId  
+        }
+        stmtDel.execute("delete from " + TABLE_ROW
+            + " WHERE " + ROW_HEADER + "=" + headerId
             + " AND " + ROW_NUMBER + "=" + rs.getInt(ROW_NUMBER));
         count++;
         result.add(ao.getId());
@@ -7180,7 +7164,7 @@ public class StoreDB {
       }
       rs.close();
       if (count == 0)
-        stmtDel.execute("delete from " + TABLE_HEADER 
+        stmtDel.execute("delete from " + TABLE_HEADER
             + " WHERE " + USER_ID + "=" + userId + " AND " + APP_ID + "=" + app.getId()
             + " AND " + T_ID + "=" + t.getId() + " AND " + FILENAME + "='" + filename + "'");
       stmtDel.close();
@@ -7195,22 +7179,22 @@ public class StoreDB {
         case ValueType.VT_INT:
           value.setValueDouble(new Double(field));
           break;
-  
+
         case ValueType.VT_REAL:
           value.setValueDouble(new Double(field));
           break;
-  
+
         case ValueType.VT_STRING:
           value.setValueString(field);
           break;
-  
+
         case ValueType.VT_DATE:
           Date date;
           try {
             date = new SimpleDateFormat("yyyy-MM-dd").parse(field);
             value.setValueDate(date);
           } catch (ParseException e) {
-            log.warning("Wrong date format: "+field);
+            log.warn("Wrong date format: "+field, e);
           }
           break;
 
@@ -7220,7 +7204,7 @@ public class StoreDB {
             datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(field);
             value.setValueDate(datetime);
           } catch (ParseException e) {
-            log.warning("Wrong date format: "+field);
+            log.warn("Wrong date format: "+field, e);
           }
           break;
 
@@ -7248,17 +7232,17 @@ public class StoreDB {
       }
     }
   }
-  
+
   public static Map<Integer, TemplateAttribute> getCommonAttributes(Connection c, int t1, int t2)
        throws SQLException {
     Map<Integer, TemplateAttribute> result = new HashMap<Integer, TemplateAttribute>();
-    
+
     Statement stmt = c.createStatement();
 
     String query = "SELECT oa1." + ObjectAttribute.ID + " as oaId, ta2.*, tg2.*, oa2.*, vt.* "
         + " FROM " + TemplateGroup.TABLE + " tg1, " + TemplateAttribute.TABLE + " ta1, " + ObjectAttribute.TABLE + " oa1, "
         + TemplateGroup.TABLE + " tg2, " + TemplateAttribute.TABLE + " ta2, " + ObjectAttribute.TABLE + "  oa2, "
-        + ValueType.TABLE + " vt"  
+        + ValueType.TABLE + " vt"
         + " WHERE tg1." + TemplateGroup.T_ID + " = " + t1
         + " AND tg1." + TemplateGroup.ID + " = ta1." + TemplateAttribute.TG_ID
         + " AND ta1." + TemplateAttribute.OA_ID + " = oa1." + ObjectAttribute.ID
@@ -7275,17 +7259,16 @@ public class StoreDB {
     }
     rs.close();
     stmt.close();
-    
+
     return result;
   }
-  
+
   /** holds the Connection to the Database */
   //private static Connection connection;
 
   /**
    * Create a new database Store.
    *
-   * @param config
    */
   public StoreDB() {
     //connection = getConnection();
@@ -7294,15 +7277,15 @@ public class StoreDB {
   /**
    * Starts a data store session and returns an Api object to use.
    *
-   * @return
+   * @return      <code>Api</code>
    */
   public Api getApi() {
     return new Api();
   }
-  
+
   /**
    * Connect to database <BR>
-   * 
+   *
    * @return successful of connect <BR>
    */
 //  public static Connection getConnection() {
@@ -7323,11 +7306,11 @@ public class StoreDB {
 //
 //    return connection;
 //  }
-  
+
   /**
    * get last identity <BR>
    * <BR>
-   * 
+   *
    * @return identity <BR>
    */
   public static int getIdentity(Statement stmt) throws SQLException {
@@ -7342,43 +7325,43 @@ public class StoreDB {
   /**
    * get code <BR>
    * <BR>
-   * 
+   *
    * @return code <BR>
    */
-  public static String getNewCode(Statement stmt, String table, String code, 
+  public static String getNewCode(Statement stmt, String table, String code,
       String idColumn, String codeColumn) throws SQLException {
     String result;
     String query = "SELECT CAST(substring("
-        + codeColumn + ", " + (1+code.length()+CODE_SEPARATOR.length()) + ", " 
+        + codeColumn + ", " + (1+code.length()+CODE_SEPARATOR.length()) + ", "
         + (code.length()+ID_OFFSET+CODE_SEPARATOR.length())
         + ") as UNSIGNED) FROM " + table
         + " WHERE " + idColumn + " = (SELECT MAX(" + idColumn + ") FROM " + table
         + ")";
     ResultSet rs = stmt.executeQuery(query);
     if (rs.next())
-      result = code + CODE_SEPARATOR 
+      result = code + CODE_SEPARATOR
           + String.format(String.format("%%0%dd", ID_OFFSET), (rs.getInt(1)+1));
-    else 
-      result = code + CODE_SEPARATOR 
+    else
+      result = code + CODE_SEPARATOR
           + String.format(String.format("%%0%dd", ID_OFFSET), 1);
     rs.close();
     return result;
   }
-  
+
   public static String[] getTablesAndWheres(List<TreeLevel> path) {
     String[] result = new String[2];
-    
+
     result[0] = "";
     result[1] = "";
     for (int i = 0; i < path.size(); i++) {
       TreeLevel level = path.get(i);
-      boolean isDerived = level.getTa().getDef() != null && 
+      boolean isDerived = level.getTa().getDef() != null &&
           (level.getTa().getFlags() & (1<<TemplateAttribute.FLAG_DERIVED)) > 0;
-          
+
       if (level.getValueString() == null && level.getValueDouble() == null
           && level.getValueDate() == null && level.getValueRef() == 0) {
         result[0] = " left outer join " + AValue.TABLE + " av" + i
-            + " on (av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID 
+            + " on (av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID
             + " AND av" + i + "." + AValue.OA_ID + "=" + level.getTa().getOaId() + ") "
             + result[0];
         result[1] = " AND av" + i + "." + AValue.ID + " is null " + result[1];
@@ -7388,45 +7371,45 @@ public class StoreDB {
           case ValueType.VT_INT:
           case ValueType.VT_REAL:
             result[0] = result[0] + ", " + AValue.TABLE + " av" + i + ", " + AValue.TABLE_DATE + " avn" + i;
-            result[1] = result[1] 
-                + " AND av" + i + "." + AValue.AO_ID + "="  + AObject.P_AO_ID 
-                + " AND av" + i + "." + AValue.OA_ID + "="  + level.getTa().getOaId() 
+            result[1] = result[1]
+                + " AND av" + i + "." + AValue.AO_ID + "="  + AObject.P_AO_ID
+                + " AND av" + i + "." + AValue.OA_ID + "="  + level.getTa().getOaId()
                 + " AND avn" + i + "." + AValue.AVN_AV_ID + "= av" + i + "." + AValue.ID
                 + " AND avn" + i + "." + AValue.VALUE_NUMBER + "=" + level.getValueDouble();
             break;
           case ValueType.VT_STRING:
             result[0] = result[0] + ", " + AValue.TABLE + " av" + i + ", " + AValue.TABLE_CHAR + " avc" + i;
-            
+
             derived = "avc" + i + "." + AValue.VALUE_STRING;
             if (isDerived) {
-              derived = String.format(level.getTa().getDef(), derived); 
+              derived = String.format(level.getTa().getDef(), derived);
             }
-            result[1] = result[1] 
-                + " AND av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID 
-                + " AND av" + i + "." + AValue.OA_ID + "="  + level.getTa().getOaId() 
+            result[1] = result[1]
+                + " AND av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID
+                + " AND av" + i + "." + AValue.OA_ID + "="  + level.getTa().getOaId()
                 + " AND avc" + i + "." + AValue.AVC_AV_ID + "= av" + i + "." + AValue.ID
                 + " AND " + derived + "='" + ServerUtils.mySQLFilter(level.getValueString()) + "'";
             break;
           case ValueType.VT_DATETIME:
           case ValueType.VT_DATE:
             result[0] = result[0] + ", " + AValue.TABLE + " av" + i + ", " + AValue.TABLE_DATE + " avd" + i;
-  
+
             derived = "avd" + i + "." + AValue.VALUE_DATE;
             if (isDerived) {
-              derived = String.format(level.getTa().getDef(), derived); 
+              derived = String.format(level.getTa().getDef(), derived);
             }
-            
-            result[1] = result[1] 
-                + " AND av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID 
-                + " AND av" + i + "." + AValue.OA_ID + "="  + level.getTa().getOaId() 
+
+            result[1] = result[1]
+                + " AND av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID
+                + " AND av" + i + "." + AValue.OA_ID + "="  + level.getTa().getOaId()
                 + " AND avd" + i + "." + AValue.AVD_AV_ID + "= av" + i + "." + AValue.ID
                 + " AND " + derived + "='" + (isDerived ? level.getValueString() : level.getValueDate()) + "'";
             break;
           case ValueType.VT_REF:
             result[0] = result[0] + ", " + AValue.TABLE + " av" + i + ", " + AValue.TABLE_REF + " avr" + i;
-            result[1] = result[1] 
-                + " AND av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID 
-                + " AND av" + i + "." + AValue.OA_ID + "="  + level.getTa().getOaId() 
+            result[1] = result[1]
+                + " AND av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID
+                + " AND av" + i + "." + AValue.OA_ID + "="  + level.getTa().getOaId()
                 + " AND avr" + i + "." + AValue.AVR_AV_ID + "= av" + i + "." + AValue.ID
                 + " AND avr" + i + "." + AValue.VALUE_REF + "=" + level.getValueRef();
             break;
@@ -7435,10 +7418,10 @@ public class StoreDB {
     }
     return result;
   }
-  
+
   public static String[] getTablesAndWheresForFilter(List<AValue> filter) {
     String[] result = new String[2];
-    
+
     result[0] = "";
     result[1] = "";
     if (filter != null) {
@@ -7469,7 +7452,7 @@ public class StoreDB {
         }
         else {
           result[0] = result[0] + " left outer join " + AValue.TABLE + " av" + i
-              + " on (av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID 
+              + " on (av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID
               + " AND av" + i + "." + AValue.OA_ID + "=" + value.getOaId() + ") ";
           result[1] = result[1] + " AND av" + i + "." + AValue.ID + " is null";
         }
@@ -7477,9 +7460,8 @@ public class StoreDB {
     }
     return result;
   }
-  
-  private static LinkedHashMap<AObject, ArrayList<AValue>> getRows(ResultSet rs, 
-      int langId) throws SQLException {
+
+  private static LinkedHashMap<AObject, ArrayList<AValue>> getRows(ResultSet rs, int langId) throws SQLException {
     LinkedHashMap<AObject, ArrayList<AValue>> result = new LinkedHashMap<AObject, ArrayList<AValue>>();
 
     ArrayList<AValue> values = null;
@@ -7505,20 +7487,20 @@ public class StoreDB {
           value.setValueString(rs.getString("ao_leaf"));
           value.setLangId(rs.getInt(AValue.AVC_LANG_ID));
         }
-          
-        if (valuePrev != null 
-            && valuePrev.getOaId() == value.getOaId() 
+
+        if (valuePrev != null
+            && valuePrev.getOaId() == value.getOaId()
             && valuePrev.getRank() == value.getRank()
             && value.getLangId() != langId)
           value = valuePrev;
-        
+
         if (isDescendingPrev) {
           if (valuePrev != null && valuePrev.getOaId() != value.getOaId())
             values.add(valuePrev);
         } else if (!isDescending) {
           if (valuePrev == null || valuePrev.getOaId() != value.getOaId())
             values.add(value);
-          else if (valuePrev.getOaId() == value.getOaId() 
+          else if (valuePrev.getOaId() == value.getOaId()
               && valuePrev.getRank() == value.getRank()
               && value.getLangId() == langId) {
             values.remove(values.size()-1);
@@ -7534,6 +7516,6 @@ public class StoreDB {
       values.add(valuePrev);
     result.put(aobject, values);
 
-    return result;    
+    return result;
   }
 }

@@ -182,7 +182,7 @@ public class ObjectsTree extends SimplePanel implements
     if (tid.getPath().size() == 0)
       nodefined();
 
-    if (ti != null) ti.removeItems();
+    ti.removeItems();
     for (AObject object : objects) {
       // create tree item
       ObjectRowView row = new ObjectRowView(object, "object-row");

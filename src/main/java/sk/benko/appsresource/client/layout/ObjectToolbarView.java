@@ -1,7 +1,6 @@
 package sk.benko.appsresource.client.layout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +14,7 @@ import sk.benko.appsresource.client.model.AObject;
 import sk.benko.appsresource.client.model.AValue;
 import sk.benko.appsresource.client.model.ApplicationModel;
 import sk.benko.appsresource.client.model.ApplicationTemplate;
-import sk.benko.appsresource.client.ui.widget.theme.ThemeImage;
+import sk.benko.appsresource.client.util.ThemeImage;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

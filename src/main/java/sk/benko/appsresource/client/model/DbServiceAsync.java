@@ -22,19 +22,18 @@ public interface DbServiceAsync extends ServiceAsync {
   void getObjectTypes(AsyncCallback<DbService.GetObjectTypesResult> callback);
 
   /**
-   * @see DbService#getObjectAttributes()
+   * @see DbService#getObjectAttributes(int)
+   * @param otId
    * @param callback
    */
-  void getObjectAttributes(int otId,
-      AsyncCallback<DbService.GetObjectAttributesResult> callback);
+  void getObjectAttributes(int otId, AsyncCallback<DbService.GetObjectAttributesResult> callback);
 
   /**
-   * @see DbService#getObjectRelations()
-   * @param timestamp
+   * @see DbService#getObjectRelations(int)
+   * @param otId
    * @param callback
    */
-  void getObjectRelations(int otId,
-      AsyncCallback<GetObjectRelationsResult> callback);
+  void getObjectRelations(int otId, AsyncCallback<GetObjectRelationsResult> callback);
   
   /**
    * @see DbService#getValueTypes()
@@ -49,68 +48,74 @@ public interface DbServiceAsync extends ServiceAsync {
   void getUnits(AsyncCallback<DbService.GetUnitsResult> callback);
 
   /**
-   * @see DbService#getTemplates(String)
+   * @see DbService#getTemplates()
    * @param callback
    */
   void getTemplates(AsyncCallback<DbService.GetTemplatesResult> callback);
 
   /**
-   * @see DbService#getTemplateRelations(String)
+   * @see DbService#getTemplateRelations()
    * @param callback
    */
   void getTemplateRelations(
       AsyncCallback<DbService.GetTemplateRelationsResult> callback);
 
   /**
-   * @see DbService#getTemplateGroups(String)
+   * @see DbService#getTemplateGroups(Template)
+   * @param template
    * @param callback
    */
-  void getTemplateGroups(Template template,
-      AsyncCallback<DbService.GetTemplateGroupsResult> callback);
+  void getTemplateGroups(Template template, AsyncCallback<DbService.GetTemplateGroupsResult> callback);
 
   /**
-   * @see DbService#createObjectType(ObjectType)
-   * @param objecType
+   * @see DbService#createObjectType(ObjectType, AppUser)
+   * @param objectType
+   * @param author
    * @param callback
    */
   void createObjectType(ObjectType objectType, AppUser author,
       AsyncCallback<DbService.CreateOrUpdateObjectTypeResult> callback);
 
   /**
-   * @see DbService#createObjectAttribute(ObjectAttribute)
-   * @param objecType
+   * @see DbService#createObjectAttribute(ObjectAttribute, AppUser)
+   * @param objectAttribute
+   * @param author
    * @param callback
    */
   void createObjectAttribute(ObjectAttribute objectAttribute, AppUser author,
       AsyncCallback<DbService.CreateOrUpdateObjectAttributeResult> callback);
 
   /**
-   * @see DbService#createObjectRelation(ObjectRelation)
-   * @param objecType
+   * @see DbService#createObjectRelation(ObjectRelation, AppUser)
+   * @param objectRelation
+   * @param author
    * @param callback
    */
   void createObjectRelation(ObjectRelation objectRelation, AppUser author,
       AsyncCallback<CreateOrUpdateObjectRelationResult> callback);
 
     /**
-   * @see DbService#createValueType(ValueType)
+   * @see DbService#createValueType(ValueType, AppUser)
    * @param valueType
+   * @param author
    * @param callback
    */
   void createValueType(ValueType valueType, AppUser author,
       AsyncCallback<DbService.CreateOrUpdateValueTypeResult> callback);
 
   /**
-   * @see DbService#createUnit(Unit)
+   * @see DbService#createUnit(Unit, AppUser)
    * @param unit
    * @param callback
    */
-  void createUnit(Unit unit, AppUser author,
-      AsyncCallback<DbService.CreateOrUpdateUnitResult> callback);
+  void createUnit(Unit unit, AppUser author, AsyncCallback<DbService.CreateOrUpdateUnitResult> callback);
   
   /**
-   * @see DbService#createTemplate(Template)
+   * @see DbService#createTemplate(Template, java.util.HashMap, java.util.HashMap, AppUser)
    * @param template
+   * @param trees
+   * @param lists
+   * @param author
    * @param callback
    */
   void createTemplate(Template template, 
@@ -119,15 +124,16 @@ public interface DbServiceAsync extends ServiceAsync {
       AsyncCallback<DbService.CreateOrUpdateTemplateResult> callback);
 
   /**
-   * @see DbService#createTemplateRelation(TemplateRelation)
+   * @see DbService#createTemplateRelation(TemplateRelation, AppUser)
    * @param templateRelation
+   * @param author
    * @param callback
    */
   void createTemplateRelation(TemplateRelation templateRelation, AppUser author,
       AsyncCallback<DbService.CreateOrUpdateTemplateRelationResult> callback);
 
   /**
-   * @see DbService#createTemplateGroup(TemplateGroup)
+   * @see DbService#createTemplateGroup(TemplateGroup, AppUser)
    * @param templateGroup
    * @param callback
    */
@@ -135,17 +141,19 @@ public interface DbServiceAsync extends ServiceAsync {
       AsyncCallback<DbService.CreateOrUpdateTemplateGroupResult> callback);
 
   /**
-   * @see DbService#createTemplateAttribute(TemplateAttribute)
+   * @see DbService#createTemplateAttribute(TemplateAttribute, AppUser)
    * @param templateAttribute
+   * @param author
    * @param callback
    */
   void createTemplateAttribute(TemplateAttribute templateAttribute, AppUser author,
       AsyncCallback<DbService.CreateOrUpdateTemplateAttributeResult> callback);
 
   /**
-   * @see DbService#createApplication(Application)
+   * @see DbService#createOrUpdateApplication(Application, java.util.ArrayList, AppUser)
    * @param application
    * @param appts
+   * @param author
    * @param callback
    */
   void createOrUpdateApplication(Application application, 

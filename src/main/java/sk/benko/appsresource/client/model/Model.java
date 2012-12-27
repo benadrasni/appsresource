@@ -552,20 +552,20 @@ public abstract class Model {
   
   // view events
   public void notifyMenuItemClicked() {
-    for (int i = 0, n = viewObservers.size(); i < n; ++i) {
-      viewObservers.get(i).onMenuItemClicked();
+    for (ViewObserver viewObserver : viewObservers) {
+      viewObserver.onMenuItemClicked();
     }
   }
 
   public void notifyNavigationItemClicked(Element element) {
-    for (int i = 0, n = viewObservers.size(); i < n; ++i) {
-      viewObservers.get(i).onNavigationItemClicked(element);
+    for (ViewObserver viewObserver : viewObservers) {
+      viewObserver.onNavigationItemClicked(element);
     }
   }
 
   public void notifyDialogNavigationItemClicked(Element element) {
-    for (int i = 0, n = viewObservers.size(); i < n; ++i) {
-      viewObservers.get(i).onDialogNavigationItemClicked(element);
+    for (ViewObserver viewObserver : viewObservers) {
+      viewObserver.onDialogNavigationItemClicked(element);
     }
   }
 
@@ -602,10 +602,10 @@ public abstract class Model {
     for (ApplicationTemplate appt : appts) {
       getAppTemplatesByTemplate().put(appt.getTId(), appt);
     }
-    
-    for (int i = 0, n = dataObservers.size(); i < n; ++i) {
-      if (dataObservers.get(i) instanceof ApplicationObserver)
-        ((ApplicationObserver)dataObservers.get(i)).onApplicationTemplatesLoaded(appts);
+
+    for (DataObserver dataObserver : dataObservers) {
+      if (dataObserver instanceof ApplicationObserver)
+        ((ApplicationObserver) dataObserver).onApplicationTemplatesLoaded(appts);
     }
   }    
   
@@ -629,9 +629,9 @@ public abstract class Model {
   public void notifyChooseTemplateTreesLoaded(int tId, ArrayList<TemplateTree> tts) {
     getTrees().put(tId, tts);
 
-    for (int i = 0, n = dataObservers.size(); i < n; ++i) {
-      if (dataObservers.get(i) instanceof ChooseObjectObserver)
-        ((ChooseObjectObserver)dataObservers.get(i)).onChooseTemplateTreesLoaded(tts);
+    for (DataObserver dataObserver : dataObservers) {
+      if (dataObserver instanceof ChooseObjectObserver)
+        ((ChooseObjectObserver) dataObserver).onChooseTemplateTreesLoaded(tts);
     }
   }
   

@@ -3,7 +3,7 @@ package sk.benko.appsresource.client.layout;
 import sk.benko.appsresource.client.ClientUtils;
 import sk.benko.appsresource.client.model.ApplicationModel;
 import sk.benko.appsresource.client.model.loader.SearchObjectCountLoader;
-import sk.benko.appsresource.client.ui.widget.theme.ThemeImage;
+import sk.benko.appsresource.client.util.ThemeImage;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

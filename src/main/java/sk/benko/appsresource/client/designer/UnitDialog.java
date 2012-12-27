@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.TextBox;
  *
  */
 public class UnitDialog extends DesignerDialog {
-  private float DEFAULT_CONVERSION = 1;
+  private static final float DEFAULT_CONVERSION = 1;
 
   private NumberFormat df; 
     
@@ -216,7 +216,7 @@ public class UnitDialog extends DesignerDialog {
     unit.setType(getDdbType().getSelection().getId());
     String valueString = getTbConversion().getText().trim();
     if (valueString.length() > 0) {
-      float valueFloat = new Float(getDf().parse(valueString)).floatValue();
+      float valueFloat = new Float(getDf().parse(valueString));
       unit.setConversion(valueFloat);
     }
   }
