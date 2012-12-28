@@ -10,7 +10,7 @@ public class ApplicationActionToolbarView extends FlowPanel {
   ApplicationView av;
   
   /**
-   * @param model
+   * @param av
    *          the model to which the Ui will bind itself
    */
   public ApplicationActionToolbarView(final ApplicationView av) {

@@ -14,8 +14,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.WidgetCollection;
 
-public class SurfaceView extends AbsolutePanel implements 
-    UserModel.ApplicationUserObserver {
+public class SurfaceView extends AbsolutePanel implements UserModel.ApplicationUserObserver {
 
   private UserModel model;
   private PickupDragController appDragController;
@@ -31,8 +30,7 @@ public class SurfaceView extends AbsolutePanel implements
     elem.getStyle().setProperty("position", "absolute");
     
     appDragController = new PickupDragController(this, true);
-    SurfaceDropController appDropController = new SurfaceDropController(this, 
-        model);
+    SurfaceDropController appDropController = new SurfaceDropController(this, model);
     appDragController.registerDropController(appDropController);
     appDragController.setBehaviorConstrainedToBoundaryPanel(true);
     appDragController.setBehaviorMultipleSelection(false);

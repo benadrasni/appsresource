@@ -69,7 +69,7 @@ public interface AppUserService extends Service {
 
   /**
    * Encapsulates a response from
-   * {@link AppUserService#createApplicationUser(ApplicationUser)}.
+   * {@link AppUserService#createOrUpdateApplicationUser(ApplicationUser, AppUser)}
    */
   @SuppressWarnings("serial")
   static class CreateOrUpdateApplicationUserResult implements Serializable {
@@ -81,7 +81,7 @@ public interface AppUserService extends Service {
      * Constructs a new result. This constructor can only be invoked on the
      * server.
      *
-     * @param key
+     * @param appuId
      *          the key that was assigned to the new {@link ApplicationUser}
      * @param updateTime
      *          the time assigned to {@link ApplicationUser#getLastUpdatedAt()}
@@ -120,7 +120,7 @@ public interface AppUserService extends Service {
   }
 
   /**
-   * Encapsulates a response from {@link AppUserService#getLanguages(String)}.
+   * Encapsulates a response from {@link sk.benko.appsresource.client.model.AppUserService#getLanguages()}
    */
   @SuppressWarnings("serial")
   static class GetLanguagesResult implements Serializable {
@@ -130,8 +130,7 @@ public interface AppUserService extends Service {
      * Constructs a new result. This constructor can only be invoked on the
      * server.
      *
-     * @param templates
-     *          the list of template attributes to return
+     * @param languages     the list of languages to return
      */
     public GetLanguagesResult(ArrayList<Language> languages) {
       assert !GWT.isClient();
@@ -157,7 +156,7 @@ public interface AppUserService extends Service {
   }
   
   /**
-   * Encapsulates a response from {@link AppUserService#getApplications(String)}.
+   * Encapsulates a response from {@link AppUserService#getApplications()}.
    */
   @SuppressWarnings("serial")
   static class GetApplicationsResult implements Serializable {
@@ -167,8 +166,7 @@ public interface AppUserService extends Service {
      * Constructs a new result. This constructor can only be invoked on the
      * server.
      *
-     * @param templates
-     *          the list of template attributes to return
+     * @param applications      the list of applications to return
      */
     public GetApplicationsResult(ArrayList<Application> applications) {
       assert !GWT.isClient();
@@ -195,7 +193,7 @@ public interface AppUserService extends Service {
 
   
   /**
-   * Encapsulates a response from {@link AppUserService#getApplicationUsers(int, String)}.
+   * Encapsulates a response from {@link AppUserService#getApplicationUsers(int)}
    */
   @SuppressWarnings("serial")
   static class GetApplicationUsersResult implements Serializable {
@@ -233,11 +231,7 @@ public interface AppUserService extends Service {
   }
 
   /**
-   * Get all applications for the currently logged in author. <code>timestamp</code> is
-   * an opaque timestamp used by the server to optimize the set of results that
-   * are returned. Callers should pass a timestamp from
-   * {@link GetTemplateAttributesResult#getTimestamp()}. For the initial call, or to simply
-   * receive the full set of object types, pass <code>null</code>.
+   * Get all applications for the currently logged user.
    *
    * @return
    * @throws AccessDeniedException
@@ -261,15 +255,9 @@ public interface AppUserService extends Service {
   UserInfoResult getUserInfo() throws AccessDeniedException;  
   
   /**
-   * Get all users for the application. 
-   * <code>timestamp</code> is an opaque timestamp used by the server 
-   * to optimize the set of results that are returned. 
-   * Callers should pass a timestamp from {@link GetApplicationUsersResult#getTimestamp()}. 
-   * For the initial call, or to simply receive the full set of applications, 
-   * pass <code>null</code>.
+   * Get all users for the application.
    *
-   * @param userId
-   *          the user to query
+   * @param appId
    * @return
    * @throws AccessDeniedException
    */
@@ -277,12 +265,7 @@ public interface AppUserService extends Service {
       throws AccessDeniedException;
 
   /**
-   * Get all applications for the currently logged in user. 
-   * <code>timestamp</code> is an opaque timestamp used by the server 
-   * to optimize the set of results that are returned. 
-   * Callers should pass a timestamp from {@link GetApplicationUsersResult#getTimestamp()}. 
-   * For the initial call, or to simply receive the full set of applications, 
-   * pass <code>null</code>.
+   * Get all applications for the currently logged in user.
    *
    * @param userId
    *          the user to query

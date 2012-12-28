@@ -22,8 +22,8 @@ public class ApplicationTemplateRowView extends FlexTable  {
   private ApplicationTemplate appt;
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param at
+   * @param style
    */
   public ApplicationTemplateRowView(final ApplicationTemplate at, String style) {
     setStyleName(style);

@@ -21,7 +21,7 @@ public class ButtonView extends FlowPanel {
   final Element elem;
 
   /**
-   * @param model
+   * @param styleName
    *          the model to which the Ui will bind itself
    */
   public ButtonView(String styleName) {

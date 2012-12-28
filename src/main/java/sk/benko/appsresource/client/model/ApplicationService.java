@@ -109,16 +109,9 @@ public interface ApplicationService extends Service {
       int tlId, int from, int perPage) throws AccessDeniedException;
   
   /**
-   * Get all values for given object. <code>timestamp</code> is
-   * an opaque timestamp used by the server to optimize the set of results that
-   * are returned. Callers should pass a timestamp from
-   * {@link GetObjectsResult#getTimestamp()}. For the initial call, or to simply
-   * receive the full set of object types, pass <code>null</code>.
+   * Get all values for given object.
    *
-   * @param t
-   *          a Template
-   * @param ta
-   *          a Template Attribute
+   * @param object
    * @return
    * @throws AccessDeniedException
    */

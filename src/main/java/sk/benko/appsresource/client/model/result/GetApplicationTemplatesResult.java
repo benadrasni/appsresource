@@ -9,7 +9,7 @@ import sk.benko.appsresource.client.model.ApplicationTemplate;
 import com.google.gwt.core.client.GWT;
 
 /**
- * Encapsulates a response from {@link ApplicationService#getApplicationTemplates(String)}.
+ * Encapsulates a response from {@link ApplicationService#getApplicationTemplates(sk.benko.appsresource.client.model.Application)}.
  */
 @SuppressWarnings("serial")
 public class GetApplicationTemplatesResult implements Serializable {
@@ -19,8 +19,8 @@ public class GetApplicationTemplatesResult implements Serializable {
    * Constructs a new result. This constructor can only be invoked on the
    * server.
    *
-   * @param templates
-   *          the list of template attributes to return
+   * @param applicationTemplates
+   *          the list of application templates to return
    */
   public GetApplicationTemplatesResult(ArrayList<ApplicationTemplate> applicationTemplates) {
     assert !GWT.isClient();

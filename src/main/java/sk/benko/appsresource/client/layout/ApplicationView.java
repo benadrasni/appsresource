@@ -11,29 +11,29 @@ import com.google.gwt.user.client.ui.FlowPanel;
  *
  */
 public class ApplicationView extends FlowPanel {
-  ApplicationModel amodel;
-  
+  ApplicationModel aModel;
+
   ApplicationHeaderView ahv;
   ApplicationActionView aav;
   ApplicationContentView acv;
 
   /**
-   * @param model
+   * @param aModel
    *          the model to which the UI will bind itself
    */
-  public ApplicationView(final ApplicationModel amodel) {
-    amodel.removeObservers();
-    this.amodel = amodel;
+  public ApplicationView(final ApplicationModel aModel) {
+    aModel.removeObservers();
+    this.aModel = aModel;
     getElement().setId(CSSConstants.CSS_APPLICATION);
     
-    ahv = new ApplicationHeaderView(amodel);
+    ahv = new ApplicationHeaderView(aModel);
     aav = new ApplicationActionView(this);
     acv = new ApplicationContentView(this);
 
     add(ahv);
     add(aav);
     add(acv);
-    
+
     Track.track("app: " + getModel().getAppu().getApp().getName());
   }
   
@@ -44,6 +44,6 @@ public class ApplicationView extends FlowPanel {
   }
   
   public ApplicationModel getModel() {
-    return amodel;
+    return aModel;
   }
 }

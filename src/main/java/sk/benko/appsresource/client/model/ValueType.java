@@ -37,7 +37,6 @@ public class ValueType extends DesignItem {
   /**
    * A constructor to be used on client-side only.
    *
-   * @param model
    * @param name
    * @param type
    */
@@ -50,12 +49,12 @@ public class ValueType extends DesignItem {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
+   * @param id
    * @param code
    * @param name
    * @param type
+   * @param userId
    * @param lastUpdatedAt
-   * @param author
    */
   public ValueType(int id, String code, String name, String desc, int type, 
       int flags, int userId, Date lastUpdatedAt) {
@@ -98,8 +97,8 @@ public class ValueType extends DesignItem {
    * Invoked when the model receives notification from the server that this 
    * objectType has been modified.
    *
-   * @param objectType
-   *          a note containing up-to-date information about <code>this</code>
+   * @param valueType
+   *          a value type containing up-to-date information about <code>this</code>
    * @return <code>this</code>, for chaining purposes
    */
   ValueType update(ValueType valueType) {

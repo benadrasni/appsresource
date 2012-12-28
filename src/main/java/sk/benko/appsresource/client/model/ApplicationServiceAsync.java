@@ -18,8 +18,7 @@ public interface ApplicationServiceAsync extends ServiceAsync {
    * @param path
    * @param ta
    * @param callback
-   * @see ApplicationService#getTreeLevel(int, int, ArrayList<TreeLevel>,
-   *      TemplateAttribute)
+   * @see ApplicationService#getTreeLevel(int, int, java.util.List, TemplateAttribute)
    */
   void getTreeLevel(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta,
                     AsyncCallback<GetTreeLevelResult> callback);
@@ -33,8 +32,7 @@ public interface ApplicationServiceAsync extends ServiceAsync {
    * @param path
    * @param ta
    * @param callback
-   * @see ApplicationService#getObjects(int, int, ArrayList<TreeLevel>,
-   *      TemplateAttribute)
+   * @see ApplicationService#getObjects(int, int, java.util.List, TemplateAttribute)
    */
   void getObjects(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta,
                   AsyncCallback<GetObjectsResult> callback);
@@ -63,7 +61,7 @@ public interface ApplicationServiceAsync extends ServiceAsync {
    * @param objId
    * @param rel
    * @param callback
-   * @see ApplicationService#getRelatedObjectCounts(int, int)
+   * @see ApplicationService#getRelatedObjectCounts(int, int, Template)
    */
   void getRelatedObjectCounts(int objId, int rel, Template t, AsyncCallback<GetSearchCountsResult> callback);
 
@@ -90,7 +88,7 @@ public interface ApplicationServiceAsync extends ServiceAsync {
    * @param object
    * @param values
    * @param callback
-   * @see ApplicationService#createObject(AObject)
+   * @see ApplicationService#createObject(AObject, java.util.List, AppUser)
    */
   void createObject(AObject object, List<AValue> values, AppUser author,
                     AsyncCallback<CreateOrUpdateObjectResult> callback);
@@ -98,7 +96,7 @@ public interface ApplicationServiceAsync extends ServiceAsync {
   /**
    * @param object
    * @param callback
-   * @see ApplicationService#deleteObject(AObject)
+   * @see ApplicationService#deleteObject(AObject, AppUser)
    */
   void deleteObject(AObject object, AppUser author, AsyncCallback<String> callback);
 

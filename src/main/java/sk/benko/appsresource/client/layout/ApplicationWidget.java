@@ -33,8 +33,8 @@ public class ApplicationWidget {
   private final Label content = new Label();
 
   /**
-   * @param note
-   *          the note to render
+   * @param appDragController
+   * @param appu
    */
   public ApplicationWidget(PickupDragController appDragController, 
       ApplicationUser appu) {

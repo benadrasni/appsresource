@@ -18,8 +18,8 @@ public class ApplicationTemplateLoader implements
   /**
    * Creates a new loader that is bound to the given model.
    *
-   * @param model the model to which this loader is bound
-   * @param id of the application to which templates belongs
+   * @param model     the model to which this loader is bound
+   * @param app       the application to which templates belongs
    */
   public ApplicationTemplateLoader(Model model, Application app) {
     this.model = model;

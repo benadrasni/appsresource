@@ -102,8 +102,8 @@ public class ApplicationTemplate implements Serializable {
    * @param flags
    * @param parentMenuId
    * @param rank
+   * @param userId
    * @param lastUpdatedAt
-   * @param author
    */
   public ApplicationTemplate(int appId, Application app, int tId, Template t,
       int flags, int parentMenuId, int rank, int userId, Date lastUpdatedAt) {

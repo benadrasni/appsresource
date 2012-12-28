@@ -16,7 +16,7 @@ public class ApplicationContentView extends FlowPanel {
 
   
   /**
-   * @param model
+   * @param av
    *          the model to which the Ui will bind itself
    */
   public ApplicationContentView(final ApplicationView av) {

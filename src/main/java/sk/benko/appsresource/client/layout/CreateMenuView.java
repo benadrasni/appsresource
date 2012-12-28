@@ -23,79 +23,79 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class CreateMenuView extends FlowPanel {
 
   /**
-   * @param model
+   * @param dModel
    *          the model to which the Ui will bind itself
    */
-  public CreateMenuView(final DesignerModel dmodel) {
+  public CreateMenuView(final DesignerModel dModel) {
     setStyleName("menu-designer");
 
     add(new MenuItemView(Main.constants.application(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dmodel.notifyMenuItemClicked();
-        new ApplicationDialog(dmodel, null);
+        dModel.notifyMenuItemClicked();
+        new ApplicationDialog(dModel, null);
       }
     }));
 
     add(new MenuItemView(Main.constants.template(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dmodel.notifyMenuItemClicked();
-        new TemplateDialog(dmodel, null);
+        dModel.notifyMenuItemClicked();
+        new TemplateDialog(dModel, null);
       }
     }));
 
     add(new MenuItemView(Main.constants.templateGroup(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dmodel.notifyMenuItemClicked();
-        new TemplateGroupDialog(dmodel, null);
+        dModel.notifyMenuItemClicked();
+        new TemplateGroupDialog(dModel, null);
       }
     }));
 
     add(new MenuItemView(Main.constants.templateAttribute(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dmodel.notifyMenuItemClicked();
-        new TemplateAttributeDialog(dmodel, null);
+        dModel.notifyMenuItemClicked();
+        new TemplateAttributeDialog(dModel, null);
       }
     }));
 
     add(new MenuItemView(Main.constants.templateRelation(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dmodel.notifyMenuItemClicked();
-        new TemplateRelationDialog(dmodel, null);
+        dModel.notifyMenuItemClicked();
+        new TemplateRelationDialog(dModel, null);
       }
     }));
 
     add(new MenuItemView(Main.constants.objectType(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dmodel.notifyMenuItemClicked();
-        new ObjectTypeDialog(dmodel, null);
+        dModel.notifyMenuItemClicked();
+        new ObjectTypeDialog(dModel, null);
       }
     }));
     
     add(new MenuItemView(Main.constants.objectAttribute(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dmodel.notifyMenuItemClicked();
-        new ObjectAttributeDialog(dmodel, null);
+        dModel.notifyMenuItemClicked();
+        new ObjectAttributeDialog(dModel, null);
       }
     }));
 
     add(new MenuItemView(Main.constants.objectRelation(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dmodel.notifyMenuItemClicked();
-        new ObjectRelationDialog(dmodel, null);
+        dModel.notifyMenuItemClicked();
+        new ObjectRelationDialog(dModel, null);
       }
     }));
 
     add(new MenuItemView(Main.constants.valueType(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dmodel.notifyMenuItemClicked();
-        new ValueTypeDialog(dmodel, null);
+        dModel.notifyMenuItemClicked();
+        new ValueTypeDialog(dModel, null);
       }
     }));
 
     add(new MenuItemView(Main.constants.unit(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dmodel.notifyMenuItemClicked();
-        new UnitDialog(dmodel, null);
+        dModel.notifyMenuItemClicked();
+        new UnitDialog(dModel, null);
       }
     }));
   }

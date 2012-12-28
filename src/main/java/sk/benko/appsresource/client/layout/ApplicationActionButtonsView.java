@@ -10,7 +10,7 @@ public class ApplicationActionButtonsView extends FlowPanel {
   ApplicationView av;
   
   /**
-   * @param model
+   * @param av
    *          the model to which the Ui will bind itself
    */
   public ApplicationActionButtonsView(final ApplicationView av) {

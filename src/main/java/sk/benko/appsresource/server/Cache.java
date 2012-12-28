@@ -132,9 +132,9 @@ public class Cache {
   /**
    * Adds object types to the cache.
    *
-   * @param objectTypes
-   *          object types
-   * @return <code>objectTypes</code>, for call chaining
+   * @param otId
+   * @param objectAttributes    the list of object's attributes to cache
+   * @return <code>objectAttributes</code>, for call chaining
    */
   public ArrayList<ObjectAttribute> putObjectAttributes(int otId, 
       ArrayList<ObjectAttribute> objectAttributes) {
@@ -174,14 +174,12 @@ public class Cache {
    * Adds object types to the cache.
    *
    * @param otId
-   * @param objectRelations
-   *          object relations
-   *          
+   * @param objectRelations     the list of object's relations to cache
    * @return <code>objectRelations</code>, for call chaining
    */
-  public ArrayList<ObjectRelation> putObjectRelations(int otId, ArrayList<ObjectRelation> objectRelation) {
-    memcache.put(createObjectRelationsId(otId), objectRelation);
-    return objectRelation;
+  public ArrayList<ObjectRelation> putObjectRelations(int otId, ArrayList<ObjectRelation> objectRelations) {
+    memcache.put(createObjectRelationsId(otId), objectRelations);
+    return objectRelations;
   }
   
   /**

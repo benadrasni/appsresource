@@ -9,7 +9,7 @@ import sk.benko.appsresource.client.model.ObjectRelation;
 import com.google.gwt.core.client.GWT;
 
 /**
- * Encapsulates a response from {@link DbService#getObjectRelations(String)}.
+ * Encapsulates a response from {@link DbService#getObjectRelations(int)}.
  */
 @SuppressWarnings("serial")
 public class GetObjectRelationsResult implements Serializable {
@@ -19,9 +19,7 @@ public class GetObjectRelationsResult implements Serializable {
    * Constructs a new result. This constructor can only be invoked on the
    * server.
    *
-   * @param timestamp
-   *          an opaque timestamp
-   * @param valueTypes
+   * @param objectRelations
    *          the list of value types to return
    */
   public GetObjectRelationsResult(ArrayList<ObjectRelation> objectRelations) {

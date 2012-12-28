@@ -4,8 +4,8 @@ import com.google.gwt.i18n.client.Constants;
 
 /**
  * This interface describes some localized constant values for the 
- * {@link org.gwt.advanced.client.ui.widget.Calendar}
- * and {@link org.gwt.advanced.client.util.DateHelper}.
+ * {@link sk.benko.appsresource.client.ui.widget.Calendar}
+ * and {@link sk.benko.appsresource.client.util.DateHelper}.
  */
 public interface CalendarConstants extends Constants {
     /**

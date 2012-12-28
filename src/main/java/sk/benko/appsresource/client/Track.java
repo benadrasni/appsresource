@@ -38,7 +38,7 @@ public class Track {
     try {
 
       // setup tracking object with account
-      var pageTracker = $wnd._gat._getTracker("UA-30298207-1"); 
+      var pageTracker = $wnd._gat._getTracker("UA-30298207-1");
 
       pageTracker._setRemoteServerMode();
 
@@ -50,7 +50,7 @@ public class Track {
 
     } catch (err) {
       // debug
-      alert('FAILURE: to send in event to google analytics: ' + err);
+      // alert('FAILURE: to send in event to google analytics: ' + err);
     }
 
   }-*/;

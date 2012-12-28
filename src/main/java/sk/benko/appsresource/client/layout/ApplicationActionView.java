@@ -13,7 +13,7 @@ public class ApplicationActionView extends FlowPanel {
   ApplicationTreeView atv;
   
   /**
-   * @param model
+   * @param av
    *          the model to which the Ui will bind itself
    */
   public ApplicationActionView(final ApplicationView av) {

@@ -26,12 +26,9 @@ import java.util.Date;
 /**
  * This class simplifies operations related to dates.
  * <p>
- * It uses {@link org.gwt.advanced.client.ui.resources.CalendarConstants}
+ * It uses {@link sk.benko.appsresource.client.ui.resources.CalendarConstants}
  * interface for some calculations. You can localize the helper using properties
- * file placed in the folder <code>org/gwt/advanced/client/resources</code>.
- * 
- * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
- * @since 1.0.0
+ * file placed in the folder <code>sk/benko/appsresource/client/ui/resources</code>.
  */
 @SuppressWarnings({ "deprecation" })
 public class DateHelper {

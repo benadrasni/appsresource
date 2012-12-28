@@ -19,10 +19,10 @@
     <inherits name="gwtupload.GWTUpload"/>
     <inherits name="com.reveregroup.gwt.imagepreloader.ImagePreloader"/>
 
-    <stylesheet src="upload.css"/>
-    <stylesheet src="../theme.css"/>
+    <add-linker name="xsiframe" />
+    <set-configuration-property name="devModeRedirectEnabled" value="true"/>
 
-    <script src="../ga.js"/>
+    <stylesheet src="upload.css"/>
 
     <!-- Specify the app entry point class.                         -->
     <entry-point class='sk.benko.appsresource.client.layout.Main'/>

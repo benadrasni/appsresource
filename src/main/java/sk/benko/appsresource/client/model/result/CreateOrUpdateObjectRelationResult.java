@@ -10,7 +10,7 @@ import com.google.gwt.core.client.GWT;
 
 /**
  * Encapsulates a response from
- * {@link DbService#createOrUpdateObjectRelation(ObjectRelation)}.
+ * {@link DbService#createObjectRelation(sk.benko.appsresource.client.model.ObjectRelation, sk.benko.appsresource.client.model.AppUser)}.
  */
 @SuppressWarnings("serial")
 public class CreateOrUpdateObjectRelationResult implements Serializable {
@@ -22,7 +22,7 @@ public class CreateOrUpdateObjectRelationResult implements Serializable {
    * Constructs a new result. This constructor can only be invoked on the
    * server.
    *
-   * @param key
+   * @param id
    *          the key that was assigned to the new {@link ObjectRelation}
    * @param updateTime
    *          the time assigned to {@link ObjectRelation#getLastUpdatedAt()}

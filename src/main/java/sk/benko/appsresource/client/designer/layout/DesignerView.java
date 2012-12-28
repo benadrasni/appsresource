@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class DesignerView extends FlowPanel {
 
   /**
-   * @param model
+   * @param dmodel
    *          the model to which the UI will bind itself
    */
   public DesignerView(final DesignerModel dmodel) {
@@ -21,7 +21,7 @@ public class DesignerView extends FlowPanel {
     
     add(new DesignerHeaderView(dmodel));
     add(new DesignerActionView(dmodel));
-    
+
     Track.track("designer");
   }
 }

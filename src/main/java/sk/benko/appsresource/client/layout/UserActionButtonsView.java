@@ -36,8 +36,7 @@ public class UserActionButtonsView extends FlowPanel implements
 
   @Override
   public void onApplicationUserCreated(ApplicationUser applicationUser) {
-    if (!existsPublicApp())
-      getBAdd().addStyleDependentName(CSSConstants.SUFFIX_DISABLED);
+    disableAddButton();
   }
 
   @Override
@@ -45,10 +44,8 @@ public class UserActionButtonsView extends FlowPanel implements
   }
 
   @Override
-  public void onApplicationUsersLoaded(
-      ArrayList<ApplicationUser> applicationUsers) {
-    if (!existsPublicApp())
-      getBAdd().addStyleDependentName(CSSConstants.SUFFIX_DISABLED);
+  public void onApplicationUsersLoaded(ArrayList<ApplicationUser> applicationUsers) {
+    disableAddButton();
   }
 
   @Override
@@ -89,13 +86,16 @@ public class UserActionButtonsView extends FlowPanel implements
               new SubscriptionDialog(model);
             }
       });
-      if (!existsPublicApp())
-        getBAdd().addStyleDependentName(CSSConstants.SUFFIX_DISABLED);
     }
     return bAdd;
   }
 
   // private methods
+
+  private void disableAddButton() {
+    if (!existsPublicApp())
+      getBAdd().addStyleDependentName(CSSConstants.SUFFIX_DISABLED);
+  }
   
   private boolean existsPublicApp() {
     if (getModel().getApplications() != null) {

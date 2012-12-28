@@ -13,9 +13,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class UserView extends FlowPanel {
 
   /**
-   * @param parent
-   *          the parent for this widget
-   * @param model
+   * @param umodel
    *          the model to which the UI will bind itself
    */
   public UserView(final UserModel umodel) {
@@ -24,7 +22,7 @@ public class UserView extends FlowPanel {
     add(new UserHeaderView(umodel));
     add(new UserActionView(umodel));
     add(new UserContentView(umodel));
-    
+
     Track.track("user");
   }
 }

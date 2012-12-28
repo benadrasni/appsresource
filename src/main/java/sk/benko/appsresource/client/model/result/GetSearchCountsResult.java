@@ -9,7 +9,7 @@ import sk.benko.appsresource.client.model.Template;
 import com.google.gwt.core.client.GWT;
 
 /**
- * Encapsulates a response from {@link ApplicationService#getRelatedObjectCounts(int, int)}.
+ * Encapsulates a response from {@link ApplicationService#getRelatedObjectCounts(int, int, sk.benko.appsresource.client.model.Template)}.
  */
 @SuppressWarnings("serial")
 public class GetSearchCountsResult implements Serializable {
@@ -19,8 +19,7 @@ public class GetSearchCountsResult implements Serializable {
    * Constructs a new result. This constructor can only be invoked on the
    * server.
    *
-   * @param templates
-   *          the list of template attributes to return
+   * @param counts
    */
   public GetSearchCountsResult(HashMap<Template, Integer> counts) {
     assert !GWT.isClient();

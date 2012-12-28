@@ -112,8 +112,6 @@ public class Main extends RetryTimer implements EntryPoint, LoadObserver,
    *
    * @param loadObserver
    *          a callback to receive load events
-   * @param statusObserver
-   *          a callback to receive status events
    */
   public static void load(final LoadObserver loadObserver) {
     final AppUserServiceAsync api = GWT.create(AppUserService.class);

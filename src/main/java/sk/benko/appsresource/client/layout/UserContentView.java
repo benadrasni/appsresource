@@ -10,14 +10,14 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class UserContentView extends FlowPanel {
 
   /**
-   * @param model
+   * @param uModel
    *          the model to which the Ui will bind itself
    */
-  public UserContentView(final UserModel umodel) {
+  public UserContentView(final UserModel uModel) {
     
     getElement().setId("content");
 
-    add(new UserToolbarView(umodel));
-    add(new SurfaceView(umodel));
+    add(new UserToolbarView(uModel));
+    add(new SurfaceView(uModel));
   }
 }

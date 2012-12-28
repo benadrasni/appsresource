@@ -124,12 +124,12 @@ public class AValue implements Serializable {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
+   * @param id
    * @param oId
    * @param oaId
    * @param rank
+   * @param userId
    * @param lastUpdatedAt
-   * @param author
    */
   public AValue(int id, int oId, int oaId, int rank, String valueString, 
       int langId, Date valueDate, Date valueTimestamp, Double valueDouble, 

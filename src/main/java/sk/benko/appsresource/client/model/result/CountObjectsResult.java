@@ -7,8 +7,8 @@ import sk.benko.appsresource.client.model.ApplicationService;
 import com.google.gwt.core.client.GWT;
 
 /**
- * Encapsulates a response from {@link ApplicationService#importObjects(String)},
- * and {@link ApplicationService#removeDuplicates(String)}.
+ * Encapsulates a response from {@link ApplicationService#importObjects(sk.benko.appsresource.client.model.Application, sk.benko.appsresource.client.model.Template, String, java.util.Map, java.util.Map, boolean, sk.benko.appsresource.client.model.AppUser)},
+ * and {@link ApplicationService#removeDuplicates(sk.benko.appsresource.client.model.Application, sk.benko.appsresource.client.model.Template, java.util.Map, sk.benko.appsresource.client.model.AppUser)}.
  */
 @SuppressWarnings("serial")
 public class CountObjectsResult implements Serializable {
@@ -18,8 +18,7 @@ public class CountObjectsResult implements Serializable {
    * Constructs a new result. This constructor can only be invoked on the
    * server.
    *
-   * @param templates
-   *          the list of template attributes to return
+   * @param count
    */
   public CountObjectsResult(int count) {
     assert !GWT.isClient();

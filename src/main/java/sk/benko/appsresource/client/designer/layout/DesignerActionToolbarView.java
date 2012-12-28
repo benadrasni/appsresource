@@ -1,15 +1,13 @@
 package sk.benko.appsresource.client.designer.layout;
 
-import sk.benko.appsresource.client.CSSConstants;
-
 import com.google.gwt.user.client.ui.FlowPanel;
+import sk.benko.appsresource.client.CSSConstants;
 
 /**
  * A widget to display the action toolbar.
- *
  */
 public class DesignerActionToolbarView extends FlowPanel {
-  
+
   /**
    *
    */

@@ -28,13 +28,12 @@ public interface AppUserServiceAsync extends ServiceAsync {
   void getApplications(AsyncCallback<AppUserService.GetApplicationsResult> callback);
   
   /**
-   * @see AppUserService#createApplication(Application)
-   * @param application
-   * @param appts
+   * @see AppUserService#createOrUpdateApplicationUser(ApplicationUser, AppUser)
+   * @param applicationUser
+   * @param author
    * @param callback
    */
-  void createOrUpdateApplicationUser(ApplicationUser applicationUser, 
-      AppUser author,
+  void createOrUpdateApplicationUser(ApplicationUser applicationUser, AppUser author,
       AsyncCallback<AppUserService.CreateOrUpdateApplicationUserResult> callback);
   
   /**

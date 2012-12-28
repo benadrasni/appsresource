@@ -11,10 +11,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class UserActionToolbarView extends FlowPanel {
   
   /**
-   * @param model
+   * @param uModel
    *          the model to which the Ui will bind itself
    */
-  public UserActionToolbarView(final UserModel umodel) {
+  public UserActionToolbarView(final UserModel uModel) {
     getElement().setId("action-toolbar");
   }
 }
