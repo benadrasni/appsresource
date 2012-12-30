@@ -24,8 +24,8 @@ public class TemplateRowView extends FlexTable implements
   private Template template;
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param template
+   * @param style
    */
   public TemplateRowView(final Template template, String style) {
     setTemplate(template);

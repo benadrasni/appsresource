@@ -41,10 +41,10 @@ public class ObjectRelation extends DesignItem {
   /**
    * A basic constructor to be used on client-side only.
    *
-   * @param code
    * @param name
-   * @param otId
-   * @param typeId
+   * @param ot1Id
+   * @param ot2Id
+   * @param type
    */
   public ObjectRelation(String name, int ot1Id, int ot2Id, int type) {
     assert GWT.isClient();
@@ -57,7 +57,7 @@ public class ObjectRelation extends DesignItem {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
+   * @param id
    * @param code
    * @param name
    * @param desc
@@ -65,7 +65,7 @@ public class ObjectRelation extends DesignItem {
    * @param ot1
    * @param ot2Id
    * @param ot2
-   * @param typeId
+   * @param type
    * @param orId
    * @param userId
    * @param lastUpdatedAt

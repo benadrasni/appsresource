@@ -1,8 +1,11 @@
 package sk.benko.appsresource.client.layout;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.Tree.Resources;
+import com.google.gwt.user.client.ui.TreeItem;
 import sk.benko.appsresource.client.TreeResource;
 import sk.benko.appsresource.client.designer.ApplicationTemplateRowView;
 import sk.benko.appsresource.client.model.ApplicationModel;
@@ -10,23 +13,19 @@ import sk.benko.appsresource.client.model.ApplicationTemplate;
 import sk.benko.appsresource.client.model.ApplicationTemplateLoader;
 import sk.benko.appsresource.client.model.Model;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.Tree.Resources;
-import com.google.gwt.user.client.ui.TreeItem;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
  */
-public class ApplicationTreeView extends FlowPanel implements 
-    Model.ApplicationObserver {
+public class ApplicationTreeView extends FlowPanel implements Model.ApplicationObserver {
   private ApplicationView av;
   private Tree apptTree;
 
   /**
-   * 
+   *
    */
   public ApplicationTreeView(final ApplicationView av) {
     getElement().setId("application-tree");
@@ -34,20 +33,20 @@ public class ApplicationTreeView extends FlowPanel implements
     setAv(av);
     setApptTree(new Tree((Resources) GWT.create(TreeResource.class), false));
   }
-  
+
   public void initialize() {
     clear();
     getApptTree().clear();
     add(getApptTree());
 
-    ApplicationTemplateLoader atl = new ApplicationTemplateLoader(getModel(), 
+    ApplicationTemplateLoader atl = new ApplicationTemplateLoader(getModel(),
         getModel().getAppu().getApp());
     atl.start();
   }
-  
+
   @Override
-  public void onApplicationTemplatesLoaded(ArrayList<ApplicationTemplate> appts) {
-    HashMap<Integer, TreeItem> hm = new HashMap<Integer, TreeItem>(); 
+  public void onApplicationTemplatesLoaded(List<ApplicationTemplate> appts) {
+    Map<Integer, TreeItem> hm = new HashMap<Integer, TreeItem>();
 
     for (ApplicationTemplate appt : appts) {
       // create tree item
@@ -56,12 +55,11 @@ public class ApplicationTreeView extends FlowPanel implements
       TreeItem treeItem = new TreeItem(row);
       //treeItem.setUserObject(appt);
       hm.put(appt.getTId(), treeItem);
-      
+
       if (appt.getParentMenuId() == 0) {
         getApptTree().addItem(treeItem);
-      }
-      else {
-        TreeItem parent = hm.get(appt.getParentMenuId()); 
+      } else {
+        TreeItem parent = hm.get(appt.getParentMenuId());
         parent.addItem(treeItem);
         // tweak for correct displaying of parent tree item 
         Element elem = ((Element) parent.getElement().getChild(0).getChild(0).getChild(0)
@@ -80,7 +78,7 @@ public class ApplicationTreeView extends FlowPanel implements
   }
 
   /* Getters and Setters */
-  
+
   public ApplicationView getAv() {
     return av;
   }
@@ -96,7 +94,7 @@ public class ApplicationTreeView extends FlowPanel implements
   public void setApptTree(Tree apptTree) {
     this.apptTree = apptTree;
   }
-  
+
   public ApplicationModel getModel() {
     return av.getModel();
   }

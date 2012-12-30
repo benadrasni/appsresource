@@ -5,7 +5,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TreeItem;
 import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.model.loader.ValueLoader;
-import sk.benko.appsresource.client.model.result.CountObjectsResult;
 import sk.benko.appsresource.client.model.result.CreateOrUpdateObjectResult;
 import sk.benko.appsresource.client.model.result.UpdateValueResult;
 
@@ -383,8 +382,8 @@ public class ApplicationModel extends Model {
     taskQueue.post(new RemoveDuplicatesTask(app, t, keys, userModel.getCurrentAuthor()));
   }
 
-  public void notifySearchCountsLoaded(String searchString, HashMap<Template, Integer> counts) {
-    ArrayList<SearchObjectCountObserver> socos = new ArrayList<SearchObjectCountObserver>();
+  public void notifySearchCountsLoaded(String searchString, Map<Template, Integer> counts) {
+    List<SearchObjectCountObserver> socos = new ArrayList<SearchObjectCountObserver>();
     for (DataObserver dataObserver : dataObservers) {
       if (dataObserver instanceof SearchObjectCountObserver)
         socos.add((SearchObjectCountObserver) dataObserver);
@@ -404,8 +403,8 @@ public class ApplicationModel extends Model {
     }
   }
 
-  public void notifyRelatedObjectCountsLoaded(int rel, HashMap<Template, Integer> counts) {
-    ArrayList<RelatedObjectCountObserver> rocos = new ArrayList<RelatedObjectCountObserver>();
+  public void notifyRelatedObjectCountsLoaded(int rel, Map<Template, Integer> counts) {
+    List<RelatedObjectCountObserver> rocos = new ArrayList<RelatedObjectCountObserver>();
     for (DataObserver dataObserver : dataObservers) {
       if (dataObserver instanceof RelatedObjectCountObserver)
         rocos.add((RelatedObjectCountObserver) dataObserver);
@@ -425,8 +424,7 @@ public class ApplicationModel extends Model {
 
   // ObjectObserver
 
-  void notifyObjectCreated(AObject object, Map<Integer,
-      Map<Integer, List<AValue>>> values) {
+  void notifyObjectCreated(AObject object, Map<Integer, Map<Integer, List<AValue>>> values) {
     setObject(object);
     setAllValues(values);
     List<ObjectObserver> clones = new ArrayList<ObjectObserver>(objectObservers);
@@ -470,7 +468,7 @@ public class ApplicationModel extends Model {
      *
      * @param tts the list of template trees
      */
-    void onChooseTemplateTreesLoaded(ArrayList<TemplateTree> tts);
+    void onChooseTemplateTreesLoaded(List<TemplateTree> tts);
 
     /**
      * Called when a list of {@link TemplateTreeItem}s is loaded.
@@ -478,7 +476,7 @@ public class ApplicationModel extends Model {
      * @param tt   the template tree
      * @param ttis the list of template tree items
      */
-    void onChooseTemplateTreeItemsLoaded(TemplateTree tt, ArrayList<TemplateTreeItem> ttis);
+    void onChooseTemplateTreeItemsLoaded(TemplateTree tt, List<TemplateTreeItem> ttis);
 
     /**
      * Called when a list of items is loaded.
@@ -682,8 +680,7 @@ public class ApplicationModel extends Model {
    * A task that manages the call to the server to create or update
    * an object type.
    */
-  private class ImportObjectsTask extends Task implements
-      AsyncCallback<CountObjectsResult> {
+  private class ImportObjectsTask extends Task implements AsyncCallback<Integer> {
     private final Application app;
     private final Template t;
     private final String filename;
@@ -716,9 +713,9 @@ public class ApplicationModel extends Model {
           caught instanceof ApplicationService.AccessDeniedException);
     }
 
-    public void onSuccess(CountObjectsResult result) {
+    public void onSuccess(Integer result) {
       getQueue().taskSucceeded(this);
-      notifyObjectsImported(result.getCount());
+      notifyObjectsImported(result);
     }
   }
 
@@ -734,8 +731,7 @@ public class ApplicationModel extends Model {
    * A task that manages the call to the server to create or update
    * an object type.
    */
-  private class RemoveDuplicatesTask extends Task implements
-      AsyncCallback<CountObjectsResult> {
+  private class RemoveDuplicatesTask extends Task implements AsyncCallback<Integer> {
     private final Application app;
     private final Template t;
     private final Map<Integer, TemplateAttribute> keys;
@@ -760,9 +756,9 @@ public class ApplicationModel extends Model {
           caught instanceof ApplicationService.AccessDeniedException);
     }
 
-    public void onSuccess(CountObjectsResult result) {
+    public void onSuccess(Integer result) {
       getQueue().taskSucceeded(this);
-      notifyObjectsRemoved(result.getCount());
+      notifyObjectsRemoved(result);
     }
   }
 

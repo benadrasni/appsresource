@@ -24,7 +24,6 @@ import sk.benko.appsresource.client.model.TemplateTreeItem;
 import sk.benko.appsresource.client.model.Unit;
 import sk.benko.appsresource.client.model.ValueType;
 import sk.benko.appsresource.client.model.result.CreateOrUpdateObjectRelationResult;
-import sk.benko.appsresource.client.model.result.GetObjectRelationsResult;
 
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
@@ -189,12 +188,8 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return clients;
   }
 
-  public GetObjectRelationsResult getObjectRelations(int otId)
-      throws AccessDeniedException {
-    return new GetObjectRelationsResult(getORs(otId));
-  }
-  
-  public CreateOrUpdateObjectRelationResult createObjectRelation(final ObjectRelation or, 
+  @Override
+  public CreateOrUpdateObjectRelationResult createObjectRelation(final ObjectRelation or,
       final AppUser author) {
     final StoreDB.Api api = store.getApi();
     try {
@@ -222,7 +217,8 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<ObjectRelation> getORs(int otId) {
+  @Override
+  public ArrayList<ObjectRelation> getObjectRelations(int otId) {
     final StoreDB.Api api = store.getApi();
     try {
       final ArrayList<ObjectRelation> fromCache = cache.getObjectRelations(otId);
@@ -563,7 +559,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
       final StoreDB.TemplateGroup tg = new StoreDB.TemplateGroup(templateGroup.getId(), 
           templateGroup.getCode(), templateGroup.getName(), templateGroup.getDesc(), 
           templateGroup.getTId(), null, templateGroup.getFlags(), templateGroup.getRank(), 
-          templateGroup.getSubrank(), templateGroup.getLabelTop(), 
+          templateGroup.getSubRank(), templateGroup.getLabelTop(),
           templateGroup.getLabelLeft(), templateGroup.getLabelWidth(), 
           templateGroup.getLabelWidthUnit(), templateGroup.getLabelAlign(), author.getId());
       api.saveTemplateGroup(tg);

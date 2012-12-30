@@ -13,8 +13,7 @@ public class ObjectActionToolbarView extends FlowPanel {
   ObjectView objectView;
 
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param objectView
    */
   public ObjectActionToolbarView(final ObjectView objectView) {
     setObjectView(objectView);

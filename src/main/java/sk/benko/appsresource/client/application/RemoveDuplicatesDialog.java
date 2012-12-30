@@ -37,7 +37,7 @@ public class RemoveDuplicatesDialog extends PopupPanel implements ApplicationMod
   
   ObjectView objectView;
   
-  ArrayList<TemplateAttribute> tas  = new ArrayList<TemplateAttribute>(); 
+  List<TemplateAttribute> tas  = new ArrayList<TemplateAttribute>();
 
   final AbsolutePanel main = new AbsolutePanel();
   HorizontalPanel header = new HorizontalPanel();

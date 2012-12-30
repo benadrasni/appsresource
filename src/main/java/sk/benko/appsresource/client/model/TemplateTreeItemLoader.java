@@ -1,16 +1,14 @@
 package sk.benko.appsresource.client.model;
 
-import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.model.result.GetTemplateTreeItemsResult;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import sk.benko.appsresource.client.layout.Main;
+
+import java.util.List;
 
 /**
- * Controls all aspects of loading the set of {@link TemplateTreeItem}s. 
- *
+ * Controls all aspects of loading the set of {@link TemplateTreeItem}s.
  */
-public class TemplateTreeItemLoader implements 
-    AsyncCallback<GetTemplateTreeItemsResult> {
+public class TemplateTreeItemLoader implements AsyncCallback<List<TemplateTreeItem>> {
 
   private final Model model;
   private final TemplateTree tt;
@@ -20,7 +18,7 @@ public class TemplateTreeItemLoader implements
    * Creates a new loader that is bound to the given model.
    *
    * @param model the model to which this loader is bound
-   * @param id of the application to which templates belongs
+   * @param tt    the template tree
    */
   public TemplateTreeItemLoader(Model model, TemplateTree tt) {
     this.model = model;
@@ -28,8 +26,7 @@ public class TemplateTreeItemLoader implements
     this.isChooseTree = false;
   }
 
-  public TemplateTreeItemLoader(Model model, TemplateTree tt,
-      boolean isChooseTree) {
+  public TemplateTreeItemLoader(Model model, TemplateTree tt, boolean isChooseTree) {
     this.model = model;
     this.tt = tt;
     this.isChooseTree = isChooseTree;
@@ -46,12 +43,12 @@ public class TemplateTreeItemLoader implements
   }
 
   @Override
-  public void onSuccess(GetTemplateTreeItemsResult result) {
+  public void onSuccess(List<TemplateTreeItem> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
     if (isChooseTree)
-      model.notifyChooseTemplateTreeItemsLoaded(tt, result.getTemplateTreeItems());
+      model.notifyChooseTemplateTreeItemsLoaded(tt, result);
     else
-      model.notifyTemplateTreeItemsLoaded(tt, result.getTemplateTreeItems());
+      model.notifyTemplateTreeItemsLoaded(tt, result);
   }
 }

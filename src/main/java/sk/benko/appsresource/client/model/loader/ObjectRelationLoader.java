@@ -1,23 +1,17 @@
 package sk.benko.appsresource.client.model.loader;
 
-import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.model.DbService;
-import sk.benko.appsresource.client.model.DbServiceAsync;
-import sk.benko.appsresource.client.model.DesignerModel;
-import sk.benko.appsresource.client.model.ObjectRelation;
-import sk.benko.appsresource.client.model.RetryTimer;
-import sk.benko.appsresource.client.model.result.GetObjectRelationsResult;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import sk.benko.appsresource.client.layout.Main;
+import sk.benko.appsresource.client.model.*;
+
+import java.util.ArrayList;
 
 /**
- * Controls all aspects of loading the set of {@link ObjectRelation}s. This class 
- * takes care of performing (and possibly retrying) a query for the initial set 
+ * Controls all aspects of loading the set of {@link ObjectRelation}s. This class
+ * takes care of performing (and possibly retrying) a query for the initial set
  * of ObjectTypes and then continues polling the server for updates.
- *
  */
-public class ObjectRelationLoader extends RetryTimer implements
-    AsyncCallback<GetObjectRelationsResult> {
+public class ObjectRelationLoader extends RetryTimer implements AsyncCallback<ArrayList<ObjectRelation>> {
 
   private final DesignerModel model;
   private final int otId;
@@ -26,7 +20,7 @@ public class ObjectRelationLoader extends RetryTimer implements
    * Creates a new loader that is bound to the given model.
    *
    * @param model the model to which this loader is bound
-   * @param interval the time to wait between polls to the server
+   * @param otId  the object type's id
    */
   public ObjectRelationLoader(DesignerModel model, int otId) {
     this.model = model;
@@ -35,9 +29,8 @@ public class ObjectRelationLoader extends RetryTimer implements
 
   public void start() {
     Main.status.showTaskStatus(Main.constants.loading());
-    ((DbServiceAsync)model.getService()).getObjectRelations(otId, this);
+    ((DbServiceAsync) model.getService()).getObjectRelations(otId, this);
   }
-
 
   @Override
   public void onFailure(Throwable caught) {
@@ -47,10 +40,10 @@ public class ObjectRelationLoader extends RetryTimer implements
   }
 
   @Override
-  public void onSuccess(GetObjectRelationsResult result) {
+  public void onSuccess(ArrayList<ObjectRelation> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
-    model.notifyObjectRelationsLoaded(otId, result.getObjectRelations());
+    model.notifyObjectRelationsLoaded(otId, result);
   }
 
   @Override

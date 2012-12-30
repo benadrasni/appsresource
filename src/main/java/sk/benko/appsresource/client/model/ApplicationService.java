@@ -5,13 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import sk.benko.appsresource.client.model.result.CountObjectsResult;
 import sk.benko.appsresource.client.model.result.CreateOrUpdateObjectResult;
 import sk.benko.appsresource.client.model.result.GetObjectsResult;
-import sk.benko.appsresource.client.model.result.GetSearchCountsResult;
-import sk.benko.appsresource.client.model.result.GetSearchObjectsResult;
-import sk.benko.appsresource.client.model.result.GetTreeLevelResult;
-import sk.benko.appsresource.client.model.result.GetValuesResult;
 import sk.benko.appsresource.client.model.result.UpdateValueResult;
 
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -38,10 +33,10 @@ public interface ApplicationService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  GetTreeLevelResult getTreeLevel(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta)
+  List<TreeLevel> getTreeLevel(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta)
       throws AccessDeniedException;
 
-  GetTreeLevelResult getTreeLevel(int langId, int tIdSource, Map<Integer, List<AValue>> values,
+  List<TreeLevel> getTreeLevel(int langId, int tIdSource, Map<Integer, List<AValue>> values,
       int tId, List<TreeLevel> path, TemplateAttribute ta)  throws AccessDeniedException;
   
   /**
@@ -66,7 +61,7 @@ public interface ApplicationService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  GetSearchCountsResult getSearchObjectCounts(int appId, String searchString) 
+  Map<Template, Integer> getSearchObjectCounts(int appId, String searchString)
       throws AccessDeniedException;
 
   /**
@@ -80,7 +75,7 @@ public interface ApplicationService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  GetSearchObjectsResult getSearchObjects(int langId, String searchString, 
+  Map<AObject, List<AValue>> getSearchObjects(int langId, String searchString,
       int tlId, int from, int perPage) throws AccessDeniedException;
   
   /**
@@ -91,7 +86,7 @@ public interface ApplicationService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  GetSearchCountsResult getRelatedObjectCounts(int objId, int rel, Template t) 
+  Map<Template, Integer> getRelatedObjectCounts(int objId, int rel, Template t)
       throws AccessDeniedException;
 
   /**
@@ -105,7 +100,7 @@ public interface ApplicationService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  GetSearchObjectsResult getRelatedObjects(int langId, int objId, int rel, 
+  Map<AObject, List<AValue>> getRelatedObjects(int langId, int objId, int rel,
       int tlId, int from, int perPage) throws AccessDeniedException;
   
   /**
@@ -115,7 +110,7 @@ public interface ApplicationService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  GetValuesResult getValues(AObject object) throws AccessDeniedException;
+  Map<Integer, Map<Integer, List<AValue>>> getValues(AObject object) throws AccessDeniedException;
   
   CreateOrUpdateObjectResult createObject(AObject object, List<AValue> values, AppUser author)
       throws AccessDeniedException;
@@ -125,11 +120,11 @@ public interface ApplicationService extends Service {
 
   String deleteObject(AObject object, AppUser author); 
 
-  CountObjectsResult importObjects(Application app, Template t, String filename,
+  Integer importObjects(Application app, Template t, String filename,
       Map<Integer, TemplateAttribute> map,
       Map<Integer, TemplateAttribute> keys, boolean onlyUpdate,
       AppUser author);
 
-  CountObjectsResult removeDuplicates(Application app, Template t,
+  Integer removeDuplicates(Application app, Template t,
       Map<Integer, TemplateAttribute> keys, AppUser author);
 }

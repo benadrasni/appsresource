@@ -3,15 +3,17 @@ package sk.benko.appsresource.client.model.loader;
 import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.model.ApplicationModel;
 import sk.benko.appsresource.client.model.ApplicationService;
-import sk.benko.appsresource.client.model.result.GetSearchCountsResult;
+import sk.benko.appsresource.client.model.Template;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import java.util.Map;
 
 /**
  * Controls all aspects of loading the set of related object counts. 
  *
  */
-public class SearchObjectCountLoader implements AsyncCallback<GetSearchCountsResult> {
+public class SearchObjectCountLoader implements AsyncCallback<Map<Template, Integer>> {
 
   private final ApplicationModel model;
   private final String searchString;
@@ -19,8 +21,8 @@ public class SearchObjectCountLoader implements AsyncCallback<GetSearchCountsRes
   /**
    * Creates a new loader that is bound to the given model.
    *
-   * @param model the model to which this loader is bound
-   * @param id of the application to which templates belongs
+   * @param model             the model to which this loader is bound
+   * @param searchString      a search string
    */
   public SearchObjectCountLoader(ApplicationModel model, String searchString) {
     this.model = model;
@@ -38,9 +40,9 @@ public class SearchObjectCountLoader implements AsyncCallback<GetSearchCountsRes
   }
 
   @Override
-  public void onSuccess(GetSearchCountsResult result) {
+  public void onSuccess(Map<Template, Integer> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
-    model.notifySearchCountsLoaded(searchString, result.getCounts());
+    model.notifySearchCountsLoaded(searchString, result);
   }
 }

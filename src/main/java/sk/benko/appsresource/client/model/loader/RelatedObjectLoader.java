@@ -2,17 +2,20 @@ package sk.benko.appsresource.client.model.loader;
 
 import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.model.AObject;
+import sk.benko.appsresource.client.model.AValue;
 import sk.benko.appsresource.client.model.ApplicationModel;
 import sk.benko.appsresource.client.model.ApplicationService;
-import sk.benko.appsresource.client.model.result.GetSearchObjectsResult;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Controls all aspects of loading the set of {@link AObject}s. 
  *
  */
-public class RelatedObjectLoader implements AsyncCallback<GetSearchObjectsResult> {
+public class RelatedObjectLoader implements AsyncCallback<Map<AObject, List<AValue>>> {
 
   private final String ID;
   private final ApplicationModel model;
@@ -26,8 +29,14 @@ public class RelatedObjectLoader implements AsyncCallback<GetSearchObjectsResult
   /**
    * Creates a new loader that is bound to the given model.
    *
-   * @param model the model to which this loader is bound
-   * @param id of the application to which templates belongs
+   * @param ID      id of UI component which is loading related objects
+   * @param model   the model to which this loader is bound
+   * @param langId  actual language
+   * @param objId
+   * @param rel
+   * @param tlId
+   * @param from
+   * @param perPage
    */
   public RelatedObjectLoader(String ID, ApplicationModel model, int langId, 
       int objId, int rel, int tlId, int from, int perPage) {
@@ -52,9 +61,9 @@ public class RelatedObjectLoader implements AsyncCallback<GetSearchObjectsResult
   }
 
   @Override
-  public void onSuccess(GetSearchObjectsResult result) {
+  public void onSuccess(Map<AObject, List<AValue>> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
-    model.notifyRelatedObjectsLoaded(ID, rel, result.getObjectValues());
+    model.notifyRelatedObjectsLoaded(ID, rel, result);
   }
 }

@@ -1,9 +1,11 @@
 package sk.benko.appsresource.client.designer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Tree.Resources;
 import sk.benko.appsresource.client.CSSConstants;
 import sk.benko.appsresource.client.ClientUtils;
 import sk.benko.appsresource.client.TreeResource;
@@ -11,58 +13,38 @@ import sk.benko.appsresource.client.dnd.ApplicationDialogDragController;
 import sk.benko.appsresource.client.dnd.ApplicationDialogDropController;
 import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.layout.NavigationLabelView;
-import sk.benko.appsresource.client.model.Application;
-import sk.benko.appsresource.client.model.ApplicationTemplate;
-import sk.benko.appsresource.client.model.ApplicationTemplateLoader;
-import sk.benko.appsresource.client.model.DesignerModel;
-import sk.benko.appsresource.client.model.Model;
-import sk.benko.appsresource.client.model.Template;
+import sk.benko.appsresource.client.model.*;
 import sk.benko.appsresource.client.model.loader.TemplateLoader;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.Tree.Resources;
-import com.google.gwt.user.client.ui.TreeItem;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  *
  */
 public class ApplicationDialog extends DesignerDialog implements
-    Model.ApplicationObserver, DesignerModel.ApplicationObserver, 
+    Model.ApplicationObserver, DesignerModel.ApplicationObserver,
     DesignerModel.TemplateObserver {
-  
+
   private TextBox tbCat;
   private CheckBox cbPublic;
   private CheckBox cbRecommended;
-
   private FlexTable widgetApp;
   private FlexTable widgetTemplates;
-  
   private FlowPanel apptPanel;
   private FlowPanel templatePanel;
-  
   private Tree templateTree;
   private Tree apptTree;
   private FlowPanel apptMsg;
-
   private HashMap<Integer, TreeItem> hmAppts;
-
   private ApplicationDialogDragController templateDragController;
   private ApplicationDialogDropController apptDropController;
 
   /**
-   * @param model
-   *          the model to which the UI will bind itself
-   * @param app
-   *          the application for editing
+   * @param model the model to which the UI will bind itself
+   * @param app   the application for editing
    */
   public ApplicationDialog(final DesignerModel model, Application app) {
     super(model, app);
@@ -70,7 +52,7 @@ public class ApplicationDialog extends DesignerDialog implements
     getModel().addTemplateObserver(this);
     getModel().setApplication(app);
 
-    getHeader().add(new Label((getModel().getApplication() == null ? 
+    getHeader().add(new Label((getModel().getApplication() == null ?
         Main.constants.newItem() + " " : "") + Main.constants.application()));
 
     NavigationLabelView menu1 = new NavigationLabelView(
@@ -80,7 +62,7 @@ public class ApplicationDialog extends DesignerDialog implements
         getBodyRight().clear();
         getBodyRight().add(getWidgetApp());
       }
-    }); 
+    });
     menu1.addStyleName("dialog-box-navigation-item dialog-box-navigation-item-selected");
     getBodyLeft().add(menu1);
 
@@ -105,15 +87,15 @@ public class ApplicationDialog extends DesignerDialog implements
     getBOk().addDomHandler(
         new ClickHandler() {
           public void onClick(ClickEvent event) {
-              if (getModel().getApplication() == null)
-                getModel().setApplication(new Application(getTbName().getText()));
-              
-              fill(getModel().getApplication());
-              model.createOrUpdateApplication(getModel().getApplication(), getAppts());
-              ApplicationDialog.this.hide();
-            }
+            if (getModel().getApplication() == null)
+              getModel().setApplication(new Application(getTbName().getText()));
+
+            fill(getModel().getApplication());
+            model.createOrUpdateApplication(getModel().getApplication(), getAppts());
+            ApplicationDialog.this.hide();
+          }
         }, ClickEvent.getType());
-    getBOk().getElement().setInnerText(getModel().getApplication() == null ? 
+    getBOk().getElement().setInnerText(getModel().getApplication() == null ?
         Main.constants.create() : Main.constants.save());
     model.getStatusObserver().onTaskFinished();
   }
@@ -126,9 +108,9 @@ public class ApplicationDialog extends DesignerDialog implements
   public void onApplicationUpdated(Application application) {
   }
 
-  //@Override
-  public void onApplicationTemplatesLoaded(ArrayList<ApplicationTemplate> appts) {
-    for (ApplicationTemplate appt : appts) 
+  @Override
+  public void onApplicationTemplatesLoaded(List<ApplicationTemplate> appts) {
+    for (ApplicationTemplate appt : appts)
       insertItem(appt);
   }
 
@@ -145,15 +127,15 @@ public class ApplicationDialog extends DesignerDialog implements
     for (Template ti : templates) {
       TemplateRowView leafWidget = new TemplateRowView(ti, "tree-row");
       leafWidget.generateWidgetTree();
-      
+
       getTemplateDragController().makeDraggable(leafWidget.getWidget(0, 0));
       TreeItem leafItem = new TreeItem(leafWidget);
       leafItem.setUserObject(ti);
       getTemplateTree().addItem(leafItem);
     }
-    
+
     if (getModel().getAppTemplatesByApp().get(getModel().getApplication().getId()) == null) {
-      ApplicationTemplateLoader atl = new ApplicationTemplateLoader(getModel(), 
+      ApplicationTemplateLoader atl = new ApplicationTemplateLoader(getModel(),
           getModel().getApplication());
       atl.start();
     } else
@@ -166,18 +148,18 @@ public class ApplicationDialog extends DesignerDialog implements
       getApptMsg().removeFromParent();
       getApptPanel().add(getApptTree());
     }
-    
+
     TreeItem treeItem = createTreeItem(appt);
     treeItem.setUserObject(appt);
     getHmAppts().put(appt.getTId(), treeItem);
-    
+
     if (appt.getParentMenuId() == 0) {
-      if (appt.getRank() == -1) 
+      if (appt.getRank() == -1)
         getApptTree().insertItem(0, treeItem);
       else
         getApptTree().addItem(treeItem);
     } else {
-      TreeItem parent = getHmAppts().get(appt.getParentMenuId()); 
+      TreeItem parent = getHmAppts().get(appt.getParentMenuId());
       parent.addItem(treeItem);
       parent.setState(true);
       // tweak for correct displaying of parent tree item 
@@ -188,104 +170,104 @@ public class ApplicationDialog extends DesignerDialog implements
     // hide item in source tree
     setVisibility(appt, false);
   }
-  
+
   /**
    * Getter for property 'templateDragController'.
-   * 
+   *
    * @return Value for property 'templateDragController'.
    */
   public ApplicationDialogDragController getTemplateDragController() {
-    if (templateDragController == null) { 
+    if (templateDragController == null) {
       templateDragController = new ApplicationDialogDragController(getMain());
       templateDragController.registerDropController(getApptDropController());
     }
     return templateDragController;
-  }  
+  }
 
   /**
    * Getter for property 'apptDropController'.
-   * 
+   *
    * @return Value for property 'apptDropController'.
    */
   public ApplicationDialogDropController getApptDropController() {
-    if (apptDropController == null) { 
+    if (apptDropController == null) {
       apptDropController = new ApplicationDialogDropController(this);
     }
     return apptDropController;
-  }  
+  }
 
   /**
    * Getter for property 'hmAppts'.
-   * 
+   *
    * @return Value for property 'hmAppts'.
    */
   public HashMap<Integer, TreeItem> getHmAppts() {
-    if (hmAppts == null) 
+    if (hmAppts == null)
       hmAppts = new HashMap<Integer, TreeItem>();
     return hmAppts;
   }
-  
+
   /**
    * Getter for property 'tbCat'.
-   * 
+   *
    * @return Value for property 'tbCat'.
    */
   public TextBox getTbCat() {
     if (tbCat == null) {
       tbCat = new TextBox();
-      if (getModel().getApplication() != null) 
+      if (getModel().getApplication() != null)
         tbCat.setText(getModel().getApplication().getCategory());
-    }  
+    }
     return tbCat;
   }
 
   /**
    * Getter for property 'cbPublic'.
-   * 
+   *
    * @return Value for property 'cbPublic'.
    */
   public CheckBox getCbPublic() {
     if (cbPublic == null) {
       cbPublic = new CheckBox();
       cbPublic.setText(Main.constants.applicationPublic());
-      if (getModel().getApplication() != null) 
+      if (getModel().getApplication() != null)
         cbPublic.setValue(ClientUtils
             .getFlag(Application.FLAG_PUBLIC, getModel().getApplication().getFlags()));
-    }  
+    }
     return cbPublic;
-  }  
+  }
 
   /**
    * Getter for property 'cbRecommended'.
-   * 
+   *
    * @return Value for property 'cbRecommended'.
    */
   public CheckBox getCbRecommended() {
     if (cbRecommended == null) {
       cbRecommended = new CheckBox();
       cbRecommended.setText(Main.constants.applicationRecommended());
-      if (getModel().getApplication() != null) 
+      if (getModel().getApplication() != null)
         cbRecommended.setValue(ClientUtils
             .getFlag(Application.FLAG_RECOMMENDED, getModel().getApplication().getFlags()));
-    }  
+    }
     return cbRecommended;
-  }  
+  }
 
   /**
    * Getter for property 'templateTree'.
-   * 
+   *
    * @return Value for property 'templateTree'.
    */
   public Tree getTemplateTree() {
     if (templateTree == null) {
       templateTree = new Tree((Resources) GWT.create(TreeResource.class), false);
-    }  
+    }
     return templateTree;
-  }  
-  
+  }
+
   /**
    * Getter for property 'apptTree'.
-   * 
+   *
    * @return Value for property 'apptTree'.
    */
   public Tree getApptTree() {
@@ -293,13 +275,13 @@ public class ApplicationDialog extends DesignerDialog implements
       apptTree = new Tree((Resources) GWT.create(TreeResource.class), false);
       apptTree.setHeight("100%");
       apptTree.setWidth("100%");
-    }  
+    }
     return apptTree;
-  }  
-  
+  }
+
   /**
    * Getter for property 'apptPanel'.
-   * 
+   *
    * @return Value for property 'apptPanel'.
    */
   public FlowPanel getApptPanel() {
@@ -314,13 +296,13 @@ public class ApplicationDialog extends DesignerDialog implements
       apptPanel.add(label);
       apptPanel.add(getApptMsg());
     }
-    
+
     return apptPanel;
   }
 
   /**
    * Getter for property 'templatePanel'.
-   * 
+   *
    * @return Value for property 'templatePanel'.
    */
   public FlowPanel getTemplatePanel() {
@@ -333,13 +315,13 @@ public class ApplicationDialog extends DesignerDialog implements
       templatePanel.add(label);
       templatePanel.add(getTemplateTree());
     }
-    
+
     return templatePanel;
   }
-  
+
   /**
    * Getter for property 'apptMsg'.
-   * 
+   *
    * @return Value for property 'apptMsg'.
    */
   public FlowPanel getApptMsg() {
@@ -353,16 +335,15 @@ public class ApplicationDialog extends DesignerDialog implements
     return apptMsg;
   }
 
-  
   /**
    * Getter for property 'widgetApp'.
-   * 
+   *
    * @return Value for property 'widgetApp'.
    */
   public FlexTable getWidgetApp() {
     if (widgetApp == null) {
       widgetApp = new FlexTable();
-      
+
       Label lblCode = new Label(Main.constants.applicationCode());
       widgetApp.setWidget(0, 0, lblCode);
       widgetApp.setWidget(0, 1, getLblCodeValue());
@@ -384,10 +365,10 @@ public class ApplicationDialog extends DesignerDialog implements
     }
     return widgetApp;
   }
-  
+
   /**
    * Getter for property 'widgetTemplates'.
-   * 
+   *
    * @return Value for property 'widgetTemplates'.
    */
   public FlexTable getWidgetTemplates() {
@@ -400,11 +381,11 @@ public class ApplicationDialog extends DesignerDialog implements
       widgetTemplates.getColumnFormatter().setWidth(0, "50%");
       widgetTemplates.getColumnFormatter().setWidth(1, "50%");
       widgetTemplates.getCellFormatter().setStyleName(0, 1, "td-top");
-      
-      
+
+
       widgetTemplates.setWidget(0, 0, getApptPanel());
       widgetTemplates.setWidget(0, 1, getTemplatePanel());
-      
+
       if (getModel().getTemplates() == null) {
         TemplateLoader tl = new TemplateLoader(getModel());
         tl.start();
@@ -415,10 +396,10 @@ public class ApplicationDialog extends DesignerDialog implements
   }
 
   // private methods
-  
+
   private void fill(Application app) {
     super.fill(app);
-    
+
     // category
     app.setCategory(getTbCat().getText().trim());
 
@@ -434,18 +415,18 @@ public class ApplicationDialog extends DesignerDialog implements
       flags = ClientUtils.unsetFlag(Application.FLAG_RECOMMENDED, flags);
     app.setFlags(flags);
   }
-  
+
   private ArrayList<ApplicationTemplate> getAppts() {
     ArrayList<ApplicationTemplate> appts = new ArrayList<ApplicationTemplate>();
     if (getApptTree() != null)
       for (int i = 0; i < getApptTree().getItemCount(); i++) {
         TreeItem ti = getApptTree().getItem(i);
-        ApplicationTemplate appt = (ApplicationTemplate)ti.getUserObject();
+        ApplicationTemplate appt = (ApplicationTemplate) ti.getUserObject();
         appt.setRank(i);
         // flags
         int flags = 0;
-        if (((FlexTable)ti.getWidget()).getWidget(0, 1) instanceof CheckBox) {
-          if (((CheckBox)((FlexTable)ti.getWidget()).getWidget(0, 1)).getValue())
+        if (((FlexTable) ti.getWidget()).getWidget(0, 1) instanceof CheckBox) {
+          if (((CheckBox) ((FlexTable) ti.getWidget()).getWidget(0, 1)).getValue())
             flags = ClientUtils.setFlag(ApplicationTemplate.FLAG_PUBLICDATA, flags);
           else
             flags = ClientUtils.unsetFlag(ApplicationTemplate.FLAG_PUBLICDATA, flags);
@@ -461,10 +442,10 @@ public class ApplicationDialog extends DesignerDialog implements
     ArrayList<ApplicationTemplate> appts = new ArrayList<ApplicationTemplate>();
     for (int i = 0; i < ti.getChildCount(); i++) {
       TreeItem tci = ti.getChild(i);
-      ApplicationTemplate appt = (ApplicationTemplate)tci.getUserObject();
+      ApplicationTemplate appt = (ApplicationTemplate) tci.getUserObject();
       appt.setRank(i);
       int flags = 0;
-      if (((CheckBox)((FlexTable)tci.getWidget()).getWidget(0, 1)).getValue())
+      if (((CheckBox) ((FlexTable) tci.getWidget()).getWidget(0, 1)).getValue())
         flags = ClientUtils.setFlag(ApplicationTemplate.FLAG_PUBLICDATA, flags);
       else
         flags = ClientUtils.unsetFlag(ApplicationTemplate.FLAG_PUBLICDATA, flags);
@@ -487,12 +468,12 @@ public class ApplicationDialog extends DesignerDialog implements
       }
     });
     row.setWidget(0, row.getCellCount(0), x);
-    row.getCellFormatter().addStyleName(0, row.getCellCount(0)-1, "tree-row-x");
+    row.getCellFormatter().addStyleName(0, row.getCellCount(0) - 1, "tree-row-x");
     TreeItem ti = new TreeItem(row);
     ti.setUserObject(appt.getT());
     return ti;
   }
-  
+
   private void deleteItem(ApplicationTemplate appt) {
     TreeItem ti = getHmAppts().get(appt.getTId());
     ti.remove();
@@ -502,14 +483,14 @@ public class ApplicationDialog extends DesignerDialog implements
       getApptTree().removeFromParent();
       getApptPanel().add(getApptMsg());
     }
-    
+
     setVisibility(appt, true);
   }
 
   private void setVisibility(ApplicationTemplate appt, boolean b) {
     for (int i = 0; i < getTemplateTree().getItemCount(); i++) {
       TreeItem ti = getTemplateTree().getItem(i);
-      if (appt.getTId() == ((Template)ti.getUserObject()).getId()) {
+      if (appt.getTId() == ((Template) ti.getUserObject()).getId()) {
         ti.setVisible(b);
       }
     }

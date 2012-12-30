@@ -12,8 +12,7 @@ import com.google.gwt.user.client.ui.Label;
 public class LogoView extends Label {
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param section
    */
   public LogoView(final String section) {
     getElement().setId(ClientUtils.CSS_LOGO);

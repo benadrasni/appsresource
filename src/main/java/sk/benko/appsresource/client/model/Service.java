@@ -1,15 +1,12 @@
 package sk.benko.appsresource.client.model;
 
-import sk.benko.appsresource.client.model.result.GetApplicationTemplatesResult;
-import sk.benko.appsresource.client.model.result.GetTemplateAttributesResult;
-import sk.benko.appsresource.client.model.result.GetTemplateListItemsResult;
-import sk.benko.appsresource.client.model.result.GetTemplateListsResult;
-import sk.benko.appsresource.client.model.result.GetTemplateRelationsResult;
-import sk.benko.appsresource.client.model.result.GetTemplateTreeItemsResult;
-import sk.benko.appsresource.client.model.result.GetTemplateTreesResult;
+import sk.benko.appsresource.client.model.result.*;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The RPC api available to the client. The asynchronous version that is used
@@ -36,8 +33,7 @@ public interface Service extends RemoteService {
    * @return
    * @throws AccessDeniedException
    */
-  GetApplicationTemplatesResult getApplicationTemplates(Application app)
-      throws AccessDeniedException;
+  List<ApplicationTemplate> getApplicationTemplates(Application app) throws AccessDeniedException;
   
   /**
    * Get all template trees for the current template.
@@ -47,8 +43,7 @@ public interface Service extends RemoteService {
    * @return
    * @throws AccessDeniedException
    */
-  GetTemplateTreesResult getTemplateTrees(int tId)
-      throws AccessDeniedException;
+  List<TemplateTree> getTemplateTrees(int tId) throws AccessDeniedException;
   
   /**
    * Get all template tree items for the template tree.
@@ -58,7 +53,7 @@ public interface Service extends RemoteService {
    * @return
    * @throws AccessDeniedException
    */
-  GetTemplateTreeItemsResult getTemplateTreeItems(TemplateTree tt)
+  List<TemplateTreeItem> getTemplateTreeItems(TemplateTree tt)
       throws AccessDeniedException;
   
   /**
@@ -69,8 +64,7 @@ public interface Service extends RemoteService {
    * @return
    * @throws AccessDeniedException
    */
-  GetTemplateListsResult getTemplateLists(int tId)
-      throws AccessDeniedException;
+  List<TemplateList> getTemplateLists(int tId) throws AccessDeniedException;
 
   /**
    * Get all template list items for the template list.
@@ -80,8 +74,7 @@ public interface Service extends RemoteService {
    * @return
    * @throws AccessDeniedException
    */
-  GetTemplateListItemsResult getTemplateListItems(TemplateList tl)
-      throws AccessDeniedException;
+  List<TemplateListItem> getTemplateListItems(TemplateList tl) throws AccessDeniedException;
   
   /**
    * Get all template attributes for the template.
@@ -91,8 +84,7 @@ public interface Service extends RemoteService {
    * @return
    * @throws AccessDeniedException
    */
-  GetTemplateAttributesResult getTemplateAttributes(Template t)
-      throws AccessDeniedException;
+  List<TemplateAttribute> getTemplateAttributes(Template t) throws AccessDeniedException;
   
   /**
    * Get all template relations for given template.
@@ -102,7 +94,6 @@ public interface Service extends RemoteService {
    * @return
    * @throws AccessDeniedException
    */
-  GetTemplateRelationsResult getTemplateRelations(Template t)
-      throws AccessDeniedException;
+  List<TemplateRelation> getTemplateRelations(Template t) throws AccessDeniedException;
 
 }

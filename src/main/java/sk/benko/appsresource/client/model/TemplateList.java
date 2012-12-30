@@ -3,6 +3,7 @@ package sk.benko.appsresource.client.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import sk.benko.appsresource.client.ClientUtils;
 
 import com.google.gwt.core.client.GWT;
@@ -88,7 +89,7 @@ public class TemplateList implements Serializable {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
+   * @param id
    * @param code
    * @param name
    * @param desc

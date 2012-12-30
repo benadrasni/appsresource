@@ -1,31 +1,23 @@
 package sk.benko.appsresource.client.designer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
+import com.google.gwt.user.client.ui.Label;
 import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.layout.TableView;
-import sk.benko.appsresource.client.model.DesignerModel;
-import sk.benko.appsresource.client.model.Model;
-import sk.benko.appsresource.client.model.Template;
-import sk.benko.appsresource.client.model.TemplateAttribute;
-import sk.benko.appsresource.client.model.TemplateAttributeComparator;
-import sk.benko.appsresource.client.model.TemplateRelation;
+import sk.benko.appsresource.client.model.*;
 import sk.benko.appsresource.client.model.loader.TemplateAttributeLoader;
 
-import com.google.gwt.user.client.ui.Label;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A widget to display table of template groups.
- *
  */
 public class TemplateAttributeTableView extends TableView implements
-    Model.TemplateAttributeObserver, 
+    Model.TemplateAttributeObserver,
     DesignerModel.TemplateAttributeUpdateObserver {
-  
+
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param model the model to which the Ui will bind itself
    */
   public TemplateAttributeTableView(DesignerModel model) {
     super(model);
@@ -45,13 +37,12 @@ public class TemplateAttributeTableView extends TableView implements
   }
 
   @Override
-  public void onTemplateAttributesLoaded(Template t,
-      ArrayList<TemplateAttribute> tas, TemplateRelation tr) {
+  public void onTemplateAttributesLoaded(Template t, List<TemplateAttribute> tas, TemplateRelation tr) {
     clear();
     add(getHeader());
     displayRows(tas);
   }
-  
+
   @Override
   public void onLoad() {
     getModel().addTemplateAttributeObserver(this);
@@ -85,7 +76,7 @@ public class TemplateAttributeTableView extends TableView implements
     Label lblLength = new Label(Main.constants.templateAttributeLength());
     getHeader().setWidget(0, 7, lblLength);
   }
-  
+
   @Override
   public void filter() {
     if (getModel().getTemplate() != null)
@@ -94,12 +85,12 @@ public class TemplateAttributeTableView extends TableView implements
             getModel().getTemplate());
         tal.start();
       } else
-        onTemplateAttributesLoaded(getModel().getTemplate(), 
+        onTemplateAttributesLoaded(getModel().getTemplate(),
             getModel().getAttrsByTemplate().get(getModel().getTemplate().getId()),
             null);
   }
 
-  public void displayRows(ArrayList<TemplateAttribute> tas) {
+  public void displayRows(List<TemplateAttribute> tas) {
     Collections.sort(tas, new TemplateAttributeComparator());
     for (TemplateAttribute ta : tas) {
       TemplateAttributeRowView tarw = new TemplateAttributeRowView(ta, "content-row");
@@ -108,5 +99,5 @@ public class TemplateAttributeTableView extends TableView implements
       getModel().addTemplateAttributeUpdateObserver(tarw);
       add(tarw);
     }
-  }  
+  }
 }

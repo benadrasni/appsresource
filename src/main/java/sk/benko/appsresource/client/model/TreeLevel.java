@@ -81,12 +81,11 @@ public class TreeLevel implements Serializable {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
-   * @param oId
-   * @param oaId
-   * @param rank
-   * @param lastUpdatedAt
-   * @param author
+   * @param ta
+   * @param valueString
+   * @param valueDate
+   * @param valueDouble
+   * @param valueRef
    */
   public TreeLevel(TemplateAttribute ta, String valueString, 
       Date valueDate, Double valueDouble, int valueRef) {

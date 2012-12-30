@@ -45,8 +45,8 @@ public class TemplateTreeItem implements Serializable {
   /**
    * A constructor to be used on client-side only.
    *
-   * @param name
-   * @param tId
+   * @param ttId
+   * @param taId
    */
   public TemplateTreeItem(int ttId, int taId) {
     assert GWT.isClient();
@@ -57,7 +57,7 @@ public class TemplateTreeItem implements Serializable {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
+   * @param id
    * @param ttId
    * @param taId
    * @param rank

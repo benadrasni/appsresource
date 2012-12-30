@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.TextBox;
  *
  */
 public class SearchView extends FlowPanel {
-  private ApplicationModel amodel;
+  private ApplicationModel aModel;
   
   private TextBox searchBox; 
   private ButtonView bSearch;
@@ -27,13 +27,13 @@ public class SearchView extends FlowPanel {
   private String searchedText;
   
   /**
-   * @param model
+   * @param aModel
    *          the model to which the Ui will bind itself
    */
-  public SearchView(final ApplicationModel amodel) {
+  public SearchView(final ApplicationModel aModel) {
     getElement().setId(ClientUtils.CSS_SEARCH);
     setStyleName(ClientUtils.CSS_SEARCH);
-    setModel(amodel);
+    setModel(aModel);
     
     add(getSearchBox());
     add(getBSearch());
@@ -57,14 +57,14 @@ public class SearchView extends FlowPanel {
    * @return the applicationModel
    */
   public ApplicationModel getModel() {
-    return amodel;
+    return aModel;
   }
 
   /**
-   * @param amodel the application modelto set
+   * @param aModel      the application model to set
    */
-  public void setModel(ApplicationModel amodel) {
-    this.amodel = amodel;
+  public void setModel(ApplicationModel aModel) {
+    this.aModel = aModel;
   }
 
   /**

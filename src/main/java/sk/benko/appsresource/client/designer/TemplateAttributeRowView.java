@@ -21,8 +21,8 @@ public class TemplateAttributeRowView extends FlexTable implements
   private TemplateAttribute templateAttribute;
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param ta
+   * @param style
    */
   public TemplateAttributeRowView(final TemplateAttribute ta, String style) {
     setStyleName(style);

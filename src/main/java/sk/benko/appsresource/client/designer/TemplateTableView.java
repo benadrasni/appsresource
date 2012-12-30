@@ -1,41 +1,32 @@
 package sk.benko.appsresource.client.designer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
+import com.google.gwt.user.client.ui.Label;
 import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.layout.TableView;
-import sk.benko.appsresource.client.model.ApplicationTemplate;
-import sk.benko.appsresource.client.model.ApplicationTemplateLoader;
-import sk.benko.appsresource.client.model.DesignerModel;
-import sk.benko.appsresource.client.model.Model;
-import sk.benko.appsresource.client.model.Template;
+import sk.benko.appsresource.client.model.*;
 
-import com.google.gwt.user.client.ui.Label;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A widget to display table of templates.
- *
  */
-public class TemplateTableView extends TableView implements 
-  Model.ApplicationObserver, DesignerModel.TemplateObserver {
+public class TemplateTableView extends TableView implements Model.ApplicationObserver, DesignerModel.TemplateObserver {
 
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param model the model to which the Ui will bind itself
    */
   public TemplateTableView(DesignerModel model) {
     super(model);
   }
 
   @Override
-  public void onApplicationTemplatesLoaded(ArrayList<ApplicationTemplate> appts) {
+  public void onApplicationTemplatesLoaded(List<ApplicationTemplate> appts) {
     clear();
     add(getHeader());
     displayRows(appts);
   }
-  
-  
+
   @Override
   public void onTemplateCreated(Template template) {
     TemplateRowView trw = new TemplateRowView(template, "content-row");
@@ -52,7 +43,7 @@ public class TemplateTableView extends TableView implements
   @Override
   public void onTemplatesLoaded(Collection<Template> templates) {
   }
-  
+
   @Override
   public void onLoad() {
     getModel().addDataObserver(this);
@@ -64,7 +55,7 @@ public class TemplateTableView extends TableView implements
     getModel().removeDataObserver(this);
     getModel().removeTemplateObserver(this);
   }
-  
+
   @Override
   public void initializeHeader() {
     getHeader().clear();
@@ -80,20 +71,20 @@ public class TemplateTableView extends TableView implements
     Label lblOa = new Label(Main.constants.templateTa());
     getHeader().setWidget(0, 4, lblOa);
   }
-  
+
   @Override
   public void filter() {
     if (getModel().getApplication() != null)
       if (getModel().getAppTemplatesByApp().get(getModel().getApplication().getId()) == null) {
-        ApplicationTemplateLoader atl = new ApplicationTemplateLoader(getModel(), 
+        ApplicationTemplateLoader atl = new ApplicationTemplateLoader(getModel(),
             getModel().getApplication());
         atl.start();
       } else
         onApplicationTemplatesLoaded(getModel().getAppTemplatesByApp()
             .get(getModel().getApplication().getId()));
   }
-  
-  public void displayRows(ArrayList<ApplicationTemplate> appts) {
+
+  public void displayRows(List<ApplicationTemplate> appts) {
     for (ApplicationTemplate appt : appts) {
       TemplateRowView trw = new TemplateRowView(appt.getT(), "content-row");
       trw.setModel(getModel());

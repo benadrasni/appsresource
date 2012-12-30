@@ -27,8 +27,7 @@ public class ObjectActionButtonsView extends FlowPanel {
   private ButtonView bImport;
 
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param objectView
    */
   public ObjectActionButtonsView(final ObjectView objectView) {
     setObjectView(objectView);

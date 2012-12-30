@@ -1,50 +1,37 @@
 package sk.benko.appsresource.client.application;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.Widget;
 import sk.benko.appsresource.client.layout.ObjectView;
-import sk.benko.appsresource.client.model.ApplicationModel;
-import sk.benko.appsresource.client.model.Model;
-import sk.benko.appsresource.client.model.ObjectRelation;
-import sk.benko.appsresource.client.model.Template;
-import sk.benko.appsresource.client.model.TemplateAttribute;
-import sk.benko.appsresource.client.model.TemplateRelation;
+import sk.benko.appsresource.client.model.*;
 import sk.benko.appsresource.client.model.loader.RelatedObjectCountLoader;
 import sk.benko.appsresource.client.model.loader.TemplateAttributeLoader;
 import sk.benko.appsresource.client.model.loader.TemplateRelationLoader;
 import sk.benko.appsresource.client.ui.widget.TemplateWidget;
 
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.NodeList;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasChangeHandlers;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * A widget to display the object's template.
- * 
  */
 public class ObjectTemplate extends TabPanel implements
-    ApplicationModel.TemplateRelationObserver, 
+    ApplicationModel.TemplateRelationObserver,
     Model.TemplateAttributeObserver,
     HasChangeHandlers {
 
   private ObjectView objectView;
   private Template template;
   private ApplicationModel model;
-
   //private AObject object;
   //private HashMap<Integer, HashMap<Integer, ArrayList<AValue>>> allvalues;
   //private HashMap<String, AObject> rels;
   private HashMap<Integer, FlexTable> tables;
-
   private boolean withRelations;
 
   public ObjectTemplate(final ApplicationModel model) {
@@ -67,8 +54,7 @@ public class ObjectTemplate extends TabPanel implements
     getTables().clear();
     setTemplate(t);
 
-    ArrayList<TemplateAttribute> templateAttributes = 
-        getModel().getAttrsByTemplate().get(getTemplate().getId());
+    List<TemplateAttribute> templateAttributes = getModel().getAttrsByTemplate().get(getTemplate().getId());
 
     if (templateAttributes == null) {
       // load all attributes at once
@@ -78,8 +64,7 @@ public class ObjectTemplate extends TabPanel implements
     } else {
       addTabs(templateAttributes, null);
 
-      ArrayList<TemplateRelation> trs = getModel().getRelsByTemplate().get(
-          getTemplate().getId());
+      List<TemplateRelation> trs = getModel().getRelsByTemplate().get(getTemplate().getId());
       if (trs != null)
         addRelTabs(trs);
     }
@@ -138,13 +123,12 @@ public class ObjectTemplate extends TabPanel implements
   }
 
   @Override
-  public void onTemplateAttributesLoaded(Template t,
-      ArrayList<TemplateAttribute> tas, TemplateRelation tr) {
+  public void onTemplateAttributesLoaded(Template t, List<TemplateAttribute> tas, TemplateRelation tr) {
 
     if ((tr == null && t.getId() != getTemplate().getId())
         || (tr != null && t.getId() != tr.getT2Id()))
       return;
-    
+
     addTabs(tas, tr);
 
     if (tr == null && isWithRelations()) {
@@ -156,8 +140,7 @@ public class ObjectTemplate extends TabPanel implements
   }
 
   @Override
-  public void onTemplateRelationsLoaded(Template t,
-      ArrayList<TemplateRelation> trs) {
+  public void onTemplateRelationsLoaded(Template t, List<TemplateRelation> trs) {
     addRelTabs(trs);
   }
 
@@ -181,8 +164,7 @@ public class ObjectTemplate extends TabPanel implements
   }
 
   /**
-   * @param model
-   *          the model to set
+   * @param model the model to set
    */
   public void setModel(ApplicationModel model) {
     this.model = model;
@@ -196,8 +178,7 @@ public class ObjectTemplate extends TabPanel implements
   }
 
   /**
-   * @param objectView
-   *          the objectView to set
+   * @param objectView the objectView to set
    */
   public void setObjectView(ObjectView objectView) {
     this.objectView = objectView;
@@ -211,8 +192,7 @@ public class ObjectTemplate extends TabPanel implements
   }
 
   /**
-   * @param template
-   *          the template to set
+   * @param template the template to set
    */
   public void setTemplate(Template template) {
     this.template = template;
@@ -220,7 +200,7 @@ public class ObjectTemplate extends TabPanel implements
 
   /**
    * Getter for property 'tables'.
-   * 
+   *
    * @return Value for property 'tables'.
    */
   public HashMap<Integer, FlexTable> getTables() {
@@ -238,8 +218,7 @@ public class ObjectTemplate extends TabPanel implements
   }
 
   /**
-   * @param withRelations
-   *          the withRelations to set
+   * @param withRelations the withRelations to set
    */
   public void setWithRelations(boolean withRelations) {
     this.withRelations = withRelations;
@@ -257,15 +236,14 @@ public class ObjectTemplate extends TabPanel implements
     }
   }
 
-  private void addTabs(ArrayList<TemplateAttribute> templateAttributes, 
-      TemplateRelation tr) {
+  private void addTabs(List<TemplateAttribute> templateAttributes, TemplateRelation tr) {
     // template attributes are ordered by template group's rank and subrank
     ObjectGroupTab otv = null;
     int prevTgId = 0;
     for (TemplateAttribute ta : templateAttributes) {
       if (ta.getTgId() != prevTgId) {
         prevTgId = ta.getTgId();
-        if (ta.getTg().getSubrank() == 0) {
+        if (ta.getTg().getSubRank() == 0) {
           otv = tr == null ? new ObjectGroupTab(this, ta.getTg())
               : new ObjectRelationGroupTab(this, tr, ta.getTg());
           add(otv, ta.getTg().getName());
@@ -289,22 +267,21 @@ public class ObjectTemplate extends TabPanel implements
       selectTab(0);
   }
 
-  private void addRelTabs(ArrayList<TemplateRelation> trs) {
+  private void addRelTabs(List<TemplateRelation> trs) {
 
     for (final TemplateRelation tr : trs) {
       if (tr.getOr().getType() == ObjectRelation.RT_11
           || tr.getOr().getType() == ObjectRelation.RT_N1) {
-        ArrayList<TemplateAttribute> templateAttributes = getModel()
-            .getAttrsByTemplate().get(tr.getT2Id());
+        List<TemplateAttribute> templateAttributes = getModel().getAttrsByTemplate().get(tr.getT2Id());
 
         if (templateAttributes == null) {
           // load all attributes for related template at once
           TemplateAttributeLoader tal = new TemplateAttributeLoader(getModel(),
               tr.getT2(), tr);
           tal.start();
-        } else 
+        } else
           addTabs(templateAttributes, tr);
-        
+
       } else {
         final ObjectRelationTab ort = new ObjectRelationTab(this, tr);
         add(ort, tr.getName());

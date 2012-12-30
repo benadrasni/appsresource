@@ -144,10 +144,8 @@ public class UserModel extends Model {
    */
   final LanguageLoader languageLoader;
   final ApplicationLoader applicationLoader;
-  final ApplicationUserLoader applicationUserLoader;
 
-  public UserModel(AppUser appUser, String logoutUrl,
-      AppUserServiceAsync api, StatusObserver statusObserver) {
+  public UserModel(AppUser appUser, String logoutUrl, AppUserServiceAsync api, StatusObserver statusObserver) {
     super(statusObserver);
     this.appUser = appUser;
     this.logoutUrl = logoutUrl;
@@ -157,7 +155,6 @@ public class UserModel extends Model {
     languageLoader.start();
     applicationLoader = new ApplicationLoader(this);
     applicationLoader.start();
-    applicationUserLoader = new ApplicationUserLoader(this, appUser.getId());
   }
   
   @Override
@@ -253,7 +250,6 @@ public class UserModel extends Model {
   }
 
   void notifyApplicationsLoaded(ArrayList<Application> applications) {
-    applicationUserLoader.start();
     this.applications = new LinkedHashMap<Integer, Application>();
     for (Application application : applications) {
       this.applications.put(application.getId(), application);

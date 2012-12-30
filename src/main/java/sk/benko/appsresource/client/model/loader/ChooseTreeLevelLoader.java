@@ -5,7 +5,6 @@ import com.google.gwt.user.client.ui.TreeItem;
 import sk.benko.appsresource.client.TreeItemData;
 import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.model.*;
-import sk.benko.appsresource.client.model.result.GetTreeLevelResult;
 
 import java.util.List;
 import java.util.Map;
@@ -13,8 +12,7 @@ import java.util.Map;
 /**
  * Controls all aspects of loading the set of {@link AObject}s.
  */
-public class ChooseTreeLevelLoader extends RetryTimer
-    implements AsyncCallback<GetTreeLevelResult> {
+public class ChooseTreeLevelLoader extends RetryTimer implements AsyncCallback<List<TreeLevel>> {
 
   private final ApplicationModel model;
   private final int langId;
@@ -36,8 +34,8 @@ public class ChooseTreeLevelLoader extends RetryTimer
    * @param key       key
    * @param ta        - template attribute
    */
-  public ChooseTreeLevelLoader(ApplicationModel model, int langId, int tIdSource,
-                               Map<Integer, List<AValue>> values, int tId, TreeItem ti, String key, TemplateAttribute ta) {
+  public ChooseTreeLevelLoader(ApplicationModel model, int langId, int tIdSource, Map<Integer, List<AValue>> values,
+                               int tId, TreeItem ti, String key, TemplateAttribute ta) {
     this.model = model;
     this.langId = langId;
     this.tIdSource = tIdSource;
@@ -62,10 +60,10 @@ public class ChooseTreeLevelLoader extends RetryTimer
   }
 
   @Override
-  public void onSuccess(GetTreeLevelResult result) {
+  public void onSuccess(List<TreeLevel> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
-    model.notifyChooseTreeLevelLoaded(ti, key, ta, result.getTreeLevel());
+    model.notifyChooseTreeLevelLoaded(ti, key, ta, result);
   }
 
   @Override

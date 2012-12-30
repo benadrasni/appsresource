@@ -26,7 +26,6 @@ public class Template extends DesignItem {
   /**
    * A basic constructor to be used on client-side only.
    *
-   * @param code
    * @param name
    */
   public Template(String name) {
@@ -37,7 +36,7 @@ public class Template extends DesignItem {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
+   * @param id
    * @param code
    * @param name
    * @param desc

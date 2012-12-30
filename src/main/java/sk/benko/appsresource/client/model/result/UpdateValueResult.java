@@ -11,7 +11,7 @@ import com.google.gwt.core.client.GWT;
 
 /**
  * Encapsulates a response from
- * {@link ApplicationService#updateValue(AValue, AppUSer)}.
+ * {@link ApplicationService#updateValue(sk.benko.appsresource.client.model.AValue, sk.benko.appsresource.client.model.AppUser)}.
  */
 @SuppressWarnings("serial")
 public class UpdateValueResult implements Serializable {
@@ -23,7 +23,7 @@ public class UpdateValueResult implements Serializable {
    * Constructs a new result. This constructor can only be invoked on the
    * server.
    *
-   * @param key
+   * @param id
    *          the key that was assigned to the new {@link AObject}
    * @param updateTime
    *          the time assigned to {@link AObject#getLastUpdatedAt()}
@@ -53,8 +53,7 @@ public class UpdateValueResult implements Serializable {
   }
 
   /**
-   * Returns the {@link Date} that was assigned to
-   * {@link AObject#getLastUpdatedAt()} by the server.
+   * Returns the {@link Date} that was assigned to {@link AObject#getLastUpdatedAt()} by the server.
    *
    * @return
    */
@@ -63,8 +62,6 @@ public class UpdateValueResult implements Serializable {
   }
   
   /**
-   * Returns the {@link Avalue}s that was assigned to
-   * {@link AObject#getValues()} by the server.
    *
    * @return
    */

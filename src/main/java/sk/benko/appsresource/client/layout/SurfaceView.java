@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import sk.benko.appsresource.client.dnd.SurfaceDropController;
 import sk.benko.appsresource.client.model.ApplicationUser;
+import sk.benko.appsresource.client.model.ApplicationUserLoader;
 import sk.benko.appsresource.client.model.UserModel;
 
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
@@ -35,7 +36,9 @@ public class SurfaceView extends AbsolutePanel implements UserModel.ApplicationU
     appDragController.setBehaviorConstrainedToBoundaryPanel(true);
     appDragController.setBehaviorMultipleSelection(false);
     appDragController.setBehaviorDragStartSensitivity(5);
-    displayAppus();
+
+    ApplicationUserLoader applicationUserLoader = new ApplicationUserLoader(model);
+    applicationUserLoader.start();
   }
 
   private void displayAppus() {

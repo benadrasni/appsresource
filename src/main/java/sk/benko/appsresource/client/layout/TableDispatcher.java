@@ -61,7 +61,7 @@ public class TableDispatcher extends ScrollPanel {
   }
 
   /**
-   * @param dmodel the model to set
+   * @param model the model to set
    */
   public void setModel(DesignerModel model) {
     this.model = model;

@@ -45,7 +45,6 @@ public class TemplateListItem implements Serializable {
   /**
    * A constructor to be used on client-side only.
    *
-   * @param name
    * @param tlId
    * @param taId
    */
@@ -58,9 +57,11 @@ public class TemplateListItem implements Serializable {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
-   * @param ttId
+   * @param id
+   * @param tlId
+   * @param tl
    * @param taId
+   * @param ta
    * @param rank
    */
   public TemplateListItem(int id, int tlId, TemplateList tl, int taId, 

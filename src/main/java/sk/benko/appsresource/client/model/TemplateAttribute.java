@@ -181,7 +181,7 @@ public class TemplateAttribute extends DesignItem {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
+   * @param id
    * @param code
    * @param name
    * @param desc
@@ -189,7 +189,7 @@ public class TemplateAttribute extends DesignItem {
    * @param oaId
    * @param flags
    * @param style
-   * @param default
+   * @param def
    * @param length
    * @param labelTop
    * @param labelLeft

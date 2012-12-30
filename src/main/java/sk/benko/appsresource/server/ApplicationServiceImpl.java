@@ -78,15 +78,15 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
    * Tree level
    */
   @Override
-  public GetTreeLevelResult getTreeLevel(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta)
+  public List<TreeLevel> getTreeLevel(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta)
       throws AccessDeniedException {
-    return new GetTreeLevelResult(getLevel(langId, tId, path, ta));
+    return getLevel(langId, tId, path, ta);
   }
 
-  public GetTreeLevelResult getTreeLevel(int langId, int tIdSource, Map<Integer, List<AValue>> values, int tId,
+  public List<TreeLevel> getTreeLevel(int langId, int tIdSource, Map<Integer, List<AValue>> values, int tId,
                                          List<TreeLevel> path, TemplateAttribute ta)
       throws AccessDeniedException {
-    return new GetTreeLevelResult(getLevel(langId, tIdSource, values, tId, path, ta));
+    return getLevel(langId, tIdSource, values, tId, path, ta);
   }
 
   private List<TreeLevel> getLevel(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta) {
@@ -171,27 +171,15 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
   }
 
   @Override
-  public GetSearchCountsResult getSearchObjectCounts(int appId, String searchString)
+  public Map<Template, Integer> getSearchObjectCounts(int appId, String searchString)
       throws AccessDeniedException {
-    return new GetSearchCountsResult(getSearchObjCounts(appId, searchString));
+    return getSearchObjCounts(appId, searchString);
   }
 
   @Override
-  public GetSearchObjectsResult getSearchObjects(int langId, String searchString,
-                                                 int tlId, int from, int perPage) throws AccessDeniedException {
-    return new GetSearchObjectsResult(getSearchObjs(langId, searchString, tlId, from, perPage));
-  }
-
-  @Override
-  public GetSearchCountsResult getRelatedObjectCounts(int objId, int rel, Template t)
+  public Map<Template, Integer> getRelatedObjectCounts(int objId, int rel, Template t)
       throws AccessDeniedException {
-    return new GetSearchCountsResult(getRelObjCounts(objId, rel, t));
-  }
-
-  @Override
-  public GetSearchObjectsResult getRelatedObjects(int langId, int objId, int rel,
-                                                  int tlId, int from, int perPage) throws AccessDeniedException {
-    return new GetSearchObjectsResult(getRelObjs(langId, objId, rel, tlId, from, perPage));
+    return getRelObjCounts(objId, rel, t);
   }
 
   private List<AObject> getObjs(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta) {
@@ -208,7 +196,8 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
     return result;
   }
 
-  private Map<AObject, List<AValue>> getSearchObjs(int langId, String searchString, int tlId, int from, int perPage) {
+  @Override
+  public Map<AObject, List<AValue>> getSearchObjects(int langId, String searchString, int tlId, int from, int perPage) {
     Map<AObject, List<AValue>> result = new LinkedHashMap<AObject, List<AValue>>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -232,7 +221,8 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
     return result;
   }
 
-  private Map<AObject, List<AValue>> getRelObjs(int langId, int objId, int rel, int tlId, int from, int perPage) {
+  @Override
+  public Map<AObject, List<AValue>> getRelatedObjects(int langId, int objId, int rel, int tlId, int from, int perPage) {
     Map<AObject, List<AValue>> result = new LinkedHashMap<AObject, List<AValue>>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -306,7 +296,7 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
       }
       api.commit();
 
-      return new CreateOrUpdateObjectResult(ao.getId(), ao.getLastUpdatedAt(), getVals(Utils.toClientObject(ao)));
+      return new CreateOrUpdateObjectResult(ao.getId(), ao.getLastUpdatedAt(), getValues(Utils.toClientObject(ao)));
     } catch (SQLException ex) {
       log.log(Level.SEVERE, ex.getLocalizedMessage(), ex);
       api.rollback();
@@ -334,16 +324,8 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
     return null;
   }
 
-  /*
-   * AValue
-   */
   @Override
-  public GetValuesResult getValues(AObject object)
-      throws AccessDeniedException {
-    return new GetValuesResult(getVals(object));
-  }
-
-  private Map<Integer, Map<Integer, List<AValue>>> getVals(AObject object) {
+  public Map<Integer, Map<Integer, List<AValue>>> getValues(AObject object) {
     Map<Integer, Map<Integer, List<AValue>>> result = new HashMap<Integer, Map<Integer, List<AValue>>>();
 
     final StoreDB.Api api = store.getApi();
@@ -417,10 +399,8 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
   }
 
   @Override
-  public CountObjectsResult importObjects(Application app, Template t,
-                                          String filename, Map<Integer, TemplateAttribute> map,
-                                          Map<Integer, TemplateAttribute> keys, boolean onlyUpdate,
-                                          AppUser author) {
+  public Integer importObjects(Application app, Template t, String filename, Map<Integer, TemplateAttribute> map,
+                               Map<Integer, TemplateAttribute> keys, boolean onlyUpdate, AppUser author) {
     final StoreDB.Api api = store.getApi();
     int count = 0;
     try {
@@ -437,12 +417,11 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
     } finally {
       api.close();
     }
-    return new CountObjectsResult(count);
+    return count;
   }
 
   @Override
-  public CountObjectsResult removeDuplicates(Application app, Template t,
-                                             Map<Integer, TemplateAttribute> keys, AppUser author) {
+  public Integer removeDuplicates(Application app, Template t, Map<Integer, TemplateAttribute> keys, AppUser author) {
     final StoreDB.Api api = store.getApi();
     int count = 0;
     try {
@@ -455,7 +434,7 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
     } finally {
       api.close();
     }
-    return new CountObjectsResult(count);
+    return count;
   }
 
 }

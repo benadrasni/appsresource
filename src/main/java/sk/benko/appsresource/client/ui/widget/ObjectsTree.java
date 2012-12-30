@@ -64,7 +64,7 @@ public class ObjectsTree extends SimplePanel implements
   private AObject object;
   private Map<Integer, Map<Integer, List<AValue>>> values;
   private int templateId;
-  private ArrayList<TemplateTreeItem> actualTreeItems;
+  private List<TemplateTreeItem> actualTreeItems;
   private TreeItem selectedItem;
   /**
    * a set of calendar listeners
@@ -205,7 +205,7 @@ public class ObjectsTree extends SimplePanel implements
   }
 
   @Override
-  public void onChooseTemplateTreesLoaded(ArrayList<TemplateTree> tts) {
+  public void onChooseTemplateTreesLoaded(List<TemplateTree> tts) {
     for (TemplateTree tt : tts) {
       if (getActualTreeItems() == null && tt.isDefault()) {
         TemplateTreeItemLoader ttil = new TemplateTreeItemLoader(getModel(), tt, true);
@@ -216,7 +216,7 @@ public class ObjectsTree extends SimplePanel implements
 
   @Override
   public void onChooseTemplateTreeItemsLoaded(TemplateTree tt,
-                                              ArrayList<TemplateTreeItem> ttis) {
+                                              List<TemplateTreeItem> ttis) {
     setActualTreeItems(ttis);
 
     loadLevel();
@@ -459,14 +459,14 @@ public class ObjectsTree extends SimplePanel implements
   /**
    * @return the actualTreeItems
    */
-  public ArrayList<TemplateTreeItem> getActualTreeItems() {
+  public List<TemplateTreeItem> getActualTreeItems() {
     return actualTreeItems;
   }
 
   /**
    * @param actualTreeItems the actualTreeItems to set
    */
-  public void setActualTreeItems(ArrayList<TemplateTreeItem> actualTreeItems) {
+  public void setActualTreeItems(List<TemplateTreeItem> actualTreeItems) {
     this.actualTreeItems = actualTreeItems;
   }
 

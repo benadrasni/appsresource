@@ -33,9 +33,9 @@ public class TemplateGroup extends DesignItem {
   private int rank;
 
   /**
-   * The subrank of the template group within a tab.
+   * The subRank of the template group within a tab.
    */
-  private int subrank;
+  private int subRank;
 
   /**
    * The position's top of the template group's label.
@@ -77,14 +77,14 @@ public class TemplateGroup extends DesignItem {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
+   * @param id
    * @param code
    * @param name
    * @param desc
    * @param tId
    * @param flags
    * @param rank
-   * @param subrank
+   * @param subRank
    * @param labelTop
    * @param labelLeft
    * @param labelWidth
@@ -94,7 +94,7 @@ public class TemplateGroup extends DesignItem {
    * @param lastUpdatedAt
    */
   public TemplateGroup(int id, String code, String name, String desc, int tId, 
-      Template t, int flags, int rank, int subrank, int labelTop, int labelLeft, int labelWidth,
+      Template t, int flags, int rank, int subRank, int labelTop, int labelLeft, int labelWidth,
       String labelWidthUnit, String labelAlign, int userId, Date lastUpdatedAt) {
     assert !GWT.isClient();
     this.id = id;
@@ -105,7 +105,7 @@ public class TemplateGroup extends DesignItem {
     this.t = t;
     this.flags = flags;
     this.rank = rank;
-    this.subrank = subrank;
+    this.subRank = subRank;
     this.labelTop = labelTop;
     this.labelLeft = labelLeft;
     this.labelWidth = labelWidth;
@@ -168,17 +168,17 @@ public class TemplateGroup extends DesignItem {
   }
 
   /**
-   * @return the subrank
+   * @return the subRank
    */
-  public int getSubrank() {
-    return subrank;
+  public int getSubRank() {
+    return subRank;
   }
 
   /**
-   * @param subrank the subrank to set
+   * @param subRank the subRank to set
    */
-  public void setSubrank(int subrank) {
-    this.subrank = subrank;
+  public void setSubRank(int subRank) {
+    this.subRank = subRank;
   }
 
   /**
@@ -262,7 +262,7 @@ public class TemplateGroup extends DesignItem {
       tId = templateGroup.tId;
       t = templateGroup.t;
       rank = templateGroup.rank;
-      subrank = templateGroup.subrank;
+      subRank = templateGroup.subRank;
       labelTop = templateGroup.labelTop;
       labelLeft = templateGroup.labelLeft;
       labelWidth = templateGroup.labelWidth;

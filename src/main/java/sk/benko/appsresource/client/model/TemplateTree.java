@@ -88,7 +88,7 @@ public class TemplateTree implements Serializable {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
+   * @param id
    * @param code
    * @param name
    * @param desc

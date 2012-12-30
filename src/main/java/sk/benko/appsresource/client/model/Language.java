@@ -29,7 +29,7 @@ public class Language implements Serializable {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
+   * @param id
    * @param code
    * @param name
    */

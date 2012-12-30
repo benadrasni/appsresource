@@ -2,6 +2,7 @@ package sk.benko.appsresource.client.designer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import sk.benko.appsresource.client.CSSConstants;
 import sk.benko.appsresource.client.ClientUtils;
@@ -30,13 +31,13 @@ import com.google.gwt.user.client.ui.TextBox;
  */
 public class TemplateGroupDialog extends DesignerDialog implements 
     Model.ApplicationObserver {
-  private int DEFAULT_RANK = 0;
-  private int DEFAULT_SUBRANK = 0;
-  private int DEFAULT_LABELTOP = 10;
-  private int DEFAULT_LABELLEFT = 10;
-  private int DEFAULT_LABELWIDTH = 50;
-  private String DEFAULT_LABELWIDTHUNIT = "px";
-  private String DEFAULT_LABELALIGN = "left";
+  private final static int DEFAULT_RANK = 0;
+  private final static int DEFAULT_SUBRANK = 0;
+  private final static int DEFAULT_LABELTOP = 10;
+  private final static int DEFAULT_LABELLEFT = 10;
+  private final static int DEFAULT_LABELWIDTH = 50;
+  private final static String DEFAULT_LABELWIDTHUNIT = "px";
+  private final static String DEFAULT_LABELALIGN = "left";
 
   final CheckBox cbLabel = new CheckBox();
   private DropDownBox ddbTemplate;
@@ -104,7 +105,7 @@ public class TemplateGroupDialog extends DesignerDialog implements
   }
 
   @Override
-  public void onApplicationTemplatesLoaded(ArrayList<ApplicationTemplate> appts) {
+  public void onApplicationTemplatesLoaded(List<ApplicationTemplate> appts) {
     fillTemplates(appts);
   }
   
@@ -145,7 +146,7 @@ public class TemplateGroupDialog extends DesignerDialog implements
       widgetTemplateGroup.setWidget(5, 1, tbRank);
 
       widgetTemplateGroup.setWidget(6, 0, lblSubrank);
-      if (getTemplateGroup() != null) tbSubrank.setText(""+getTemplateGroup().getSubrank());
+      if (getTemplateGroup() != null) tbSubrank.setText(""+getTemplateGroup().getSubRank());
       else tbSubrank.setText(""+DEFAULT_SUBRANK);
       widgetTemplateGroup.setWidget(6, 1, tbSubrank);
 
@@ -231,7 +232,7 @@ public class TemplateGroupDialog extends DesignerDialog implements
 
     // rank
     templateGroup.setRank(Integer.parseInt(tbRank.getText()));
-    templateGroup.setSubrank(Integer.parseInt(tbSubrank.getText()));
+    templateGroup.setSubRank(Integer.parseInt(tbSubrank.getText()));
 
     // label
     if (ClientUtils.getFlag(TemplateGroup.FLAG_SHOW_LABEL, flags)) {

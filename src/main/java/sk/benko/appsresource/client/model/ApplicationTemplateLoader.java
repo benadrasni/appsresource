@@ -1,16 +1,17 @@
 package sk.benko.appsresource.client.model;
 
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.model.result.GetApplicationTemplatesResult;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controls all aspects of loading the set of {@link ApplicationTemplate}s. 
  *
  */
-public class ApplicationTemplateLoader implements 
-    AsyncCallback<GetApplicationTemplatesResult> {
+public class ApplicationTemplateLoader implements AsyncCallback<List<ApplicationTemplate>> {
 
   private final Model model;
   private final Application app;
@@ -37,9 +38,9 @@ public class ApplicationTemplateLoader implements
   }
 
   @Override
-  public void onSuccess(GetApplicationTemplatesResult result) {
+  public void onSuccess(List<ApplicationTemplate> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
-    model.notifyApplicationTemplatesLoaded(app, result.getApplicationTemplates());
+    model.notifyApplicationTemplatesLoaded(app, result);
   }
 }

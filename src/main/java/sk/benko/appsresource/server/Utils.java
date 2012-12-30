@@ -113,7 +113,7 @@ public class Utils {
   public static StoreDB.TemplateGroup toServerTemplateGroup(TemplateGroup tg) {
     return tg == null ? null : new StoreDB.TemplateGroup(tg.getId(), tg.getCode(), tg.getName(),
         tg.getDesc(), tg.getTId(), toServerTemplate(tg.getT()), tg.getFlags(),
-        tg.getRank(), tg.getSubrank(), tg.getLabelTop(), tg.getLabelLeft(),
+        tg.getRank(), tg.getSubRank(), tg.getLabelTop(), tg.getLabelLeft(),
         tg.getLabelWidth(), tg.getLabelWidthUnit(), tg.getLabelAlign(),
         tg.getUserId());
   }

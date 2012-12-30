@@ -50,12 +50,14 @@ public class Unit extends DesignItem {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
+   * @param id
    * @param code
    * @param name
    * @param symbol
+   * @param type
+   * @param conversion
+   * @param userId
    * @param lastUpdatedAt
-   * @param author
    */
   public Unit(int id, String code, String name, String desc, String symbol, 
       int type, float conversion, int userId, Date lastUpdatedAt) {

@@ -1,14 +1,11 @@
 package sk.benko.appsresource.client.model;
 
-import sk.benko.appsresource.client.model.result.GetApplicationTemplatesResult;
-import sk.benko.appsresource.client.model.result.GetTemplateAttributesResult;
-import sk.benko.appsresource.client.model.result.GetTemplateListItemsResult;
-import sk.benko.appsresource.client.model.result.GetTemplateListsResult;
-import sk.benko.appsresource.client.model.result.GetTemplateRelationsResult;
-import sk.benko.appsresource.client.model.result.GetTemplateTreeItemsResult;
-import sk.benko.appsresource.client.model.result.GetTemplateTreesResult;
+import sk.benko.appsresource.client.model.result.*;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -23,54 +20,47 @@ public interface ServiceAsync {
    * @param app
    * @param callback
    */
-  void getApplicationTemplates(Application app,
-      AsyncCallback<GetApplicationTemplatesResult> callback);
+  void getApplicationTemplates(Application app, AsyncCallback<List<ApplicationTemplate>> callback);
   
   /**
    * @see ApplicationService#getTemplateRelations(Template)
-   * @param timestamp
-   * @param callback
-   */
-  void getTemplateRelations(Template t,
-      AsyncCallback<GetTemplateRelationsResult> callback);
-  
-  /**
-   * @see Service#getTemplateTrees(Template)
    * @param t
    * @param callback
    */
-  void getTemplateTrees(int tId,
-      AsyncCallback<GetTemplateTreesResult> callback);
+  void getTemplateRelations(Template t, AsyncCallback<List<TemplateRelation>> callback);
+  
+  /**
+   * @see Service#getTemplateTrees(int)
+   * @param tId
+   * @param callback
+   */
+  void getTemplateTrees(int tId, AsyncCallback<List<TemplateTree>> callback);
   
   /**
    * @see Service#getTemplateTreeItems(TemplateTree)
    * @param tt
    * @param callback
    */
-  void getTemplateTreeItems(TemplateTree tt,
-      AsyncCallback<GetTemplateTreeItemsResult> callback);
+  void getTemplateTreeItems(TemplateTree tt, AsyncCallback<List<TemplateTreeItem>> callback);
 
   /**
-   * @see Service#getTemplateLists(Template)
-   * @param t
+   * @see Service#getTemplateLists(int)
+   * @param tId
    * @param callback
    */
-  void getTemplateLists(int tId,
-      AsyncCallback<GetTemplateListsResult> callback);
+  void getTemplateLists(int tId, AsyncCallback<List<TemplateList>> callback);
 
   /**
    * @see Service#getTemplateListItems(TemplateList)
    * @param tl
    * @param callback
    */
-  void getTemplateListItems(TemplateList tl,
-      AsyncCallback<GetTemplateListItemsResult> callback);
+  void getTemplateListItems(TemplateList tl, AsyncCallback<List<TemplateListItem>> callback);
   
   /**
    * @see Service#getTemplateAttributes(Template)
    * @param t
    * @param callback
    */
-  void getTemplateAttributes(Template t,
-      AsyncCallback<GetTemplateAttributesResult> callback);
+  void getTemplateAttributes(Template t, AsyncCallback<List<TemplateAttribute>> callback);
 }

@@ -41,7 +41,6 @@ public class ObjectAttribute extends DesignItem {
   /**
    * A basic constructor to be used on client-side only.
    *
-   * @param code
    * @param name
    * @param otId
    * @param typeId
@@ -56,7 +55,7 @@ public class ObjectAttribute extends DesignItem {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
+   * @param id
    * @param code
    * @param name
    * @param desc

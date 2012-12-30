@@ -2,22 +2,18 @@ package sk.benko.appsresource.client.model.loader;
 
 import sk.benko.appsresource.client.TreeItemData;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.model.AObject;
-import sk.benko.appsresource.client.model.ApplicationModel;
-import sk.benko.appsresource.client.model.ApplicationService;
-import sk.benko.appsresource.client.model.RetryTimer;
-import sk.benko.appsresource.client.model.TemplateAttribute;
-import sk.benko.appsresource.client.model.result.GetTreeLevelResult;
+import sk.benko.appsresource.client.model.*;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TreeItem;
+
+import java.util.List;
 
 /**
  * Controls all aspects of loading the set of {@link AObject}s. 
  *
  */
-public class TreeLevelLoader extends RetryTimer 
-    implements AsyncCallback<GetTreeLevelResult> {
+public class TreeLevelLoader extends RetryTimer implements AsyncCallback<List<TreeLevel>> {
 
   private final ApplicationModel model;
   private final int langId;
@@ -60,10 +56,10 @@ public class TreeLevelLoader extends RetryTimer
   }
 
   @Override
-  public void onSuccess(GetTreeLevelResult result) {
+  public void onSuccess(List<TreeLevel> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
-    model.notifyTreeLevelLoaded(ti, key, ta, result.getTreeLevel());
+    model.notifyTreeLevelLoaded(ti, key, ta, result);
   }
 
   @Override

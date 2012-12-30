@@ -1,16 +1,14 @@
 package sk.benko.appsresource.client.model;
 
-import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.model.result.GetTemplateTreesResult;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import sk.benko.appsresource.client.layout.Main;
+
+import java.util.List;
 
 /**
- * Controls all aspects of loading the set of {@link TemplateTree}s. 
- *
+ * Controls all aspects of loading the set of {@link TemplateTree}s.
  */
-public class TemplateTreeLoader implements 
-    AsyncCallback<GetTemplateTreesResult> {
+public class TemplateTreeLoader implements AsyncCallback<List<TemplateTree>> {
 
   private final Model model;
   private final int tId;
@@ -19,8 +17,8 @@ public class TemplateTreeLoader implements
   /**
    * Creates a new loader that is bound to the given model.
    *
-   * @param model the model to which this loader is bound
-   * @param id of the application to which templates belongs
+   * @param model     the model to which this loader is bound
+   * @param tId       the template's id
    */
   public TemplateTreeLoader(Model model, int tId) {
     this.model = model;
@@ -45,12 +43,12 @@ public class TemplateTreeLoader implements
   }
 
   @Override
-  public void onSuccess(GetTemplateTreesResult result) {
+  public void onSuccess(List<TemplateTree> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
     if (isChooseTree)
-      model.notifyChooseTemplateTreesLoaded(tId, result.getTemplateTrees());
+      model.notifyChooseTemplateTreesLoaded(tId, result);
     else
-      model.notifyTemplateTreesLoaded(tId, result.getTemplateTrees());
+      model.notifyTemplateTreesLoaded(tId, result);
   }
 }

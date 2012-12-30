@@ -16,8 +16,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class MenuItemView extends FlowPanel {
 
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param text
+   * @param clickHandler
    */
   public MenuItemView(String text, ClickHandler clickHandler) {
     final Element elem = getElement();

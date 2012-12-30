@@ -15,8 +15,7 @@ public class ObjectTemplateView extends FlowPanel {
   private ObjectTemplate otemp;
 
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param objectView
    */
   public ObjectTemplateView(final ObjectView objectView) {
     setObjectView(objectView);

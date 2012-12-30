@@ -40,7 +40,7 @@ public class ObjectRelationDialog extends DesignerDialog implements
   /**
    * @param model
    *          the model to which the UI will bind itself
-   * @param oa
+   * @param or
    *          the object relation
    */
   public ObjectRelationDialog(final DesignerModel model, ObjectRelation or) {

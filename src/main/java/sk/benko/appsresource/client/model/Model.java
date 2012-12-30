@@ -3,6 +3,7 @@ package sk.benko.appsresource.client.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import sk.benko.appsresource.client.model.ApplicationModel.ChooseObjectObserver;
 
@@ -34,7 +35,7 @@ public abstract class Model {
      * @param appts
      *          the list of application templates
      */
-    void onApplicationTemplatesLoaded(ArrayList<ApplicationTemplate> appts);
+    void onApplicationTemplatesLoaded(List<ApplicationTemplate> appts);
   }
   
   /**
@@ -49,7 +50,7 @@ public abstract class Model {
      * @param tts
      *          the list of template trees
      */
-    void onTemplateTreesLoaded(ArrayList<TemplateTree> tts);
+    void onTemplateTreesLoaded(List<TemplateTree> tts);
   }
   
   /**
@@ -66,7 +67,7 @@ public abstract class Model {
      * @param ttis
      *          the list of template tree items
      */
-    void onTemplateTreeItemsLoaded(TemplateTree tt, ArrayList<TemplateTreeItem> ttis);
+    void onTemplateTreeItemsLoaded(TemplateTree tt, List<TemplateTreeItem> ttis);
   }
 
   /**
@@ -117,8 +118,7 @@ public abstract class Model {
      * @param tr
      *          the template relation
      */
-    void onTemplateAttributesLoaded(Template t, 
-        ArrayList<TemplateAttribute> tas, TemplateRelation tr);
+    void onTemplateAttributesLoaded(Template t, List<TemplateAttribute> tas, TemplateRelation tr);
   }
   
   /**
@@ -134,7 +134,7 @@ public abstract class Model {
      * @param trs
      *          the list of template relations
      */
-    void onTemplateRelationsLoaded(Template t, ArrayList<TemplateRelation> trs);
+    void onTemplateRelationsLoaded(Template t, List<TemplateRelation> trs);
   }
   
   /**
@@ -331,42 +331,38 @@ public abstract class Model {
   /** 
    * Cache for application's templates indexed by application id 
    */
-  private HashMap<Integer, ArrayList<ApplicationTemplate>> a_appts;
+  private Map<Integer, List<ApplicationTemplate>> a_appts;
   
   /**
    * Cache for loaded trees indexed by template id.
    */
-  private HashMap<Integer, ArrayList<TemplateTree>> trees =
-      new HashMap<Integer, ArrayList<TemplateTree>>();
+  private HashMap<Integer, List<TemplateTree>> trees = new HashMap<Integer, List<TemplateTree>>();
 
   /**
    * Cache for loaded tree items indexed by tree id and template id.
    */
-  private HashMap<Integer, ArrayList<TemplateTreeItem>> treeItems =
-      new HashMap<Integer, ArrayList<TemplateTreeItem>>();
+  private HashMap<Integer, List<TemplateTreeItem>> treeItems = new HashMap<Integer, List<TemplateTreeItem>>();
 
   /**
    * Cache for loaded lists indexed by template id.
    */
-  private HashMap<Integer, ArrayList<TemplateList>> lists =
-      new HashMap<Integer, ArrayList<TemplateList>>();
+  private HashMap<Integer, List<TemplateList>> lists = new HashMap<Integer, List<TemplateList>>();
 
   /**
    * Cache for loaded list items indexed by list id and template id.
    */
-  private HashMap<Integer, ArrayList<TemplateListItem>> listItems =
-      new HashMap<Integer, ArrayList<TemplateListItem>>();
+  private HashMap<Integer, List<TemplateListItem>> listItems = new HashMap<Integer, List<TemplateListItem>>();
 
   /**
    * Cache for loaded attributes indexed by template id.
    */
-  private HashMap<Integer, ArrayList<TemplateAttribute>> t_attrs;  
+  private HashMap<Integer, List<TemplateAttribute>> t_attrs;
   
   
   /**
    * Cache for loaded relations indexed by template id.
    */
-  private HashMap<Integer, ArrayList<TemplateRelation>> t_rels;
+  private HashMap<Integer, List<TemplateRelation>> t_rels;
   
   /**
    * Constructor
@@ -398,17 +394,17 @@ public abstract class Model {
    *
    * @return
    */
-  public HashMap<Integer, ArrayList<ApplicationTemplate>> getAppTemplatesByApp() {
+  public Map<Integer, List<ApplicationTemplate>> getAppTemplatesByApp() {
     if (a_appts == null)
-      a_appts = new HashMap<Integer, ArrayList<ApplicationTemplate>>();
+      a_appts = new HashMap<Integer, List<ApplicationTemplate>>();
     return a_appts;
   }
 
-  public ArrayList<ApplicationTemplate> getAppTemplateByApp(int appId) {
+  public List<ApplicationTemplate> getAppTemplateByApp(int appId) {
     return getAppTemplatesByApp().get(appId);
   }  
   
-  public HashMap<Integer, ApplicationTemplate> getAppTemplatesByTemplate() {
+  public Map<Integer, ApplicationTemplate> getAppTemplatesByTemplate() {
     if (t_appts == null)
       t_appts = new HashMap<Integer, ApplicationTemplate>();
     return t_appts;
@@ -418,19 +414,19 @@ public abstract class Model {
     return getAppTemplatesByTemplate().get(tId);
   }   
   
-  public HashMap<Integer, ArrayList<TemplateTree>> getTrees() {
+  public HashMap<Integer, List<TemplateTree>> getTrees() {
     return trees;
   }
   
-  public HashMap<Integer, ArrayList<TemplateTreeItem>> getTreeItems() {
+  public HashMap<Integer, List<TemplateTreeItem>> getTreeItems() {
     return treeItems;
   }
 
-  public HashMap<Integer, ArrayList<TemplateList>> getLists() {
+  public HashMap<Integer, List<TemplateList>> getLists() {
     return lists;
   }
   
-  public HashMap<Integer, ArrayList<TemplateListItem>> getListItems() {
+  public HashMap<Integer, List<TemplateListItem>> getListItems() {
     return listItems;
   }
 
@@ -439,9 +435,9 @@ public abstract class Model {
    * 
    * @return Value for property 't_attrs'.
    */
-  public HashMap<Integer, ArrayList<TemplateAttribute>> getAttrsByTemplate() {
+  public HashMap<Integer, List<TemplateAttribute>> getAttrsByTemplate() {
     if (t_attrs == null) {
-      t_attrs = new HashMap<Integer, ArrayList<TemplateAttribute>>();
+      t_attrs = new HashMap<Integer, List<TemplateAttribute>>();
     }
     return t_attrs;
   }  
@@ -451,9 +447,9 @@ public abstract class Model {
    * 
    * @return Value for property 't_rels'.
    */
-  public HashMap<Integer, ArrayList<TemplateRelation>> getRelsByTemplate() {
+  public HashMap<Integer, List<TemplateRelation>> getRelsByTemplate() {
     if (t_rels == null) {
-      t_rels = new HashMap<Integer, ArrayList<TemplateRelation>>();
+      t_rels = new HashMap<Integer, List<TemplateRelation>>();
     }
     return t_rels;
   }
@@ -595,8 +591,7 @@ public abstract class Model {
   }
   
   // application events
-  public void notifyApplicationTemplatesLoaded(Application app, 
-      ArrayList<ApplicationTemplate> appts) {
+  public void notifyApplicationTemplatesLoaded(Application app, List<ApplicationTemplate> appts) {
     getAppTemplatesByApp().put(app.getId(),appts);
 
     for (ApplicationTemplate appt : appts) {
@@ -609,7 +604,7 @@ public abstract class Model {
     }
   }    
   
-  public void notifyTemplateTreesLoaded(int tId, ArrayList<TemplateTree> tts) {
+  public void notifyTemplateTreesLoaded(int tId, List<TemplateTree> tts) {
     getTrees().put(tId, tts);
     
     for (DataObserver dataObserver : dataObservers) {
@@ -618,7 +613,7 @@ public abstract class Model {
     }
   }
   
-  public void notifyTemplateTreeItemsLoaded(TemplateTree tt, ArrayList<TemplateTreeItem> ttis) {
+  public void notifyTemplateTreeItemsLoaded(TemplateTree tt, List<TemplateTreeItem> ttis) {
     getTreeItems().put(tt.getTId(), ttis);
     for (DataObserver dataObserver : dataObservers) {
       if (dataObserver instanceof TemplateTreeItemObserver)
@@ -626,7 +621,7 @@ public abstract class Model {
     }
   }
   
-  public void notifyChooseTemplateTreesLoaded(int tId, ArrayList<TemplateTree> tts) {
+  public void notifyChooseTemplateTreesLoaded(int tId, List<TemplateTree> tts) {
     getTrees().put(tId, tts);
 
     for (DataObserver dataObserver : dataObservers) {
@@ -635,7 +630,7 @@ public abstract class Model {
     }
   }
   
-  public void notifyChooseTemplateTreeItemsLoaded(TemplateTree tt, ArrayList<TemplateTreeItem> ttis) {
+  public void notifyChooseTemplateTreeItemsLoaded(TemplateTree tt, List<TemplateTreeItem> ttis) {
     getTreeItems().put(tt.getTId(), ttis);
     for (DataObserver dataObserver : dataObservers) {
       if (dataObserver instanceof ChooseObjectObserver)
@@ -643,7 +638,7 @@ public abstract class Model {
     }
   }
   
-  public void notifyTemplateListsLoaded(String ID, int tId, ArrayList<TemplateList> tls) {
+  public void notifyTemplateListsLoaded(String ID, int tId, List<TemplateList> tls) {
     getLists().put(tId, tls);
     List<DataObserver> clones = new ArrayList<DataObserver>(dataObservers);
     for (DataObserver dataObserver : clones) { 
@@ -652,7 +647,7 @@ public abstract class Model {
     }
   }
   
-  public void notifyTemplateListItemsLoaded(TemplateList tl, ArrayList<TemplateListItem> tlis) {
+  public void notifyTemplateListItemsLoaded(TemplateList tl, List<TemplateListItem> tlis) {
     getListItems().put(tl.getId(), tlis);
     List<DataObserver> clones = new ArrayList<DataObserver>(dataObservers);
     for (DataObserver dataObserver : clones) { 
@@ -661,15 +656,13 @@ public abstract class Model {
     }
   }
   
-  public void notifyTemplateAttributesLoaded(Template t, 
-      ArrayList<TemplateAttribute> tas, TemplateRelation tr) {
+  public void notifyTemplateAttributesLoaded(Template t, List<TemplateAttribute> tas, TemplateRelation tr) {
     getAttrsByTemplate().put(t.getId(), tas);
     for (TemplateAttributeObserver taObserver : taObservers)
       taObserver.onTemplateAttributesLoaded(t, tas, tr);
   }
   
-  public void notifyTemplateRelationsLoaded(Template t, 
-      ArrayList<TemplateRelation> trs) {
+  public void notifyTemplateRelationsLoaded(Template t, List<TemplateRelation> trs) {
     getRelsByTemplate().put(t.getId(), trs);
     for (TemplateRelationObserver trObserver : trObservers)
       trObserver.onTemplateRelationsLoaded(t, trs);

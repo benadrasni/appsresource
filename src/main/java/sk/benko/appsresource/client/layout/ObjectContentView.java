@@ -17,8 +17,7 @@ public class ObjectContentView extends FlowPanel {
   SearchObjects srv;
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param objectView
    */
   public ObjectContentView(final ObjectView objectView) {
     this.objectView = objectView;

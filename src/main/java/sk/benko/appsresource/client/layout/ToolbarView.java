@@ -98,10 +98,7 @@ public class ToolbarView extends FlowPanel implements
     private final Label appsElem;
 
     /**
-     * @param author
-     *          the current author
-     * @param logoutUrl
-     *          a url that can be used to logout
+     * @param model
      */
     public AppsView(final UserModel model) {
       getElement().setId("apps-info");
@@ -122,11 +119,10 @@ public class ToolbarView extends FlowPanel implements
   private static DropDownBox ddbLanguages;
   
   /**
-   * @param parent
-   *          the parent for this widget
-   * @param model
+   * @param dmodel
    *          the model to which the Ui will bind itself
-   */
+   * @param umodel
+   *          the model to which the Ui will bind itself   */
   public ToolbarView(final DesignerModel dmodel, final UserModel umodel) {
     final Element elem = getElement();
     elem.setId(CSSConstants.CSS_TOOLBAR);
@@ -143,9 +139,7 @@ public class ToolbarView extends FlowPanel implements
   }
 
   /**
-   * @param parent
-   *          the parent for this widget
-   * @param model
+   * @param umodel
    *          the model to which the Ui will bind itself
    */
   public ToolbarView(final UserModel umodel) {

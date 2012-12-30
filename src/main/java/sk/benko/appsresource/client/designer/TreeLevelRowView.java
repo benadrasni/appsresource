@@ -20,8 +20,7 @@ import com.google.gwt.user.client.ui.TreeItem;
  */
 public class TreeLevelRowView extends TreeItem {
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param item
    */
   public TreeLevelRowView(final TreeLevel item) {
 

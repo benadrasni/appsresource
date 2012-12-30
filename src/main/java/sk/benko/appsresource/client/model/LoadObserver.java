@@ -10,8 +10,7 @@ public interface LoadObserver {
   /**
    * Invoked when the user loads successfully.
    *
-   * @param model
-   *          the newly loaded model
+   * @param result
    */
   void onModelLoaded(UserInfoResult result);
 

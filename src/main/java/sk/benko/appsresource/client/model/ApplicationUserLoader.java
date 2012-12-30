@@ -12,22 +12,19 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class ApplicationUserLoader extends RetryTimer implements
     AsyncCallback<AppUserService.GetApplicationUsersResult> {
   private final UserModel model;
-  private final int userId;
 
   /**
    * Creates a new loader that is bound to the given model.
    *
    * @param model the model to which this loader is bound
-   * @param userId
    */
-  public ApplicationUserLoader(UserModel model, int userId) {
+  public ApplicationUserLoader(UserModel model) {
     this.model = model;
-    this.userId = userId;
   }
 
   public void start() {
     Main.status.showTaskStatus(Main.constants.loading());
-    ((AppUserServiceAsync)model.getService()).getUserApplications(userId, this);
+    ((AppUserServiceAsync)model.getService()).getUserApplications(model.getCurrentAuthor().getId(), this);
   }
 
   @Override

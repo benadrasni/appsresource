@@ -59,7 +59,7 @@ public class TemplateGroupRowView extends FlexTable implements
     setWidget(0, 3, lblT);
     Label lblRank = new Label(""+tg.getRank());
     setWidget(0, 4, lblRank);
-    Label lblSubrank = new Label(""+tg.getSubrank());
+    Label lblSubrank = new Label(""+tg.getSubRank());
     setWidget(0, 5, lblSubrank);
   }
 

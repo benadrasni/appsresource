@@ -1440,7 +1440,7 @@ public class DesignerModel extends Model {
       Collections.sort(getTemplates());
     }
     
-    for (ArrayList<ApplicationTemplate> appts : getAppTemplatesByApp().values()) {
+    for (List<ApplicationTemplate> appts : getAppTemplatesByApp().values()) {
       for (ApplicationTemplate appt : appts) {
         if (appt.getTId() == template.getId())
           appt.setT(template);
@@ -1494,7 +1494,7 @@ public class DesignerModel extends Model {
 
   void notifyTemplateAttributeCreated(TemplateAttribute templateAttribute) {
     if (getAttrsByTemplate().get(templateAttribute.getTg().getTId()) != null) {
-      ArrayList<TemplateAttribute> tas = getAttrsByTemplate().get(templateAttribute.getTg().getTId());
+      List<TemplateAttribute> tas = getAttrsByTemplate().get(templateAttribute.getTg().getTId());
       tas.add(templateAttribute);
       Collections.sort(tas);
     }
@@ -1507,7 +1507,7 @@ public class DesignerModel extends Model {
 
   void notifyTemplateAttributeUpdated(TemplateAttribute templateAttribute) {
     if (getAttrsByTemplate().get(templateAttribute.getTg().getTId()) != null) {
-      ArrayList<TemplateAttribute> tas = getAttrsByTemplate().get(templateAttribute.getTg().getTId());
+      List<TemplateAttribute> tas = getAttrsByTemplate().get(templateAttribute.getTg().getTId());
       for (int i = 0; i < tas.size(); i++)
         if (tas.get(i).getId() == templateAttribute.getId()) {
           tas.remove(i);
@@ -1524,7 +1524,7 @@ public class DesignerModel extends Model {
   // template relation events
   void notifyTemplateRelationCreated(TemplateRelation templateRelation) {
     if (getRelsByTemplate().get(templateRelation.getT1Id()) != null) {
-      ArrayList<TemplateRelation> trs = getRelsByTemplate().get(templateRelation.getT1Id());
+      List<TemplateRelation> trs = getRelsByTemplate().get(templateRelation.getT1Id());
       trs.add(templateRelation);
       Collections.sort(trs);
     }
@@ -1537,7 +1537,7 @@ public class DesignerModel extends Model {
 
   void notifyTemplateRelationUpdated(TemplateRelation templateRelation) {
     if (getRelsByTemplate().get(templateRelation.getT1Id()) != null) {
-      ArrayList<TemplateRelation> trs = getRelsByTemplate().get(templateRelation.getT1Id());
+      List<TemplateRelation> trs = getRelsByTemplate().get(templateRelation.getT1Id());
       for (int i = 0; i < trs.size(); i++)
         if (trs.get(i).getId() == templateRelation.getId()) {
           trs.remove(i);

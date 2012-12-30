@@ -12,8 +12,7 @@ public class ObjectActionView extends FlowPanel {
   ObjectActionButtonsView oabv;
   ObjectTreeView objectTreeView;
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param objectView
    */
   public ObjectActionView(final ObjectView objectView) {
     this.objectView = objectView;

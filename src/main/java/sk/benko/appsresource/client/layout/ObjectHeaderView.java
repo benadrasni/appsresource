@@ -13,13 +13,13 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class ObjectHeaderView extends FlowPanel {
 
   /**
-   * @param model
+   * @param aModel
    *          the model to which the Ui will bind itself
    */
-  public ObjectHeaderView(final ApplicationModel amodel){
+  public ObjectHeaderView(final ApplicationModel aModel){
     getElement().setId("header");
      
-    LogoView lv = new LogoView(amodel.getAppu().getApp().getName());
+    LogoView lv = new LogoView(aModel.getAppu().getApp().getName());
     add(lv);
   }
 }

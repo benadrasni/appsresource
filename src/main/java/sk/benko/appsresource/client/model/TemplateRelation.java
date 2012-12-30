@@ -53,7 +53,9 @@ public class TemplateRelation extends DesignItem {
    * A constructor to be used on client-side only.
    *
    * @param name
-   * @param tId
+   * @param t1Id
+   * @param t2Id
+   * @param orId
    */
   public TemplateRelation(String name, int t1Id, int t2Id, int orId) {
     assert GWT.isClient();
@@ -66,7 +68,7 @@ public class TemplateRelation extends DesignItem {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param key
+   * @param id
    * @param code
    * @param name
    * @param desc
@@ -78,13 +80,13 @@ public class TemplateRelation extends DesignItem {
    * @param or
    * @param flags
    * @param rank
-   * @param subrank
+   * @param subRank
    * @param userId
    * @param lastUpdatedAt
    */
   public TemplateRelation(int id, String code, String name, String desc, 
       int t1Id, Template t1, int t2Id, Template t2, int orId, ObjectRelation or, 
-      int flags, int rank, int subrank, int userId, Date lastUpdatedAt) {
+      int flags, int rank, int subRank, int userId, Date lastUpdatedAt) {
     assert !GWT.isClient();
     this.id = id;
     this.code = code;
@@ -98,7 +100,7 @@ public class TemplateRelation extends DesignItem {
     this.or = or;
     this.flags = flags;
     this.rank = rank;
-    this.subrank = subrank;
+    this.subrank = subRank;
     this.userId = userId;
     this.lastUpdatedAt = lastUpdatedAt;
   }

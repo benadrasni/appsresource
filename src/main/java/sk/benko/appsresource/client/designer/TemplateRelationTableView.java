@@ -1,8 +1,6 @@
 package sk.benko.appsresource.client.designer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
+import com.google.gwt.user.client.ui.Label;
 import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.layout.TableView;
 import sk.benko.appsresource.client.model.DesignerModel;
@@ -11,19 +9,18 @@ import sk.benko.appsresource.client.model.Template;
 import sk.benko.appsresource.client.model.TemplateRelation;
 import sk.benko.appsresource.client.model.loader.TemplateRelationLoader;
 
-import com.google.gwt.user.client.ui.Label;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A widget to display table of template groups.
- *
  */
-public class TemplateRelationTableView extends TableView implements 
+public class TemplateRelationTableView extends TableView implements
     Model.TemplateRelationObserver,
     DesignerModel.TemplateRelationUpdateObserver {
-  
+
   /**
-   * @param model
-   *          the model to which the UI will bind itself
+   * @param model the model to which the UI will bind itself
    */
   public TemplateRelationTableView(DesignerModel model) {
     super(model);
@@ -39,8 +36,7 @@ public class TemplateRelationTableView extends TableView implements
   }
 
   @Override
-  public void onTemplateRelationsLoaded(Template t, 
-      ArrayList<TemplateRelation> templateRelations) {
+  public void onTemplateRelationsLoaded(Template t, List<TemplateRelation> templateRelations) {
     clear();
     add(getHeader());
     displayRows(templateRelations);
@@ -57,7 +53,7 @@ public class TemplateRelationTableView extends TableView implements
     getModel().removeTemplateRelationObserver(this);
     getModel().removeTemplateRelationUpdateObserver(this);
   }
-  
+
   @Override
   public void initializeHeader() {
     getHeader().clear();
@@ -88,15 +84,15 @@ public class TemplateRelationTableView extends TableView implements
             getModel().getTemplate());
         tal.start();
       } else
-        onTemplateRelationsLoaded(getModel().getTemplate(), 
+        onTemplateRelationsLoaded(getModel().getTemplate(),
             getModel().getRelsByTemplate().get(getModel().getTemplate().getId()));
   }
-  
-  public void displayRows(ArrayList<TemplateRelation> trs) {
+
+  public void displayRows(List<TemplateRelation> trs) {
     Collections.sort(trs);
     for (TemplateRelation tr : trs) {
       add(new TemplateRelationRowView(getModel(), tr));
     }
-  }  
+  }
 
 }

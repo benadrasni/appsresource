@@ -21,10 +21,10 @@ public interface ApplicationServiceAsync extends ServiceAsync {
    * @see ApplicationService#getTreeLevel(int, int, java.util.List, TemplateAttribute)
    */
   void getTreeLevel(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta,
-                    AsyncCallback<GetTreeLevelResult> callback);
+                    AsyncCallback<List<TreeLevel>> callback);
 
   void getTreeLevel(int langId, int tIdSource, Map<Integer, List<AValue>> values, int tId,
-                    List<TreeLevel> path, TemplateAttribute ta, AsyncCallback<GetTreeLevelResult> callback);
+                    List<TreeLevel> path, TemplateAttribute ta, AsyncCallback<List<TreeLevel>> callback);
 
   /**
    * @param langId
@@ -43,7 +43,7 @@ public interface ApplicationServiceAsync extends ServiceAsync {
    * @param callback
    * @see ApplicationService#getSearchObjectCounts(int, String)
    */
-  void getSearchObjectCounts(int appId, String searchString, AsyncCallback<GetSearchCountsResult> callback);
+  void getSearchObjectCounts(int appId, String searchString, AsyncCallback<Map<Template, Integer>> callback);
 
   /**
    * @param langId
@@ -55,7 +55,7 @@ public interface ApplicationServiceAsync extends ServiceAsync {
    * @see ApplicationService#getSearchObjects(int, String, int, int, int)
    */
   void getSearchObjects(int langId, String searchString, int tlId, int from, int perPage,
-                        AsyncCallback<GetSearchObjectsResult> callback);
+                        AsyncCallback<Map<AObject, List<AValue>>> callback);
 
   /**
    * @param objId
@@ -63,7 +63,7 @@ public interface ApplicationServiceAsync extends ServiceAsync {
    * @param callback
    * @see ApplicationService#getRelatedObjectCounts(int, int, Template)
    */
-  void getRelatedObjectCounts(int objId, int rel, Template t, AsyncCallback<GetSearchCountsResult> callback);
+  void getRelatedObjectCounts(int objId, int rel, Template t, AsyncCallback<Map<Template, Integer>> callback);
 
   /**
    * @param langId
@@ -75,14 +75,14 @@ public interface ApplicationServiceAsync extends ServiceAsync {
    * @see ApplicationService#getRelatedObjects(int, int, int, int, int, int)
    */
   void getRelatedObjects(int langId, int objId, int rel, int tlId, int from, int perPage,
-                         AsyncCallback<GetSearchObjectsResult> callback);
+                         AsyncCallback<Map<AObject, List<AValue>>> callback);
 
   /**
    * @param object
    * @param callback
    * @see ApplicationService#getValues(AObject)
    */
-  void getValues(AObject object, AsyncCallback<GetValuesResult> callback);
+  void getValues(AObject object, AsyncCallback<Map<Integer, Map<Integer, List<AValue>>>> callback);
 
   /**
    * @param object
@@ -106,10 +106,10 @@ public interface ApplicationServiceAsync extends ServiceAsync {
                      Map<Integer, TemplateAttribute> map,
                      Map<Integer, TemplateAttribute> keys,
                      boolean onlyUpdate, AppUser author,
-                     AsyncCallback<CountObjectsResult> callback);
+                     AsyncCallback<Integer> callback);
 
   void removeDuplicates(Application app, Template t,
                         Map<Integer, TemplateAttribute> keys, AppUser author,
-                        AsyncCallback<CountObjectsResult> callback);
+                        AsyncCallback<Integer> callback);
 
 }
