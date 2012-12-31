@@ -3,6 +3,7 @@ package sk.benko.appsresource.server;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,10 +45,8 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
   /**
    * A reference to a cache service.
    */
-  private final Cache cache = new Cache(MemcacheServiceFactory
-      .getMemcacheService());
-  private final CacheApplication cacheApp = new CacheApplication(
-      MemcacheServiceFactory.getMemcacheService());
+  private final Cache cache = new Cache(MemcacheServiceFactory.getMemcacheService());
+  private final CacheApplication cacheApp = new CacheApplication(MemcacheServiceFactory.getMemcacheService());
 
   /*
    * Object Type
@@ -62,11 +61,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return clients;
   }
 
-  public GetObjectTypesResult getObjectTypes()
-      throws AccessDeniedException {
-    return new DbService.GetObjectTypesResult(getOTs());
-  }
-  
+  @Override
   public CreateOrUpdateObjectTypeResult createObjectType(final ObjectType objectType, 
       final AppUser author) {
     final StoreDB.Api api = store.getApi();
@@ -93,10 +88,11 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<ObjectType> getOTs() {
+  @Override
+  public List<ObjectType> getObjectTypes() {
     final StoreDB.Api api = store.getApi();
     try {
-      final ArrayList<ObjectType> fromCache = cache.getObjectTypes();
+      final List<ObjectType> fromCache = cache.getObjectTypes();
       if (fromCache != null) {
         return fromCache;
       }
@@ -109,7 +105,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
       api.close();
     }
     
-    return new ArrayList<ObjectType>();  
+    return new ArrayList<ObjectType>();
   }
 
   /*
@@ -125,11 +121,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return clients;
   }
 
-  public GetObjectAttributesResult getObjectAttributes(int otId)
-      throws AccessDeniedException {
-    return new DbService.GetObjectAttributesResult(getOAs(otId));
-  }
-  
+  @Override
   public CreateOrUpdateObjectAttributeResult createObjectAttribute(
       final ObjectAttribute oa, final AppUser author) {
     final StoreDB.Api api = store.getApi();
@@ -156,10 +148,11 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<ObjectAttribute> getOAs(int otId) {
+  @Override
+  public List<ObjectAttribute> getObjectAttributes(int otId) {
     final StoreDB.Api api = store.getApi();
     try {
-      final ArrayList<ObjectAttribute> fromCache = cache.getObjectAttributes(otId);
+      final List<ObjectAttribute> fromCache = cache.getObjectAttributes(otId);
       if (fromCache != null) {
         return fromCache;
       }
@@ -218,10 +211,10 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
   }
 
   @Override
-  public ArrayList<ObjectRelation> getObjectRelations(int otId) {
+  public List<ObjectRelation> getObjectRelations(int otId) {
     final StoreDB.Api api = store.getApi();
     try {
-      final ArrayList<ObjectRelation> fromCache = cache.getObjectRelations(otId);
+      final List<ObjectRelation> fromCache = cache.getObjectRelations(otId);
       if (fromCache != null) {
         return fromCache;
       }
@@ -250,11 +243,6 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return clients;
   }
 
-  public GetValueTypesResult getValueTypes()
-      throws AccessDeniedException {
-    return new DbService.GetValueTypesResult(getVTs());
-  }
-
   @Override
   public CreateOrUpdateValueTypeResult createValueType(ValueType valueType,
       AppUser author) {
@@ -279,12 +267,12 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     }
     return null;
   }
-  
-  private ArrayList<ValueType> getVTs() {
-    ArrayList<ValueType> result = new ArrayList<ValueType>();
+
+  @Override
+  public List<ValueType> getValueTypes() {
     final StoreDB.Api api = store.getApi();
     try {
-      final ArrayList<ValueType> fromCache = cache.getValueTypes();
+      final List<ValueType> fromCache = cache.getValueTypes();
       if (fromCache != null) {
         return fromCache;
       }
@@ -296,7 +284,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
       api.close();
     }
     
-    return result;  
+    return new ArrayList<ValueType>();
   }
 
   /*
@@ -312,10 +300,6 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
           n.getLastUpdatedAt()));
     }
     return clients;
-  }
-
-  public GetUnitsResult getUnits() throws AccessDeniedException {
-    return new DbService.GetUnitsResult(getUs());
   }
 
   @Override
@@ -341,11 +325,12 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     }
     return null;
   }
-  
-  private ArrayList<Unit> getUs() {
+
+  @Override
+  public List<Unit> getUnits() {
     final StoreDB.Api api = store.getApi();
     try {
-      final ArrayList<Unit> fromCache = cache.getUnits();
+      final List<Unit> fromCache = cache.getUnits();
       if (fromCache != null) {
         return fromCache;
       }
@@ -375,11 +360,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return clients;
   }
 
-  public GetTemplatesResult getTemplates()
-      throws AccessDeniedException {
-    return new DbService.GetTemplatesResult(getTs());
-  }
-  
+  @Override
   public CreateOrUpdateTemplateResult createTemplate(final Template template, 
       final HashMap<TemplateTree,ArrayList<TemplateTreeItem>> trees, 
       final HashMap<TemplateList,ArrayList<TemplateListItem>> lists,
@@ -450,10 +431,11 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<Template> getTs() {
+  @Override
+  public List<Template> getTemplates() {
     final StoreDB.Api api = store.getApi();
     try {
-      final ArrayList<Template> fromCache = cache.getTemplates();
+      final List<Template> fromCache = cache.getTemplates();
       if (fromCache != null) {
         return fromCache;
       }
@@ -480,11 +462,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return clients;
   }
 
-  public GetTemplateRelationsResult getTemplateRelations()
-      throws AccessDeniedException {
-    return new DbService.GetTemplateRelationsResult(getTRs());
-  }
-  
+  @Override
   public CreateOrUpdateTemplateRelationResult createTemplateRelation(
       final TemplateRelation templateRelation, final AppUser author) {
     final StoreDB.Api api = store.getApi();
@@ -513,10 +491,11 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<TemplateRelation> getTRs() {
+  @Override
+  public List<TemplateRelation> getTemplateRelations() {
     final StoreDB.Api api = store.getApi();
     try {
-      final ArrayList<TemplateRelation> fromCache = cache.getTemplateRelations();
+      final List<TemplateRelation> fromCache = cache.getTemplateRelations();
       if (fromCache != null) {
         return fromCache;
       }
@@ -546,11 +525,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return clients;
   }
 
-  public GetTemplateGroupsResult getTemplateGroups(Template template)
-      throws AccessDeniedException {
-    return new DbService.GetTemplateGroupsResult(getTGs(template));
-  }
-  
+  @Override
   public CreateOrUpdateTemplateGroupResult createTemplateGroup(
       final TemplateGroup templateGroup, final AppUser author) {
     final StoreDB.Api api = store.getApi();
@@ -580,10 +555,11 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<TemplateGroup> getTGs(Template template) {
+  @Override
+  public List<TemplateGroup> getTemplateGroups(Template template) {
     final StoreDB.Api api = store.getApi();
     try {
-      final ArrayList<TemplateGroup> fromCache = cache.getTemplateGroups(template.getId());
+      final List<TemplateGroup> fromCache = cache.getTemplateGroups(template.getId());
       if (fromCache != null) {
         return fromCache;
       }
@@ -602,21 +578,7 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
   /*
    * Template Attribute
    */
-  
-  private static ArrayList<TemplateAttribute> toClientTemplateAttributes(
-      ArrayList<StoreDB.TemplateAttribute> templateAttributes) {
-    final ArrayList<TemplateAttribute> clients = new ArrayList<TemplateAttribute>();
-    for (StoreDB.TemplateAttribute ta : templateAttributes) {
-      clients.add(Utils.toClientTemplateAttribute(ta));
-    }
-    return clients;
-  }
 
-  public GetTemplateAttributesResult getTemplateAttributes()
-      throws AccessDeniedException {
-    return new DbService.GetTemplateAttributesResult(getTAs());
-  }
-  
   public CreateOrUpdateTemplateAttributeResult createTemplateAttribute(
       final TemplateAttribute templateAttribute, final AppUser author) {
     final StoreDB.Api api = store.getApi();
@@ -659,25 +621,6 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
     return null;
   }
 
-  private ArrayList<TemplateAttribute> getTAs() {
-    final StoreDB.Api api = store.getApi();
-    try {
-      final ArrayList<TemplateAttribute> fromCache = cache.getTemplateAttributes();
-      if (fromCache != null) {
-        return fromCache;
-      }
-
-      return cache.putTemplateAttributes(
-          toClientTemplateAttributes(api.getTemplateAttributes()));
-    } catch (SQLException ex) {
-      log.log(Level.SEVERE, ex.getLocalizedMessage(), ex);
-    } finally {
-      api.close();
-    }
-    
-    return new ArrayList<TemplateAttribute>();  
-  }
-  
   /*
    * Application
    */

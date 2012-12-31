@@ -145,10 +145,8 @@ public class TemplateObjectPickerWidget extends TemplateWidget implements Object
 
   @Override
   public TemplateWidget copy(int rank) {
-    TemplateWidget copy = new TemplateObjectPickerWidget(getObjectTemplate(),
-        getTemplateAttribute(), getRelId(), rank, getWidgetToHighlight(),
-        false);
-    return copy;
+    return new TemplateObjectPickerWidget(getObjectTemplate(), getTemplateAttribute(), getRelId(), rank,
+        getWidgetToHighlight(), false);
   }
 
   @Override

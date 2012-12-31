@@ -6,9 +6,11 @@ import sk.benko.appsresource.client.model.DbServiceAsync;
 import sk.benko.appsresource.client.model.DesignerModel;
 import sk.benko.appsresource.client.model.ObjectAttribute;
 import sk.benko.appsresource.client.model.RetryTimer;
-import sk.benko.appsresource.client.model.DbService.GetObjectAttributesResult;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controls all aspects of loading the set of {@link ObjectAttribute}s. This class 
@@ -16,8 +18,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * of ObjectAtributes.
  *
  */
-public class ObjectAttributeLoader extends RetryTimer implements
-    AsyncCallback<DbService.GetObjectAttributesResult> {
+public class ObjectAttributeLoader extends RetryTimer implements AsyncCallback<List<ObjectAttribute>> {
 
   private final DesignerModel model;
   private final int otId;
@@ -25,8 +26,8 @@ public class ObjectAttributeLoader extends RetryTimer implements
   /**
    * Creates a new loader that is bound to the given model.
    *
-   * @param model the model to which this loader is bound
-   * @param otId
+   * @param model     the model to which this loader is bound
+   * @param otId      the object type's id
    */
   public ObjectAttributeLoader(DesignerModel model, int otId) {
     this.model = model;
@@ -46,10 +47,10 @@ public class ObjectAttributeLoader extends RetryTimer implements
   }
 
   @Override
-  public void onSuccess(GetObjectAttributesResult result) {
+  public void onSuccess(List<ObjectAttribute> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
-    model.notifyObjectAttributesLoaded(otId, result.getObjectAttributes());
+    model.notifyObjectAttributesLoaded(otId, result);
   }
 
   @Override

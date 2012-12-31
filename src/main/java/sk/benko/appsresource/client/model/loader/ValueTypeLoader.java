@@ -1,23 +1,17 @@
 package sk.benko.appsresource.client.model.loader;
 
-import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.model.DbService;
-import sk.benko.appsresource.client.model.DbServiceAsync;
-import sk.benko.appsresource.client.model.DesignerModel;
-import sk.benko.appsresource.client.model.RetryTimer;
-import sk.benko.appsresource.client.model.ValueType;
-import sk.benko.appsresource.client.model.DbService.GetValueTypesResult;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import sk.benko.appsresource.client.layout.Main;
+import sk.benko.appsresource.client.model.*;
+
+import java.util.List;
 
 /**
- * Controls all aspects of loading the set of {@link ValueType}s. This class 
- * takes care of performing (and possibly retrying) a query for the initial set 
+ * Controls all aspects of loading the set of {@link ValueType}s. This class
+ * takes care of performing (and possibly retrying) a query for the initial set
  * of ValueTypes.
- *
  */
-public class ValueTypeLoader extends RetryTimer implements
-    AsyncCallback<DbService.GetValueTypesResult> {
+public class ValueTypeLoader extends RetryTimer implements AsyncCallback<List<ValueType>> {
 
   private final DesignerModel model;
 
@@ -32,7 +26,7 @@ public class ValueTypeLoader extends RetryTimer implements
 
   public void start() {
     Main.status.showTaskStatus(Main.constants.loading());
-    ((DbServiceAsync)model.getService()).getValueTypes(this);
+    ((DbServiceAsync) model.getService()).getValueTypes(this);
   }
 
   @Override
@@ -43,10 +37,10 @@ public class ValueTypeLoader extends RetryTimer implements
   }
 
   @Override
-  public void onSuccess(GetValueTypesResult result) {
+  public void onSuccess(List<ValueType> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
-    model.notifyValueTypesLoaded(result.getValueTypes());
+    model.notifyValueTypesLoaded(result);
   }
 
   @Override

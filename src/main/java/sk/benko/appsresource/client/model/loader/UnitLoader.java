@@ -1,23 +1,18 @@
 package sk.benko.appsresource.client.model.loader;
 
-import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.model.DbService;
-import sk.benko.appsresource.client.model.DbServiceAsync;
-import sk.benko.appsresource.client.model.DesignerModel;
-import sk.benko.appsresource.client.model.RetryTimer;
-import sk.benko.appsresource.client.model.Unit;
-import sk.benko.appsresource.client.model.DbService.GetUnitsResult;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import sk.benko.appsresource.client.layout.Main;
+import sk.benko.appsresource.client.model.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Controls all aspects of loading the set of {@link Unit}s. This class 
- * takes care of performing (and possibly retrying) a query for the initial set 
+ * Controls all aspects of loading the set of {@link Unit}s. This class
+ * takes care of performing (and possibly retrying) a query for the initial set
  * of Units.
- *
  */
-public class UnitLoader extends RetryTimer implements
-    AsyncCallback<DbService.GetUnitsResult> {
+public class UnitLoader extends RetryTimer implements AsyncCallback<List<Unit>> {
 
   private final DesignerModel model;
 
@@ -32,7 +27,7 @@ public class UnitLoader extends RetryTimer implements
 
   public void start() {
     Main.status.showTaskStatus(Main.constants.loading());
-    ((DbServiceAsync)model.getService()).getUnits(this);
+    ((DbServiceAsync) model.getService()).getUnits(this);
   }
 
   @Override
@@ -43,10 +38,10 @@ public class UnitLoader extends RetryTimer implements
   }
 
   @Override
-  public void onSuccess(GetUnitsResult result) {
+  public void onSuccess(List<Unit> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
-    model.notifyUnitsLoaded(result.getUnits());
+    model.notifyUnitsLoaded(result);
   }
 
   @Override

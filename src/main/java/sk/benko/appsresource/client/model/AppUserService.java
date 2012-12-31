@@ -1,21 +1,72 @@
 package sk.benko.appsresource.client.model;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-import sk.benko.appsresource.client.model.DbService.GetTemplateAttributesResult;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-
 /**
  * The RPC api available to the client. The asynchronous version that is used
  * directly by the client is {@link AppUserServiceAsync}.
- *
  */
 @RemoteServiceRelativePath("userservice")
 public interface AppUserService extends Service {
+
+  /**
+   * Get all applications for the currently logged user.
+   *
+   * @return
+   * @throws AccessDeniedException
+   */
+  GetApplicationsResult getApplications() throws AccessDeniedException;
+
+  /**
+   * Get all languages.
+   *
+   * @return
+   * @throws AccessDeniedException
+   */
+  GetLanguagesResult getLanguages() throws AccessDeniedException;
+
+  /**
+   * Returns the information needed to load the application template.
+   *
+   * @return a result object
+   * @throws AccessDeniedException
+   */
+  UserInfoResult getUserInfo() throws AccessDeniedException;
+
+  /**
+   * Get all users for the application.
+   *
+   * @param appId
+   * @return
+   * @throws AccessDeniedException
+   */
+  GetApplicationUsersResult getApplicationUsers(int appId)
+      throws AccessDeniedException;
+
+  /**
+   * Get all applications for the currently logged in user.
+   *
+   * @param userId the user to query
+   * @return
+   * @throws AccessDeniedException
+   */
+  GetApplicationUsersResult getUserApplications(int userId)
+      throws AccessDeniedException;
+
+  /**
+   * Create a new {@link ApplicationUser}.
+   *
+   * @param applicationUser the applicationUser
+   * @return a result object
+   * @throws AccessDeniedException
+   */
+  CreateOrUpdateApplicationUserResult createOrUpdateApplicationUser(
+      ApplicationUser applicationUser, AppUser author);
 
   /**
    * Encapsulates a response for {@link AppUserService#getUserInfo()}.
@@ -23,17 +74,14 @@ public interface AppUserService extends Service {
   @SuppressWarnings("serial")
   static class UserInfoResult implements Serializable {
     private AppUser author;
-
     private String logoutUrl;
 
     /**
      * Constructs a new response. This constructor can only be invoked on the
      * server.
      *
-     * @param author
-     *          the current author
-     * @param logoutUrl
-     *          a url that can be used to log the current user out
+     * @param author    the current author
+     * @param logoutUrl a url that can be used to log the current user out
      */
     public UserInfoResult(AppUser author, String logoutUrl) {
       assert !GWT.isClient();
@@ -74,17 +122,14 @@ public interface AppUserService extends Service {
   @SuppressWarnings("serial")
   static class CreateOrUpdateApplicationUserResult implements Serializable {
     private int appuId;
-
     private Date updateTime;
 
     /**
      * Constructs a new result. This constructor can only be invoked on the
      * server.
      *
-     * @param appuId
-     *          the key that was assigned to the new {@link ApplicationUser}
-     * @param updateTime
-     *          the time assigned to {@link ApplicationUser#getLastUpdatedAt()}
+     * @param appuId     the key that was assigned to the new {@link ApplicationUser}
+     * @param updateTime the time assigned to {@link ApplicationUser#getLastUpdatedAt()}
      */
     public CreateOrUpdateApplicationUserResult(int appuId, Date updateTime) {
       assert !GWT.isClient();
@@ -130,7 +175,7 @@ public interface AppUserService extends Service {
      * Constructs a new result. This constructor can only be invoked on the
      * server.
      *
-     * @param languages     the list of languages to return
+     * @param languages the list of languages to return
      */
     public GetLanguagesResult(ArrayList<Language> languages) {
       assert !GWT.isClient();
@@ -154,7 +199,7 @@ public interface AppUserService extends Service {
       return languages;
     }
   }
-  
+
   /**
    * Encapsulates a response from {@link AppUserService#getApplications()}.
    */
@@ -166,7 +211,7 @@ public interface AppUserService extends Service {
      * Constructs a new result. This constructor can only be invoked on the
      * server.
      *
-     * @param applications      the list of applications to return
+     * @param applications the list of applications to return
      */
     public GetApplicationsResult(ArrayList<Application> applications) {
       assert !GWT.isClient();
@@ -191,7 +236,6 @@ public interface AppUserService extends Service {
     }
   }
 
-  
   /**
    * Encapsulates a response from {@link AppUserService#getApplicationUsers(int)}
    */
@@ -203,8 +247,7 @@ public interface AppUserService extends Service {
      * Constructs a new result. This constructor can only be invoked on the
      * server.
      *
-     * @param appus
-     *          the list of users's applications to return
+     * @param appus the list of users's applications to return
      */
     public GetApplicationUsersResult(ArrayList<ApplicationUser> appus) {
       assert !GWT.isClient();
@@ -229,60 +272,4 @@ public interface AppUserService extends Service {
     }
 
   }
-
-  /**
-   * Get all applications for the currently logged user.
-   *
-   * @return
-   * @throws AccessDeniedException
-   */
-  GetApplicationsResult getApplications() throws AccessDeniedException;
-
-  /**
-   * Get all languages.
-   *
-   * @return
-   * @throws AccessDeniedException
-   */
-  GetLanguagesResult getLanguages() throws AccessDeniedException;
-
-  /**
-   * Returns the information needed to load the application template.
-   *
-   * @return a result object
-   * @throws AccessDeniedException
-   */
-  UserInfoResult getUserInfo() throws AccessDeniedException;  
-  
-  /**
-   * Get all users for the application.
-   *
-   * @param appId
-   * @return
-   * @throws AccessDeniedException
-   */
-  GetApplicationUsersResult getApplicationUsers(int appId)
-      throws AccessDeniedException;
-
-  /**
-   * Get all applications for the currently logged in user.
-   *
-   * @param userId
-   *          the user to query
-   * @return
-   * @throws AccessDeniedException
-   */
-  GetApplicationUsersResult getUserApplications(int userId)
-      throws AccessDeniedException;
-
-  /**
-   * Create a new {@link ApplicationUser}.
-   *
-   * @param applicationUser
-   *          the applicationUser
-   * @return a result object
-   * @throws AccessDeniedException
-   */
-  CreateOrUpdateApplicationUserResult createOrUpdateApplicationUser(
-      ApplicationUser applicationUser, AppUser author);
 }

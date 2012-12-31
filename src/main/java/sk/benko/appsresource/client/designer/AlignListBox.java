@@ -3,9 +3,9 @@ package sk.benko.appsresource.client.designer;
 import com.google.gwt.user.client.ui.ListBox;
 
 public class AlignListBox extends ListBox {
-  public static String ALIGN_LEFT = "left";
-  public static String ALIGN_RIGHT = "right";
-  public static String ALIGN_CENTER = "center";
+  public static final String ALIGN_LEFT = "left";
+  public static final String ALIGN_RIGHT = "right";
+  public static final String ALIGN_CENTER = "center";
   
   public AlignListBox() {
     addItem(ALIGN_LEFT);

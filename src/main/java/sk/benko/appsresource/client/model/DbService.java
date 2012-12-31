@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * The RPC api available to the client. The asynchronous version that is used
@@ -22,7 +23,7 @@ public interface DbService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  GetObjectTypesResult getObjectTypes() throws AccessDeniedException;
+  List<ObjectType> getObjectTypes() throws AccessDeniedException;
 
   /**
    * Get all object attributes for given object type.
@@ -31,8 +32,7 @@ public interface DbService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  GetObjectAttributesResult getObjectAttributes(int otId)
-      throws AccessDeniedException;
+  List<ObjectAttribute> getObjectAttributes(int otId) throws AccessDeniedException;
 
   /**
    * Get all object relations for given object type.
@@ -41,7 +41,7 @@ public interface DbService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  ArrayList<ObjectRelation> getObjectRelations(int otId) throws AccessDeniedException;
+  List<ObjectRelation> getObjectRelations(int otId) throws AccessDeniedException;
 
   /**
    * Get all value types.
@@ -49,7 +49,7 @@ public interface DbService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  GetValueTypesResult getValueTypes() throws AccessDeniedException;
+  List<ValueType> getValueTypes() throws AccessDeniedException;
 
   /**
    * Get all units for the currently logged in author.
@@ -57,7 +57,7 @@ public interface DbService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  GetUnitsResult getUnits() throws AccessDeniedException;
+  List<Unit> getUnits() throws AccessDeniedException;
 
   /**
    * Get all templates for the currently logged in author.
@@ -65,7 +65,7 @@ public interface DbService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  GetTemplatesResult getTemplates() throws AccessDeniedException;
+  List<Template> getTemplates() throws AccessDeniedException;
 
   /**
    * Get all template groups for the currently logged in author.
@@ -73,11 +73,9 @@ public interface DbService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  GetTemplateRelationsResult getTemplateRelations()
-      throws AccessDeniedException;
+  List<TemplateRelation> getTemplateRelations()  throws AccessDeniedException;
 
-  GetTemplateGroupsResult getTemplateGroups(Template template)
-      throws AccessDeniedException;
+  List<TemplateGroup> getTemplateGroups(Template template) throws AccessDeniedException;
 
   /**
    * Create a new {@link ObjectType}.
@@ -729,293 +727,4 @@ public interface DbService extends Service {
       return updateTime;
     }
   }
-
-  /**
-   * Encapsulates a response from {@link sk.benko.appsresource.client.model.DbService#getObjectTypes()}.
-   */
-  @SuppressWarnings("serial")
-  static class GetObjectTypesResult implements Serializable {
-    private ArrayList<ObjectType> objectTypes;
-
-    /**
-     * Constructs a new result. This constructor can only be invoked on the
-     * server.
-     *
-     * @param objectTypes the list of object types to return
-     */
-    public GetObjectTypesResult(ArrayList<ObjectType> objectTypes) {
-      assert !GWT.isClient();
-      this.objectTypes = objectTypes;
-    }
-
-    /**
-     * Needed for RPC serialization.
-     */
-    @SuppressWarnings("unused")
-    private GetObjectTypesResult() {
-    }
-
-    /**
-     * Returns the object types that were returned by the server. This can be
-     * zero-length, but will not be null.
-     *
-     * @return
-     */
-    public ArrayList<ObjectType> getObjectTypes() {
-      return objectTypes;
-    }
-  }
-
-  /**
-   * Encapsulates a response from {@link DbService#getObjectAttributes(int)}.
-   */
-  @SuppressWarnings("serial")
-  static class GetObjectAttributesResult implements Serializable {
-    private ArrayList<ObjectAttribute> objectAttributes;
-
-    /**
-     * Constructs a new result. This constructor can only be invoked on the
-     * server.
-     *
-     * @param objectAttributes the list of object attributes to return
-     */
-    public GetObjectAttributesResult(ArrayList<ObjectAttribute> objectAttributes) {
-      assert !GWT.isClient();
-      this.objectAttributes = objectAttributes;
-    }
-
-    /**
-     * Needed for RPC serialization.
-     */
-    @SuppressWarnings("unused")
-    private GetObjectAttributesResult() {
-    }
-
-    /**
-     * Returns the object types that were returned by the server. This can be
-     * zero-length, but will not be null.
-     *
-     * @return
-     */
-    public ArrayList<ObjectAttribute> getObjectAttributes() {
-      return objectAttributes;
-    }
-  }
-
-  /**
-   * Encapsulates a response from {@link DbService#getValueTypes()}.
-   */
-  @SuppressWarnings("serial")
-  static class GetValueTypesResult implements Serializable {
-    private ArrayList<ValueType> valueTypes;
-
-    /**
-     * Constructs a new result. This constructor can only be invoked on the
-     * server.
-     *
-     * @param valueTypes the list of value types to return
-     */
-    public GetValueTypesResult(ArrayList<ValueType> valueTypes) {
-      assert !GWT.isClient();
-      this.valueTypes = valueTypes;
-    }
-
-    /**
-     * Needed for RPC serialization.
-     */
-    @SuppressWarnings("unused")
-    private GetValueTypesResult() {
-    }
-
-    /**
-     * Returns the value types that were returned by the server. This can be
-     * zero-length, but will not be null.
-     *
-     * @return
-     */
-    public ArrayList<ValueType> getValueTypes() {
-      return valueTypes;
-    }
-  }
-
-  /**
-   * Encapsulates a response from {@link DbService#getUnits()}.
-   */
-  @SuppressWarnings("serial")
-  static class GetUnitsResult implements Serializable {
-    private ArrayList<Unit> units;
-
-    /**
-     * Constructs a new result. This constructor can only be invoked on the
-     * server.
-     *
-     * @param units the list of units to return
-     */
-    public GetUnitsResult(ArrayList<Unit> units) {
-      assert !GWT.isClient();
-      this.units = units;
-    }
-
-    /**
-     * Needed for RPC serialization.
-     */
-    @SuppressWarnings("unused")
-    private GetUnitsResult() {
-    }
-
-    /**
-     * Returns the units that were returned by the server. This can be
-     * zero-length, but will not be null.
-     *
-     * @return
-     */
-    public ArrayList<Unit> getUnits() {
-      return units;
-    }
-  }
-
-  /**
-   * Encapsulates a response from {@link DbService#getTemplates()}.
-   */
-  @SuppressWarnings("serial")
-  static class GetTemplatesResult implements Serializable {
-    private ArrayList<Template> templates;
-
-    /**
-     * Constructs a new result. This constructor can only be invoked on the
-     * server.
-     *
-     * @param templates the list of templates to return
-     */
-    public GetTemplatesResult(ArrayList<Template> templates) {
-      assert !GWT.isClient();
-      this.templates = templates;
-    }
-
-    /**
-     * Needed for RPC serialization.
-     */
-    @SuppressWarnings("unused")
-    private GetTemplatesResult() {
-    }
-
-    /**
-     * Returns the object types that were returned by the server. This can be
-     * zero-length, but will not be null.
-     *
-     * @return
-     */
-    public ArrayList<Template> getTemplates() {
-      return templates;
-    }
-  }
-
-  /**
-   * Encapsulates a response from {@link DbService#getTemplateRelations()}.
-   */
-  @SuppressWarnings("serial")
-  static class GetTemplateRelationsResult implements Serializable {
-    private ArrayList<TemplateRelation> templateRelations;
-
-    /**
-     * Constructs a new result. This constructor can only be invoked on the
-     * server.
-     *
-     * @param templateRelations the list of template relations to return
-     */
-    public GetTemplateRelationsResult(ArrayList<TemplateRelation> templateRelations) {
-      assert !GWT.isClient();
-      this.templateRelations = templateRelations;
-    }
-
-    /**
-     * Needed for RPC serialization.
-     */
-    @SuppressWarnings("unused")
-    private GetTemplateRelationsResult() {
-    }
-
-    /**
-     * Returns the object types that were returned by the server. This can be
-     * zero-length, but will not be null.
-     *
-     * @return
-     */
-    public ArrayList<TemplateRelation> getTemplateRelations() {
-      return templateRelations;
-    }
-  }
-
-  /**
-   * Encapsulates a response from {@link DbService#getTemplateGroups(Template)}.
-   */
-  @SuppressWarnings("serial")
-  static class GetTemplateGroupsResult implements Serializable {
-    private ArrayList<TemplateGroup> templateGroups;
-
-    /**
-     * Constructs a new result. This constructor can only be invoked on the
-     * server.
-     *
-     * @param templateGroups the list of templates to return
-     */
-    public GetTemplateGroupsResult(ArrayList<TemplateGroup> templateGroups) {
-      assert !GWT.isClient();
-      this.templateGroups = templateGroups;
-    }
-
-    /**
-     * Needed for RPC serialization.
-     */
-    @SuppressWarnings("unused")
-    private GetTemplateGroupsResult() {
-    }
-
-    /**
-     * Returns the object types that were returned by the server. This can be
-     * zero-length, but will not be null.
-     *
-     * @return
-     */
-    public ArrayList<TemplateGroup> getTemplateGroups() {
-      return templateGroups;
-    }
-  }
-
-  /**
-   * Encapsulates a response from {@link DbService#getTemplateAttributes(Template)}.
-   */
-  @SuppressWarnings("serial")
-  static class GetTemplateAttributesResult implements Serializable {
-    private ArrayList<TemplateAttribute> templateAttributes;
-
-    /**
-     * Constructs a new result. This constructor can only be invoked on the
-     * server.
-     *
-     * @param templateAttributes the list of template attributes to return
-     */
-    public GetTemplateAttributesResult(ArrayList<TemplateAttribute> templateAttributes) {
-      assert !GWT.isClient();
-      this.templateAttributes = templateAttributes;
-    }
-
-    /**
-     * Needed for RPC serialization.
-     */
-    @SuppressWarnings("unused")
-    private GetTemplateAttributesResult() {
-    }
-
-    /**
-     * Returns the template attributes that were returned by the server.
-     * This can be zero-length, but will not be null.
-     *
-     * @return
-     */
-    public ArrayList<TemplateAttribute> getTemplateAttributes() {
-      return templateAttributes;
-    }
-  }
-
 }

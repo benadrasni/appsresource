@@ -1,11 +1,6 @@
 package sk.benko.appsresource.client.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import sk.benko.appsresource.client.model.DbService.CreateOrUpdateApplicationResult;
 import sk.benko.appsresource.client.model.DbService.CreateOrUpdateObjectAttributeResult;
@@ -712,7 +707,7 @@ public class DesignerModel extends Model {
   private ObjectType objectType;
   
   /** Object types */
-  private ArrayList<ObjectType> objectTypes;
+  private List<ObjectType> objectTypes;
 
   /**
    * The list of the observers monitoring the model for object type related
@@ -721,7 +716,7 @@ public class DesignerModel extends Model {
   private final List<ObjectTypeObserver> objectTypeObservers = new ArrayList<ObjectTypeObserver>();
 
   /** Cache for object attributes indexed by object type id */
-  private HashMap<Integer, ArrayList<ObjectAttribute>> objectAttributes;
+  private Map<Integer, List<ObjectAttribute>> objectAttributes;
 
   /**
    * The list of the observers monitoring the model for object attribute related
@@ -730,7 +725,7 @@ public class DesignerModel extends Model {
   private final List<ObjectAttributeObserver> objectAttributeObservers = new ArrayList<ObjectAttributeObserver>();
 
   /** Object relations */
-  private HashMap<Integer, ArrayList<ObjectRelation>> objectRelations;
+  private Map<Integer, List<ObjectRelation>> objectRelations;
 
   /**
    * The list of the observers monitoring the model for object relation related
@@ -739,7 +734,7 @@ public class DesignerModel extends Model {
   private final List<ObjectRelationObserver> objectRelationObservers = new ArrayList<ObjectRelationObserver>();
 
   /** Value types*/
-  private ArrayList<ValueType> valueTypes;
+  private List<ValueType> valueTypes;
 
   /**
    * The list of the observers monitoring the model for value type related
@@ -748,7 +743,7 @@ public class DesignerModel extends Model {
   private final List<ValueTypeObserver> valueTypeObservers = new ArrayList<ValueTypeObserver>();
 
   /** Units */
-  private ArrayList<Unit> units;
+  private List<Unit> units;
 
   /**
    * The list of the observers monitoring the model for data related events.
@@ -756,7 +751,7 @@ public class DesignerModel extends Model {
   private final List<UnitObserver> unitObservers = new ArrayList<UnitObserver>();
   
   /** Templates */
-  private ArrayList<Template> templates;
+  private List<Template> templates;
 
   /**
    * The list of the observers monitoring the model for data related events.
@@ -764,7 +759,7 @@ public class DesignerModel extends Model {
   private final List<TemplateObserver> templateObservers = new ArrayList<TemplateObserver>();
 
   /** Cache for template groups indexed by template id */
-  private HashMap<Integer, ArrayList<TemplateGroup>> templateGroups;
+  private Map<Integer, List<TemplateGroup>> templateGroups;
 
   /**
    * The list of the observers monitoring the model for data related events.
@@ -1120,14 +1115,14 @@ public class DesignerModel extends Model {
    *
    * @return
    */
-  public ArrayList<ObjectType> getObjectTypes() {
+  public List<ObjectType> getObjectTypes() {
     return objectTypes;
   }
 
   /**
    * @param objectTypes the objectTypes to set
    */
-  public void setObjectTypes(ArrayList<ObjectType> objectTypes) {
+  public void setObjectTypes(List<ObjectType> objectTypes) {
     this.objectTypes = objectTypes;
   }
 
@@ -1136,9 +1131,9 @@ public class DesignerModel extends Model {
    *
    * @return
    */
-  public HashMap<Integer, ArrayList<ObjectAttribute>> getObjectAttributes() {
+  public Map<Integer, List<ObjectAttribute>> getObjectAttributes() {
     if (objectAttributes == null)
-      objectAttributes = new HashMap<Integer, ArrayList<ObjectAttribute>>();
+      objectAttributes = new HashMap<Integer, List<ObjectAttribute>>();
     return objectAttributes;
   }
 
@@ -1147,9 +1142,9 @@ public class DesignerModel extends Model {
    *
    * @return
    */
-  public HashMap<Integer, ArrayList<ObjectRelation>> getObjectRelations() {
+  public Map<Integer, List<ObjectRelation>> getObjectRelations() {
     if (objectRelations == null)
-      objectRelations = new HashMap<Integer, ArrayList<ObjectRelation>>();
+      objectRelations = new HashMap<Integer, List<ObjectRelation>>();
     return objectRelations;
   }
 
@@ -1158,14 +1153,14 @@ public class DesignerModel extends Model {
    *
    * @return
    */
-  public ArrayList<ValueType> getValueTypes() {
+  public List<ValueType> getValueTypes() {
     return valueTypes;
   }
 
   /**
    * @param valueTypes the value types to set
    */
-  public void setValueTypes(ArrayList<ValueType> valueTypes) {
+  public void setValueTypes(List<ValueType> valueTypes) {
     this.valueTypes = valueTypes;
   }
 
@@ -1174,14 +1169,14 @@ public class DesignerModel extends Model {
    *
    * @return units
    */
-  public ArrayList<Unit> getUnits() {
+  public List<Unit> getUnits() {
     return units;
   }
   
   /**
    * @param units the units to set
    */
-  public void setUnits(ArrayList<Unit> units) {
+  public void setUnits(List<Unit> units) {
     this.units = units;
   }
 
@@ -1190,14 +1185,14 @@ public class DesignerModel extends Model {
    *
    * @return
    */
-  public ArrayList<Template> getTemplates() {
+  public List<Template> getTemplates() {
     return templates;
   }
 
   /**
    * @param templates the templates to set
    */
-  public void setTemplates(ArrayList<Template> templates) {
+  public void setTemplates(List<Template> templates) {
     this.templates = templates;
   }
 
@@ -1206,13 +1201,13 @@ public class DesignerModel extends Model {
    *
    * @return
    */
-  public HashMap<Integer, ArrayList<TemplateGroup>> getTemplateGroups() {
+  public Map<Integer, List<TemplateGroup>> getTemplateGroups() {
     if (templateGroups == null)
-      templateGroups = new HashMap<Integer, ArrayList<TemplateGroup>>();
+      templateGroups = new HashMap<Integer, List<TemplateGroup>>();
     return templateGroups;
   }
 
-  public ArrayList<TemplateGroup> getTemplateGroup(int tId) {
+  public List<TemplateGroup> getTemplateGroup(int tId) {
     return getTemplateGroups().get(tId);
   }
 
@@ -1222,7 +1217,7 @@ public class DesignerModel extends Model {
    */
   
   // object type events
-  public void notifyObjectTypesLoaded(ArrayList<ObjectType> objectTypes) {
+  public void notifyObjectTypesLoaded(List<ObjectType> objectTypes) {
     setObjectTypes(objectTypes);
     List<ObjectTypeObserver> clones = new ArrayList<ObjectTypeObserver>(objectTypeObservers);
     for (ObjectTypeObserver objectTypeObserver : clones) {
@@ -1255,8 +1250,7 @@ public class DesignerModel extends Model {
   }
 
   // object attribute events
-  public void notifyObjectAttributesLoaded(int otId, 
-      ArrayList<ObjectAttribute> objectAttributes) {
+  public void notifyObjectAttributesLoaded(int otId, List<ObjectAttribute> objectAttributes) {
     getObjectAttributes().put(otId, objectAttributes);
     List<ObjectAttributeObserver> clones = new ArrayList<ObjectAttributeObserver>(objectAttributeObservers);
     for (ObjectAttributeObserver objectAttributeObserver : clones) {
@@ -1266,7 +1260,7 @@ public class DesignerModel extends Model {
 
   void notifyObjectAttributeCreated(ObjectAttribute objectAttribute) {
     if (getObjectAttributes().get(objectAttribute.getOtId()) != null) {
-      ArrayList<ObjectAttribute> attrs = getObjectAttributes().get(objectAttribute.getOtId());
+      List<ObjectAttribute> attrs = getObjectAttributes().get(objectAttribute.getOtId());
       attrs.add(objectAttribute);
       Collections.sort(attrs);
     }
@@ -1278,7 +1272,7 @@ public class DesignerModel extends Model {
 
   void notifyObjectAttributeUpdated(ObjectAttribute objectAttribute) {
     if (getObjectAttributes().get(objectAttribute.getOtId()) != null) {
-      ArrayList<ObjectAttribute> attrs = getObjectAttributes().get(objectAttribute.getOtId());
+      List<ObjectAttribute> attrs = getObjectAttributes().get(objectAttribute.getOtId());
       for (int i = 0; i < attrs.size(); i++)
         if (attrs.get(i).getId() == objectAttribute.getId()) {
           attrs.remove(i);
@@ -1293,7 +1287,7 @@ public class DesignerModel extends Model {
   }
 
   // object relation events
-  public void notifyObjectRelationsLoaded(int otId, ArrayList<ObjectRelation> objectRelations) {
+  public void notifyObjectRelationsLoaded(int otId, List<ObjectRelation> objectRelations) {
     getObjectRelations().put(otId, objectRelations);
     List<ObjectRelationObserver> clones = new ArrayList<ObjectRelationObserver>(objectRelationObservers);
     for (ObjectRelationObserver objectRelationObserver : clones) {
@@ -1303,7 +1297,7 @@ public class DesignerModel extends Model {
   
   public void notifyObjectRelationCreated(ObjectRelation objectRelation) {
     if (getObjectRelations().get(objectRelation.getOt1Id()) != null) {
-      ArrayList<ObjectRelation> rels = getObjectRelations().get(objectRelation.getOt1Id());
+      List<ObjectRelation> rels = getObjectRelations().get(objectRelation.getOt1Id());
       rels.add(objectRelation);
       Collections.sort(rels);
     } else {
@@ -1320,7 +1314,7 @@ public class DesignerModel extends Model {
 
   public void notifyObjectRelationUpdated(ObjectRelation objectRelation) {
     if (getObjectRelations().get(objectRelation.getOt1Id()) != null) {
-      ArrayList<ObjectRelation> rels = getObjectRelations().get(objectRelation.getOt1Id());
+      List<ObjectRelation> rels = getObjectRelations().get(objectRelation.getOt1Id());
       for (int i = 0; i < rels.size(); i++)
         if (rels.get(i).getId() == objectRelation.getId()) {
           rels.remove(i);
@@ -1336,7 +1330,7 @@ public class DesignerModel extends Model {
   }
 
   // value type events
-  public void notifyValueTypesLoaded(ArrayList<ValueType> valueTypes) {
+  public void notifyValueTypesLoaded(List<ValueType> valueTypes) {
     sortValueTypes(valueTypes);
     List<ValueTypeObserver> clones = new ArrayList<ValueTypeObserver>(valueTypeObservers);
     for (ValueTypeObserver valueTypeObserver : clones) {
@@ -1373,7 +1367,7 @@ public class DesignerModel extends Model {
   }
   
   // unit events
-  public void notifyUnitsLoaded(ArrayList<Unit> units) {
+  public void notifyUnitsLoaded(List<Unit> units) {
     setUnits(units);
     List<UnitObserver> clones = new ArrayList<UnitObserver>(unitObservers);
     for (UnitObserver unitObserver : clones) {
@@ -1410,7 +1404,7 @@ public class DesignerModel extends Model {
   }
 
   // template events
-  public void notifyTemplatesLoaded(ArrayList<Template> templates) {
+  public void notifyTemplatesLoaded(List<Template> templates) {
     setTemplates(templates);
     List<TemplateObserver> clones = new ArrayList<TemplateObserver>(templateObservers);
     for (TemplateObserver templateObserver : clones) {
@@ -1452,8 +1446,7 @@ public class DesignerModel extends Model {
   }
 
   // template group events
-  void notifyTemplateGroupsLoaded(Template template, 
-      ArrayList<TemplateGroup> templateGroups) {
+  void notifyTemplateGroupsLoaded(Template template, List<TemplateGroup> templateGroups) {
     getTemplateGroups().put(template.getId(), templateGroups);
     
     List<TemplateGroupObserver> clones = new ArrayList<TemplateGroupObserver>(templateGroupObservers);
@@ -1464,7 +1457,7 @@ public class DesignerModel extends Model {
 
   void notifyTemplateGroupCreated(TemplateGroup templateGroup) {
     if (getTemplateGroups().get(templateGroup.getTId()) != null) {
-      ArrayList<TemplateGroup> tgs = getTemplateGroups().get(templateGroup.getTId());
+      List<TemplateGroup> tgs = getTemplateGroups().get(templateGroup.getTId());
       tgs.add(templateGroup);
       Collections.sort(tgs);
     }
@@ -1476,7 +1469,7 @@ public class DesignerModel extends Model {
 
   void notifyTemplateGroupUpdated(TemplateGroup templateGroup) {
     if (getTemplateGroups().get(templateGroup.getTId()) != null) {
-      ArrayList<TemplateGroup> tgs = getTemplateGroups().get(templateGroup.getTId());
+      List<TemplateGroup> tgs = getTemplateGroups().get(templateGroup.getTId());
       for (int i = 0; i < tgs.size(); i++)
         if (tgs.get(i).getId() == templateGroup.getId()) {
           tgs.remove(i);
@@ -1589,9 +1582,9 @@ public class DesignerModel extends Model {
   }
   
   // private methods
-  private void sortValueTypes(ArrayList<ValueType> valueTypes) {
-    ArrayList<ValueType> vts = new ArrayList<ValueType>();
-    ArrayList<ValueType> vts_custom = new ArrayList<ValueType>();
+  private void sortValueTypes(List<ValueType> valueTypes) {
+    List<ValueType> vts = new ArrayList<ValueType>();
+    List<ValueType> vts_custom = new ArrayList<ValueType>();
     for (ValueType vt : valueTypes) {
       if (vt.isSystem())
         vts.add(vt);

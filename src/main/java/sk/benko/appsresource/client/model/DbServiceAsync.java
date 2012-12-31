@@ -5,6 +5,7 @@ import sk.benko.appsresource.client.model.result.CreateOrUpdateObjectRelationRes
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * The asynchronous interface for calls to {@link DbService}.
@@ -15,53 +16,52 @@ public interface DbServiceAsync extends ServiceAsync {
    * @param callback
    * @see DbService#getObjectTypes()
    */
-  void getObjectTypes(AsyncCallback<DbService.GetObjectTypesResult> callback);
+  void getObjectTypes(AsyncCallback<List<ObjectType>> callback);
 
   /**
    * @param otId
    * @param callback
    * @see DbService#getObjectAttributes(int)
    */
-  void getObjectAttributes(int otId, AsyncCallback<DbService.GetObjectAttributesResult> callback);
+  void getObjectAttributes(int otId, AsyncCallback<List<ObjectAttribute>> callback);
 
   /**
    * @param otId
    * @param callback
    * @see DbService#getObjectRelations(int)
    */
-  void getObjectRelations(int otId, AsyncCallback<ArrayList<ObjectRelation>> callback);
+  void getObjectRelations(int otId, AsyncCallback<List<ObjectRelation>> callback);
 
   /**
    * @param callback
    * @see DbService#getValueTypes()
    */
-  void getValueTypes(AsyncCallback<DbService.GetValueTypesResult> callback);
+  void getValueTypes(AsyncCallback<List<ValueType>> callback);
 
   /**
    * @param callback
    * @see DbService#getUnits()
    */
-  void getUnits(AsyncCallback<DbService.GetUnitsResult> callback);
+  void getUnits(AsyncCallback<List<Unit>> callback);
 
   /**
    * @param callback
    * @see DbService#getTemplates()
    */
-  void getTemplates(AsyncCallback<DbService.GetTemplatesResult> callback);
+  void getTemplates(AsyncCallback<List<Template>> callback);
 
   /**
    * @param callback
    * @see DbService#getTemplateRelations()
    */
-  void getTemplateRelations(
-      AsyncCallback<DbService.GetTemplateRelationsResult> callback);
+  void getTemplateRelations(AsyncCallback<List<TemplateRelation>> callback);
 
   /**
    * @param template
    * @param callback
    * @see DbService#getTemplateGroups(Template)
    */
-  void getTemplateGroups(Template template, AsyncCallback<DbService.GetTemplateGroupsResult> callback);
+  void getTemplateGroups(Template template, AsyncCallback<List<TemplateGroup>> callback);
 
   /**
    * @param objectType

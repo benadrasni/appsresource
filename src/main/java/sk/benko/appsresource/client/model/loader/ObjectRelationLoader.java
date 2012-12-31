@@ -5,13 +5,14 @@ import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.model.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controls all aspects of loading the set of {@link ObjectRelation}s. This class
  * takes care of performing (and possibly retrying) a query for the initial set
  * of ObjectTypes and then continues polling the server for updates.
  */
-public class ObjectRelationLoader extends RetryTimer implements AsyncCallback<ArrayList<ObjectRelation>> {
+public class ObjectRelationLoader extends RetryTimer implements AsyncCallback<List<ObjectRelation>> {
 
   private final DesignerModel model;
   private final int otId;
@@ -40,7 +41,7 @@ public class ObjectRelationLoader extends RetryTimer implements AsyncCallback<Ar
   }
 
   @Override
-  public void onSuccess(ArrayList<ObjectRelation> result) {
+  public void onSuccess(List<ObjectRelation> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
     model.notifyObjectRelationsLoaded(otId, result);

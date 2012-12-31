@@ -1,18 +1,17 @@
 package sk.benko.appsresource.client.model;
 
-import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.model.DbService.GetTemplateGroupsResult;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import sk.benko.appsresource.client.layout.Main;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Controls all aspects of loading the set of {@link TemplateGroup}s. This class 
- * takes care of performing (and possibly retrying) a query for the initial set 
+ * Controls all aspects of loading the set of {@link TemplateGroup}s. This class
+ * takes care of performing (and possibly retrying) a query for the initial set
  * of TemplateGroups.
- *
  */
-public class TemplateGroupLoader extends RetryTimer implements
-    AsyncCallback<DbService.GetTemplateGroupsResult> {
+public class TemplateGroupLoader extends RetryTimer implements AsyncCallback<List<TemplateGroup>> {
 
   private final DesignerModel model;
   private final Template template;
@@ -29,7 +28,7 @@ public class TemplateGroupLoader extends RetryTimer implements
 
   public void start() {
     Main.status.showTaskStatus(Main.constants.loading());
-    ((DbServiceAsync)model.getService()).getTemplateGroups(template, this);
+    ((DbServiceAsync) model.getService()).getTemplateGroups(template, this);
   }
 
   @Override
@@ -40,10 +39,10 @@ public class TemplateGroupLoader extends RetryTimer implements
   }
 
   @Override
-  public void onSuccess(GetTemplateGroupsResult result) {
+  public void onSuccess(List<TemplateGroup> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
-    model.notifyTemplateGroupsLoaded(template, result.getTemplateGroups());
+    model.notifyTemplateGroupsLoaded(template, result);
   }
 
   @Override

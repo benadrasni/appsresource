@@ -52,8 +52,7 @@ public class TemplateDialogDragController extends PickupDragController {
     draggableTree = (Tree) context.draggable.getParent().getParent();
     dragItem = ((TemplateAttributeRowView)context.draggable.getParent())
         .getTemplateAttribute();
-    Label lblName = new Label(dragItem.getName());
-    return lblName;
+    return new Label(dragItem.getName());
   }
 
   Tree getDraggableTree() {
