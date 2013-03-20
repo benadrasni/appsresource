@@ -163,13 +163,7 @@ public class ObjectAttributeDialog extends DesignerDialog implements
   protected DropDownBox getDdbObjectType() {
     if (ddbObjectType == null) {
       ddbObjectType = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
-      if (getObjectAttribute() != null && getObjectAttribute().getOt() != null)  
-        ddbObjectType.setSelection(new DropDownObjectImpl(getObjectAttribute().getOtId(), 
-            getObjectAttribute().getOt().getName(), getObjectAttribute().getOt()));
-      else
-        ddbObjectType.setSelection(new DropDownObjectImpl(0, 
-            Main.constants.chooseObjectType()));
-      
+
       if (getModel().getObjectTypes() == null) {
         ObjectTypeLoader otl = new ObjectTypeLoader(getModel());
         otl.start();    
@@ -367,12 +361,29 @@ public class ObjectAttributeDialog extends DesignerDialog implements
   
   private void fillObjectTypes (Collection<ObjectType> objectTypes) {
     ArrayList<DropDownObject> items = new ArrayList<DropDownObject>();
+    DropDownObjectImpl chooseItem = new DropDownObjectImpl(0, Main.constants.chooseObjectType());
+
     for (ObjectType ot : objectTypes) {
-      items.add(new DropDownObjectImpl(ot.getId(), ot.getName(), ot));
-      if (getObjectAttribute() != null && 
-          getObjectAttribute().getShared1() == ot.getId())
-        getDdbRCOT().setSelection(items.get(items.size()-1));
+      DropDownObjectImpl item = new DropDownObjectImpl(ot.getId(), ot.getName(), ot);
+      items.add(item);
+
+      if (getObjectAttribute() != null) {
+        if (getObjectAttribute().getOt() != null) {
+          if (getObjectAttribute().getOtId() == ot.getId()) {
+            getDdbObjectType().setSelection(item);
+          }
+        } else {
+          getDdbObjectType().setSelection(chooseItem);
+        }
+        if (getObjectAttribute().getShared1() == ot.getId()) {
+          getDdbRCOT().setSelection(item);
+        }
+      } else {
+        getDdbRCOT().setSelection(chooseItem);
+        getDdbObjectType().setSelection(chooseItem);
+      }
     }
+
     getDdbObjectType().setItems(items);
     getDdbRCOT().setItems(items);
     loadRelations();
@@ -423,8 +434,6 @@ public class ObjectAttributeDialog extends DesignerDialog implements
       getWidgetObjectAttribute().setWidget(7, 0, getLblRCOR());
       getWidgetObjectAttribute().setWidget(7, 1, getDdbRCOR());
       getWidgetObjectAttribute().getFlexCellFormatter().addStyleName(7, 1, ClientUtils.CSS_ALIGN_RIGHT);
-      
-      getDdbRCOT().setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectType()));
     } else {
       if (getWidgetObjectAttribute().getRowCount() == 8) {
         getWidgetObjectAttribute().removeRow(7);
