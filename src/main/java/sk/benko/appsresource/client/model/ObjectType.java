@@ -24,7 +24,7 @@ public class ObjectType extends DesignItem {
   /**
    * A basic constructor to be used on client-side only.
    *
-   * @param name
+   * @param name      the name of the object type
    */
   public ObjectType(String name) {
     assert GWT.isClient();
@@ -34,14 +34,14 @@ public class ObjectType extends DesignItem {
   /**
    * A constructor to be used on server-side only.
    *
-   * @param id
-   * @param code
-   * @param name
-   * @param desc
-   * @param parentId
-   * @param parent
-   * @param userId
-   * @param lastUpdatedAt
+   * @param id              object type's id
+   * @param code            object type's code (post computed)
+   * @param name            object type's name
+   * @param desc            object type's description
+   * @param parentId        parent type's id
+   * @param parent          the parent object type
+   * @param userId          id of the user who created the object type
+   * @param lastUpdatedAt   the date of the last update
    */
   public ObjectType(int id, String code, String name, String desc, int parentId, 
       ObjectType parent, int userId, Date lastUpdatedAt) {
@@ -57,8 +57,7 @@ public class ObjectType extends DesignItem {
   }
 
   /**
-   * A default constructor to allow these objects to be serialized with GWT's
-   * RPC.
+   * A default constructor to allow these objects to be serialized with GWT's RPC.
    */
   @SuppressWarnings("unused")
   private ObjectType() {
