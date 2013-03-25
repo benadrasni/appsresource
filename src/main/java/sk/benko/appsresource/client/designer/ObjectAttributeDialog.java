@@ -40,10 +40,10 @@ public class ObjectAttributeDialog extends DesignerDialog implements
   private DropDownBox ddbObjectType;
   private DropDownBox ddbValueType;
   private DropDownBox ddbUnit;
-  private Label lblRCOT; 
-  private DropDownBox ddbRCOT;
-  private Label lblRCOR; 
-  private DropDownBox ddbRCOR;
+  private Label lblRelatedObjectType;
+  private DropDownBox ddbRelatedObjectType;
+  private Label lblRelation;
+  private DropDownBox ddbRelation;
   
   private FlexTable widgetObjectAttribute;
   
@@ -231,25 +231,25 @@ public class ObjectAttributeDialog extends DesignerDialog implements
   }
   
   /**
-   * Getter for property 'lblRCOT'.
+   * Getter for property 'lblRelatedObjectType'.
    * 
-   * @return Value for property 'lblRCOT'.
+   * @return Value for property 'lblRelatedObjectType'.
    */
-  protected Label getLblRCOT() {
-    if (lblRCOT == null) {
-      lblRCOT = new Label(Main.constants.objectAttributeRCOT());
+  protected Label getLblRelatedObjectType() {
+    if (lblRelatedObjectType == null) {
+      lblRelatedObjectType = new Label(Main.constants.objectAttributeRCOT());
     }
-    return lblRCOT;
+    return lblRelatedObjectType;
   } 
   
   /**
-   * Getter for property 'ddbRCOT'.
+   * Getter for property 'ddbRelatedObjectType'.
    * 
-   * @return Value for property 'ddbRCOT'.
+   * @return Value for property 'ddbRelatedObjectType'.
    */
-  protected DropDownBox getDdbRCOT() {
-    if (ddbRCOT == null) {
-      ddbRCOT = new DropDownBox(this, null, 
+  protected DropDownBox getRelatedObjectTypeDropDownBox() {
+    if (ddbRelatedObjectType == null) {
+      ddbRelatedObjectType = new DropDownBox(this, null,
           CSSConstants.SUFFIX_DESIGNER, new ChangeHandler() {
 
             @Override
@@ -259,31 +259,31 @@ public class ObjectAttributeDialog extends DesignerDialog implements
       });
     }
     
-    return ddbRCOT;
+    return ddbRelatedObjectType;
   }  
 
   /**
-   * Getter for property 'lblRCOR'.
+   * Getter for property 'lblRelation'.
    * 
-   * @return Value for property 'lblRCOR'.
+   * @return Value for property 'lblRelation'.
    */
-  protected Label getLblRCOR() {
-    if (lblRCOR == null) {
-      lblRCOR = new Label(Main.constants.objectAttributeRCOR());
+  protected Label getLblRelation() {
+    if (lblRelation == null) {
+      lblRelation = new Label(Main.constants.objectAttributeRCOR());
     }
-    return lblRCOR;
+    return lblRelation;
   } 
   
   /**
-   * Getter for property 'ddbRCOR'.
+   * Getter for property 'ddbRelation'.
    * 
-   * @return Value for property 'ddbRCOR'.
+   * @return Value for property 'ddbRelation'.
    */
-  protected DropDownBox getDdbRCOR() {
-    if (ddbRCOR == null) {
-      ddbRCOR = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
+  protected DropDownBox getRelationDropDownBox() {
+    if (ddbRelation == null) {
+      ddbRelation = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
     }
-    return ddbRCOR;
+    return ddbRelation;
   } 
   
   /**
@@ -343,8 +343,8 @@ public class ObjectAttributeDialog extends DesignerDialog implements
     // shared
     switch (objectAttribute.getVt().getType()) {
       case ValueType.VT_REF:
-        objectAttribute.setShared1(getDdbRCOT().getSelection().getId());
-        objectAttribute.setShared2(getDdbRCOR().getSelection().getId());
+        objectAttribute.setShared1(getRelatedObjectTypeDropDownBox().getSelection().getId());
+        objectAttribute.setShared2(getRelationDropDownBox().getSelection().getId());
         objectAttribute.setShared4(0);
         objectAttribute.setShared5(0);
         break;
@@ -376,16 +376,16 @@ public class ObjectAttributeDialog extends DesignerDialog implements
           getDdbObjectType().setSelection(chooseItem);
         }
         if (getObjectAttribute().getShared1() == ot.getId()) {
-          getDdbRCOT().setSelection(item);
+          getRelatedObjectTypeDropDownBox().setSelection(item);
         }
       } else {
-        getDdbRCOT().setSelection(chooseItem);
+        getRelatedObjectTypeDropDownBox().setSelection(chooseItem);
         getDdbObjectType().setSelection(chooseItem);
       }
     }
 
     getDdbObjectType().setItems(items);
-    getDdbRCOT().setItems(items);
+    getRelatedObjectTypeDropDownBox().setItems(items);
     loadRelations();
   }
 
@@ -409,30 +409,27 @@ public class ObjectAttributeDialog extends DesignerDialog implements
   
   private void fillObjectRelations(Collection<ObjectRelation> objectRelations) {
     ArrayList<DropDownObject> items = new ArrayList<DropDownObject>();
+    getRelationDropDownBox().setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectRelation()));
     for (ObjectRelation or : objectRelations) {
-      if (or.getOt2Id() == getDdbRCOT().getSelection().getId()
+      if (or.getOt2Id() == getRelatedObjectTypeDropDownBox().getSelection().getId()
            && or.getOt1Id() == getDdbObjectType().getSelection().getId()) {
         items.add(new DropDownObjectImpl(or.getId(), or.getName(), or));
         if (getObjectAttribute() != null && getObjectAttribute().getShared2() == or.getId())
-          getDdbRCOR().setSelection(items.get(items.size()-1));
+          getRelationDropDownBox().setSelection(items.get(items.size() - 1));
       }
     }
-    getDdbRCOR().setItems(items);
-    if (items.size() == 1)
-      getDdbRCOR().setSelection(items.get(0));
-    else
-      getDdbRCOR().setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectRelation()));
+    getRelationDropDownBox().setItems(items);
   }
 
   private void setVisibility() {
     ValueType vt = (ValueType)getDdbValueType().getSelection().getUserObject();
     if (vt != null && vt.getType() == ValueType.VT_REF) {
-      getWidgetObjectAttribute().setWidget(6, 0, getLblRCOT());
-      getWidgetObjectAttribute().setWidget(6, 1, getDdbRCOT());
+      getWidgetObjectAttribute().setWidget(6, 0, getLblRelatedObjectType());
+      getWidgetObjectAttribute().setWidget(6, 1, getRelatedObjectTypeDropDownBox());
       getWidgetObjectAttribute().getFlexCellFormatter().addStyleName(6, 1, ClientUtils.CSS_ALIGN_RIGHT);
 
-      getWidgetObjectAttribute().setWidget(7, 0, getLblRCOR());
-      getWidgetObjectAttribute().setWidget(7, 1, getDdbRCOR());
+      getWidgetObjectAttribute().setWidget(7, 0, getLblRelation());
+      getWidgetObjectAttribute().setWidget(7, 1, getRelationDropDownBox());
       getWidgetObjectAttribute().getFlexCellFormatter().addStyleName(7, 1, ClientUtils.CSS_ALIGN_RIGHT);
     } else {
       if (getWidgetObjectAttribute().getRowCount() == 8) {
@@ -443,12 +440,12 @@ public class ObjectAttributeDialog extends DesignerDialog implements
   }
   
   private void loadRelations() {
-    if (getDdbRCOT().getSelection().getId() > 0) {
+    if (getRelatedObjectTypeDropDownBox().getSelection().getId() > 0) {
       Collection<ObjectRelation> ors = getModel().getObjectRelations()
-          .get(getDdbRCOT().getSelection().getId());
+          .get(getRelatedObjectTypeDropDownBox().getSelection().getId());
       if (ors == null) {
         ObjectRelationLoader orl = new ObjectRelationLoader(getModel(), 
-            getDdbRCOT().getSelection().getId());
+            getRelatedObjectTypeDropDownBox().getSelection().getId());
         orl.start();    
       } else
         fillObjectRelations(ors);

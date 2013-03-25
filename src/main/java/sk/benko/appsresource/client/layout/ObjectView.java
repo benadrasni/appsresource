@@ -54,8 +54,6 @@ public class ObjectView extends FlowPanel implements ApplicationModel.ValueObser
   }
 
   public void initialize() {
-    getModel().addValueObserver(this);
-
     getAhv().initialize(false);
     getOav().initialize();
     getOcv().initialize(false);

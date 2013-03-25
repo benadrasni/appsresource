@@ -60,14 +60,14 @@ public class TemplateTableWidget extends TemplateWidget {
   
   @Override
   public void initialize(Map<Integer, Map<Integer, List<AValue>>> allValues) {
-    for (int i = 0; i < getTable().getRowCount(); i++) {
-      for (int j = 0; j < getTable().getCellCount(i); j++) {
-        if (getTable().getWidget(i, j) != null) {
-          TemplateWidget tw = (TemplateWidget)getTable().getWidget(i, j);
-          tw.initialize(allValues);
-        }
-      }
-    }
+//    for (int i = 0; i < getTable().getRowCount(); i++) {
+//      for (int j = 0; j < getTable().getCellCount(i); j++) {
+//        if (getTable().getWidget(i, j) != null) {
+//          TemplateWidget tw = (TemplateWidget)getTable().getWidget(i, j);
+//          tw.initialize(allValues);
+//        }
+//      }
+//    }
   }
   
   @Override
