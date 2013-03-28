@@ -52,9 +52,9 @@ public class TemplateAttributeDialog extends DesignerDialog implements
   private int DEFAULT_LENGTH = 255;
   private int DEFAULT_LABELTOP = 10;
   private int DEFAULT_LABELLEFT = 10;
-  private int DEFAULT_LABELWIDTH = 150;
+  private int DEFAULT_LABELWIDTH = 100;
   private int DEFAULT_TOP = 10;
-  private int DEFAULT_LEFT = 150;
+  private int DEFAULT_LEFT = 100;
   private int DEFAULT_WIDTH = 200;
   private int DEFAULT_UNITTOP = 10;
   private int DEFAULT_UNITLEFT = 360;
@@ -610,78 +610,7 @@ public class TemplateAttributeDialog extends DesignerDialog implements
             
             @Override
             public void onChange(ChangeEvent event) {
-              
-              boolean dynacomboVisible = ddbStyle.getSelection().getId() ==
-                  TemplateAttribute.STYLE_DYNAMICCOMBO;
-              boolean tableVisible = ddbStyle.getSelection().getId() ==
-                  TemplateAttribute.STYLE_TABLE;
-              boolean isDatePicker = ddbStyle.getSelection().getId() ==
-                  TemplateAttribute.STYLE_DATEPICKER;
-                  
-              setUnitVisible();
-              
-              if (dynacomboVisible) {
-                widgetTemplateAttribute.setWidget(9, 0, getLblTable());
-                widgetTemplateAttribute.setWidget(9, 1, getDdbTable());
-                widgetTemplateAttribute.getFlexCellFormatter().addStyleName(9, 1, ClientUtils.CSS_ALIGN_RIGHT);
-
-                widgetTemplateAttribute.setWidget(10, 0, getLblDCT());
-                widgetTemplateAttribute.setWidget(10, 1, getDdbDCT());
-                widgetTemplateAttribute.getFlexCellFormatter().addStyleName(10, 1, ClientUtils.CSS_ALIGN_RIGHT);
-
-                widgetTemplateAttribute.setWidget(11, 0, getLblDCOA());
-                widgetTemplateAttribute.setWidget(11, 1, getDdbDCOA());
-                widgetTemplateAttribute.getFlexCellFormatter().addStyleName(11, 1, ClientUtils.CSS_ALIGN_RIGHT);
-              } else if (tableVisible) {
-//                widgetTemplateAttribute.setWidget(9, 0, getLblTType());
-//                widgetTemplateAttribute.setWidget(9, 1, getLbTType());
-//
-//                widgetTemplateAttribute.setWidget(10, 0, getLblTOrientation());
-//                widgetTemplateAttribute.setWidget(10, 1, getLbTOrientation());
-//
-//                NativeEvent nevent = Document.get().createChangeEvent();
-//                DomEvent.fireNativeEvent(nevent, getLbTType());
-              } else if (isDatePicker) {
-                widgetTemplateAttribute.setWidget(9, 0, getLblStartYear());
-                widgetTemplateAttribute.setWidget(9, 1, getTbStartYear());
-
-                widgetTemplateAttribute.setWidget(10, 0, getLblEndYear());
-                widgetTemplateAttribute.setWidget(10, 1, getTbEndYear());
-              } else {
-                widgetTemplateAttribute.setWidget(9, 0, getLblTable());
-                widgetTemplateAttribute.setWidget(9, 1, getDdbTable());
-                widgetTemplateAttribute.getFlexCellFormatter().addStyleName(9, 1, ClientUtils.CSS_ALIGN_RIGHT);
-
-
-                if (widgetTemplateAttribute.getRowCount() > 10) { 
-                  if (widgetTemplateAttribute.getWidget(10, 0) != null)
-                    widgetTemplateAttribute.getWidget(10, 0).removeFromParent();
-                  if (widgetTemplateAttribute.getCellCount(10) > 1
-                      && widgetTemplateAttribute.getWidget(10, 1) != null)
-                    widgetTemplateAttribute.getWidget(10, 1).removeFromParent();
-                }
-                if (widgetTemplateAttribute.getRowCount() > 11) { 
-                    if (widgetTemplateAttribute.getWidget(11, 0) != null)
-                      widgetTemplateAttribute.getWidget(11, 0).removeFromParent();
-                    if (widgetTemplateAttribute.getCellCount(11) > 1
-                        && widgetTemplateAttribute.getWidget(11, 1) != null)
-                      widgetTemplateAttribute.getWidget(11, 1).removeFromParent();
-                }
-                if (widgetTemplateAttribute.getRowCount() > 12) { 
-                    if (widgetTemplateAttribute.getWidget(12, 0) != null)
-                      widgetTemplateAttribute.getWidget(12, 0).removeFromParent();
-                  if (widgetTemplateAttribute.getCellCount(12) > 1
-                      && widgetTemplateAttribute.getWidget(12, 1) != null)
-                    widgetTemplateAttribute.getWidget(12, 1).removeFromParent();
-                }
-                if (widgetTemplateAttribute.getRowCount() > 13) {
-                    if (widgetTemplateAttribute.getWidget(13, 0) != null)
-                      widgetTemplateAttribute.getWidget(13, 0).removeFromParent();
-                  if (widgetTemplateAttribute.getCellCount(13) > 1
-                      && widgetTemplateAttribute.getWidget(13, 1) != null)
-                    widgetTemplateAttribute.getWidget(13, 1).removeFromParent();
-                }
-              }
+              setVisibility();
             }
           });
       
@@ -1177,22 +1106,6 @@ public class TemplateAttributeDialog extends DesignerDialog implements
     return tbEndYear;
   }
 
-  protected void setUnitVisible() {
-    boolean unitVisible = getDdbStyle().getSelection().getId() !=
-        TemplateAttribute.STYLE_DYNAMICCOMBO &&
-        getDdbStyle().getSelection().getId() !=
-        TemplateAttribute.STYLE_DATEPICKER &&
-        getDdbStyle().getSelection().getId() != 
-        TemplateAttribute.STYLE_TABLE;
-    
-    getCbUnit().setVisible(unitVisible);
-    getTbUnitTop().setVisible(unitVisible);
-    tbUnitLeft.setVisible(unitVisible);
-    tbUnitWidth.setVisible(unitVisible);
-    tbUnitWidthUnit.setVisible(unitVisible);
-    tbUnitAlign.setVisible(unitVisible);
-  }
-
   /**
    * Getter for property 'objectTemplate'.
    * 
@@ -1207,6 +1120,7 @@ public class TemplateAttributeDialog extends DesignerDialog implements
   }
   
   // private methods
+
   private void fill(TemplateAttribute templateAttribute) {
     super.fill(templateAttribute);
 
@@ -1386,27 +1300,24 @@ public class TemplateAttributeDialog extends DesignerDialog implements
         .getSelection().getUserObject();
     if (oa != null && oa.getVt().getType() == ValueType.VT_REF) {
       getDdbStyle().setSelection(
-          new DropDownObjectImpl(TemplateAttribute.STYLE_DYNAMICCOMBO, 
-          Main.constants.templateAttributeStyle4()));
+          new DropDownObjectImpl(TemplateAttribute.STYLE_DYNAMICCOMBO, Main.constants.templateAttributeStyle4()));
+
       ArrayList<DropDownObject> items = new ArrayList<DropDownObject>(); 
-      Collection<ApplicationTemplate> appts = getModel()
-          .getAppTemplateByApp(getModel().getApplication().getId());
+      Collection<ApplicationTemplate> appts = getModel().getAppTemplateByApp(getModel().getApplication().getId());
       assert(appts != null);
       for (ApplicationTemplate appt : appts) {
         if (appt.getT().getOtId() == oa.getShared1()) {
-          items.add(new DropDownObjectImpl(appt.getTId(), 
-              appt.getT().getName(), appt.getT()));
-          if (getTemplateAttribute() != null && 
-              getTemplateAttribute().getShared1() == appt.getTId())
-            getDdbDCT().setSelection(new DropDownObjectImpl(appt.getTId(), 
-              appt.getT().getName(), appt.getT()));
+          items.add(new DropDownObjectImpl(appt.getTId(), appt.getT().getName(), appt.getT()));
+          if (getTemplateAttribute() != null && getTemplateAttribute().getShared1() == appt.getTId())
+            getDdbDCT().setSelection(new DropDownObjectImpl(appt.getTId(), appt.getT().getName(), appt.getT()));
         }
       }
       getDdbDCT().setItems(items);
       
-      loadAttributes(((Template)getDdbDCT().getSelection().getUserObject())
-          .getOtId(), getDdbDCOA(), 
+      loadAttributes(((Template)getDdbDCT().getSelection().getUserObject()).getOtId(), getDdbDCOA(),
           getTemplateAttribute() != null ? getTemplateAttribute().getShared2() : 0);
+
+      setVisibility();
     }
   }
   
@@ -1419,5 +1330,95 @@ public class TemplateAttributeDialog extends DesignerDialog implements
       oal.start();    
     } else
       fillObjectAttributes(ddb, oas, selection);
+  }
+
+  private void setVisibility() {
+    boolean dynacomboVisible = ddbStyle.getSelection().getId() ==
+        TemplateAttribute.STYLE_DYNAMICCOMBO;
+    boolean tableVisible = ddbStyle.getSelection().getId() ==
+        TemplateAttribute.STYLE_TABLE;
+    boolean isDatePicker = ddbStyle.getSelection().getId() ==
+        TemplateAttribute.STYLE_DATEPICKER;
+
+    setUnitVisible();
+
+    if (dynacomboVisible) {
+      widgetTemplateAttribute.setWidget(9, 0, getLblTable());
+      widgetTemplateAttribute.setWidget(9, 1, getDdbTable());
+      widgetTemplateAttribute.getFlexCellFormatter().addStyleName(9, 1, ClientUtils.CSS_ALIGN_RIGHT);
+
+      widgetTemplateAttribute.setWidget(10, 0, getLblDCT());
+      widgetTemplateAttribute.setWidget(10, 1, getDdbDCT());
+      widgetTemplateAttribute.getFlexCellFormatter().addStyleName(10, 1, ClientUtils.CSS_ALIGN_RIGHT);
+
+      widgetTemplateAttribute.setWidget(11, 0, getLblDCOA());
+      widgetTemplateAttribute.setWidget(11, 1, getDdbDCOA());
+      widgetTemplateAttribute.getFlexCellFormatter().addStyleName(11, 1, ClientUtils.CSS_ALIGN_RIGHT);
+    } else if (tableVisible) {
+//                widgetTemplateAttribute.setWidget(9, 0, getLblTType());
+//                widgetTemplateAttribute.setWidget(9, 1, getLbTType());
+//
+//                widgetTemplateAttribute.setWidget(10, 0, getLblTOrientation());
+//                widgetTemplateAttribute.setWidget(10, 1, getLbTOrientation());
+//
+//                NativeEvent nevent = Document.get().createChangeEvent();
+//                DomEvent.fireNativeEvent(nevent, getLbTType());
+    } else if (isDatePicker) {
+      widgetTemplateAttribute.setWidget(9, 0, getLblStartYear());
+      widgetTemplateAttribute.setWidget(9, 1, getTbStartYear());
+
+      widgetTemplateAttribute.setWidget(10, 0, getLblEndYear());
+      widgetTemplateAttribute.setWidget(10, 1, getTbEndYear());
+    } else {
+      widgetTemplateAttribute.setWidget(9, 0, getLblTable());
+      widgetTemplateAttribute.setWidget(9, 1, getDdbTable());
+      widgetTemplateAttribute.getFlexCellFormatter().addStyleName(9, 1, ClientUtils.CSS_ALIGN_RIGHT);
+
+
+      if (widgetTemplateAttribute.getRowCount() > 10) {
+        if (widgetTemplateAttribute.getWidget(10, 0) != null)
+          widgetTemplateAttribute.getWidget(10, 0).removeFromParent();
+        if (widgetTemplateAttribute.getCellCount(10) > 1
+            && widgetTemplateAttribute.getWidget(10, 1) != null)
+          widgetTemplateAttribute.getWidget(10, 1).removeFromParent();
+      }
+      if (widgetTemplateAttribute.getRowCount() > 11) {
+        if (widgetTemplateAttribute.getWidget(11, 0) != null)
+          widgetTemplateAttribute.getWidget(11, 0).removeFromParent();
+        if (widgetTemplateAttribute.getCellCount(11) > 1
+            && widgetTemplateAttribute.getWidget(11, 1) != null)
+          widgetTemplateAttribute.getWidget(11, 1).removeFromParent();
+      }
+      if (widgetTemplateAttribute.getRowCount() > 12) {
+        if (widgetTemplateAttribute.getWidget(12, 0) != null)
+          widgetTemplateAttribute.getWidget(12, 0).removeFromParent();
+        if (widgetTemplateAttribute.getCellCount(12) > 1
+            && widgetTemplateAttribute.getWidget(12, 1) != null)
+          widgetTemplateAttribute.getWidget(12, 1).removeFromParent();
+      }
+      if (widgetTemplateAttribute.getRowCount() > 13) {
+        if (widgetTemplateAttribute.getWidget(13, 0) != null)
+          widgetTemplateAttribute.getWidget(13, 0).removeFromParent();
+        if (widgetTemplateAttribute.getCellCount(13) > 1
+            && widgetTemplateAttribute.getWidget(13, 1) != null)
+          widgetTemplateAttribute.getWidget(13, 1).removeFromParent();
+      }
+    }
+  }
+
+  private void setUnitVisible() {
+    boolean unitVisible = getDdbStyle().getSelection().getId() !=
+        TemplateAttribute.STYLE_DYNAMICCOMBO &&
+        getDdbStyle().getSelection().getId() !=
+            TemplateAttribute.STYLE_DATEPICKER &&
+        getDdbStyle().getSelection().getId() !=
+            TemplateAttribute.STYLE_TABLE;
+
+    getCbUnit().setVisible(unitVisible);
+    getTbUnitTop().setVisible(unitVisible);
+    tbUnitLeft.setVisible(unitVisible);
+    tbUnitWidth.setVisible(unitVisible);
+    tbUnitWidthUnit.setVisible(unitVisible);
+    tbUnitAlign.setVisible(unitVisible);
   }
 }

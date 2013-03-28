@@ -282,6 +282,7 @@ public class ObjectAttributeDialog extends DesignerDialog implements
   protected DropDownBox getRelationDropDownBox() {
     if (ddbRelation == null) {
       ddbRelation = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
+      ddbRelation.setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectRelation()));
     }
     return ddbRelation;
   } 
@@ -324,10 +325,8 @@ public class ObjectAttributeDialog extends DesignerDialog implements
     
     return widgetObjectAttribute;
   }
-  
-  // private methods
-  
-  private void fill(ObjectAttribute objectAttribute) {
+
+  protected void fill(ObjectAttribute objectAttribute) {
     super.fill(objectAttribute);
 
     // object type
@@ -339,7 +338,7 @@ public class ObjectAttributeDialog extends DesignerDialog implements
     // unit
     objectAttribute.setUnitId(getDdbUnit().getSelection().getId());
     objectAttribute.setUnit((Unit)getDdbUnit().getSelection().getUserObject());
-    
+
     // shared
     switch (objectAttribute.getVt().getType()) {
       case ValueType.VT_REF:
@@ -348,7 +347,7 @@ public class ObjectAttributeDialog extends DesignerDialog implements
         objectAttribute.setShared4(0);
         objectAttribute.setShared5(0);
         break;
-  
+
       default:
         objectAttribute.setShared1(0);
         objectAttribute.setShared2(0);
@@ -358,6 +357,8 @@ public class ObjectAttributeDialog extends DesignerDialog implements
         break;
     }
   }
+
+  // private methods
   
   private void fillObjectTypes (Collection<ObjectType> objectTypes) {
     ArrayList<DropDownObject> items = new ArrayList<DropDownObject>();
@@ -377,6 +378,7 @@ public class ObjectAttributeDialog extends DesignerDialog implements
         }
         if (getObjectAttribute().getShared1() == ot.getId()) {
           getRelatedObjectTypeDropDownBox().setSelection(item);
+          loadRelations();
         }
       } else {
         getRelatedObjectTypeDropDownBox().setSelection(chooseItem);
@@ -386,7 +388,6 @@ public class ObjectAttributeDialog extends DesignerDialog implements
 
     getDdbObjectType().setItems(items);
     getRelatedObjectTypeDropDownBox().setItems(items);
-    loadRelations();
   }
 
   private void fillValueTypes (Collection<ValueType> valueTypes) {
