@@ -2,7 +2,9 @@ package sk.benko.appsresource.client.layout;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.Tree.Resources;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -23,6 +25,7 @@ import java.util.Map;
 public class ApplicationTreeView extends FlowPanel implements Model.ApplicationObserver {
   private ApplicationView av;
   private Tree apptTree;
+  private ScrollPanel sc;
 
   /**
    *
@@ -32,12 +35,16 @@ public class ApplicationTreeView extends FlowPanel implements Model.ApplicationO
 
     setAv(av);
     setApptTree(new Tree((Resources) GWT.create(TreeResource.class), false));
+
+    this.sc = new ScrollPanel(getApptTree());
+    this.sc.setSize("184px", Window.getClientHeight() - 184 + "px");
+    add(sc);
   }
 
   public void initialize() {
-    clear();
+//    clear();
     getApptTree().clear();
-    add(getApptTree());
+//    add(getApptTree());
 
     ApplicationTemplateLoader atl = new ApplicationTemplateLoader(getModel(),
         getModel().getAppu().getApp());

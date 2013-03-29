@@ -56,7 +56,7 @@ public class ObjectTreeView extends FlowPanel implements
     add(getDdbTemplate());
 
     this.sc = new ScrollPanel(getObjectView().getObjectTree());
-    this.sc.setSize("184px", Window.getClientHeight() - 245 + "px");
+    this.sc.setSize("184px", Window.getClientHeight() - 213 + "px");
     add(sc);
 
     getObjectView().getObjectTree().addOpenHandler(this);
