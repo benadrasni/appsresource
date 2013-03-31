@@ -2,8 +2,9 @@ package sk.benko.appsresource.client.designer;
 
 import java.util.Collection;
 
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.TableView;
+import sk.benko.appsresource.client.designer.layout.TableView;
 import sk.benko.appsresource.client.model.DesignerModel;
 import sk.benko.appsresource.client.model.ObjectType;
 import sk.benko.appsresource.client.model.loader.ObjectTypeLoader;
@@ -18,11 +19,10 @@ public class ObjectTypeTableView extends TableView implements
     DesignerModel.ObjectTypeObserver {
 
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public ObjectTypeTableView(DesignerModel model) {
-    super(model);
+  public ObjectTypeTableView(final DesignerView designerView) {
+    super(designerView);
     
     if (getModel().getObjectTypes() == null) {
       ObjectTypeLoader otl = new ObjectTypeLoader(getModel());
@@ -33,7 +33,7 @@ public class ObjectTypeTableView extends TableView implements
 
   @Override
   public void onObjectTypeCreated(ObjectType objectType) {
-    add(new ObjectTypeRowView(getModel(), objectType));
+    add(new ObjectTypeRowView(getDesignerView(), objectType));
   }
 
   @Override
@@ -73,7 +73,7 @@ public class ObjectTypeTableView extends TableView implements
   
   public void displayRows(Collection<ObjectType> ots) {
     for (ObjectType ot : ots) {
-      add(new ObjectTypeRowView(getModel(), ot));
+      add(new ObjectTypeRowView(getDesignerView(), ot));
     }
   }
 }

@@ -1,8 +1,9 @@
 package sk.benko.appsresource.client.designer;
 
 import com.google.gwt.user.client.ui.Label;
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.TableView;
+import sk.benko.appsresource.client.designer.layout.TableView;
 import sk.benko.appsresource.client.model.*;
 import sk.benko.appsresource.client.model.loader.TemplateAttributeLoader;
 
@@ -17,16 +18,15 @@ public class TemplateAttributeTableView extends TableView implements
     DesignerModel.TemplateAttributeUpdateObserver {
 
   /**
-   * @param model the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public TemplateAttributeTableView(DesignerModel model) {
-    super(model);
+  public TemplateAttributeTableView(final DesignerView designerView) {
+    super(designerView);
   }
 
   @Override
   public void onTemplateAttributeCreated(TemplateAttribute templateAttribute) {
-    TemplateAttributeRowView tarw = new TemplateAttributeRowView(templateAttribute, "content-row");
-    tarw.addHandlers(getModel());
+    TemplateAttributeRowView tarw = new TemplateAttributeRowView(getDesignerView(), templateAttribute, "content-row");
     tarw.generateWidgetFull();
     getModel().addTemplateAttributeUpdateObserver(tarw);
     add(tarw);
@@ -93,8 +93,7 @@ public class TemplateAttributeTableView extends TableView implements
   public void displayRows(List<TemplateAttribute> tas) {
     Collections.sort(tas, new TemplateAttributeComparator());
     for (TemplateAttribute ta : tas) {
-      TemplateAttributeRowView tarw = new TemplateAttributeRowView(ta, "content-row");
-      tarw.addHandlers(getModel());
+      TemplateAttributeRowView tarw = new TemplateAttributeRowView(getDesignerView(), ta, "content-row");
       tarw.generateWidgetFull();
       getModel().addTemplateAttributeUpdateObserver(tarw);
       add(tarw);

@@ -2,9 +2,10 @@ package sk.benko.appsresource.client.designer;
 
 import java.util.Collection;
 
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.designer.model.ObjectAttributeLoader;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.TableView;
+import sk.benko.appsresource.client.designer.layout.TableView;
 import sk.benko.appsresource.client.model.DesignerModel;
 import sk.benko.appsresource.client.model.ObjectAttribute;
 
@@ -18,16 +19,15 @@ public class ObjectAttributeTableView extends TableView implements
     DesignerModel.ObjectAttributeObserver {
 
   /**
-   * @param model
-   *          the model to which the UI will bind itself
+   * @param designerView the top level view
    */
-  public ObjectAttributeTableView(DesignerModel model) {
-    super(model);
+  public ObjectAttributeTableView(final DesignerView designerView) {
+    super(designerView);
   }
 
   @Override
   public void onObjectAttributeCreated(ObjectAttribute objectAttribute) {
-    add(new ObjectAttributeRowView(getModel(), objectAttribute));
+    add(new ObjectAttributeRowView(getDesignerView(), objectAttribute));
   }
 
   @Override
@@ -72,7 +72,7 @@ public class ObjectAttributeTableView extends TableView implements
 
   public void displayRows(Collection<ObjectAttribute> oas) {
     for (ObjectAttribute oa : oas) 
-      add(new ObjectAttributeRowView(getModel(), oa));
+      add(new ObjectAttributeRowView(getDesignerView(), oa));
   }
   
   @Override

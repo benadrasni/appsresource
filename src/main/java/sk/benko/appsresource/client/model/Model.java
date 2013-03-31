@@ -602,7 +602,7 @@ public abstract class Model {
       if (dataObserver instanceof ApplicationObserver)
         ((ApplicationObserver) dataObserver).onApplicationTemplatesLoaded(appts);
     }
-  }    
+  }
   
   public void notifyTemplateTreesLoaded(int tId, List<TemplateTree> tts) {
     getTrees().put(tId, tts);

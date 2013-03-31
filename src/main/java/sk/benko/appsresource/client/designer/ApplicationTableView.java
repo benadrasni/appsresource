@@ -2,8 +2,9 @@ package sk.benko.appsresource.client.designer;
 
 import java.util.Collection;
 
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.TableView;
+import sk.benko.appsresource.client.designer.layout.TableView;
 import sk.benko.appsresource.client.model.Application;
 import sk.benko.appsresource.client.model.DesignerModel;
 import sk.benko.appsresource.client.model.UserModel;
@@ -18,18 +19,17 @@ public class ApplicationTableView extends TableView implements
     DesignerModel.ApplicationObserver, UserModel.ApplicationObserver {
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public ApplicationTableView(DesignerModel model) {
-    super(model);
+  public ApplicationTableView(final DesignerView designerView) {
+    super(designerView);
     if (getModel().getUserModel().getApplications() != null) 
       onApplicationsLoaded(getModel().getUserModel().getApplications().values());
   }
 
   @Override
   public void onApplicationCreated(Application application) {
-    add(new ApplicationRowView(getModel(), application));
+    add(new ApplicationRowView(getDesignerView(), application));
   }
 
   @Override
@@ -70,7 +70,7 @@ public class ApplicationTableView extends TableView implements
   public void displayRows() {
     Collection<Application> apps = getModel().getUserModel().getApplications().values();
     for (Application app : apps) {
-      add(new ApplicationRowView(getModel(), app));
+      add(new ApplicationRowView(getDesignerView(), app));
     }
   }
 }

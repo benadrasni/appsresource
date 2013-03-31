@@ -1,51 +1,76 @@
 package sk.benko.appsresource.client.designer;
 
-import java.util.Collection;
-
-import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.model.DesignerModel;
-import sk.benko.appsresource.client.model.ObjectRelation;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
+import sk.benko.appsresource.client.designer.layout.DesignerView;
+import sk.benko.appsresource.client.layout.Main;
+import sk.benko.appsresource.client.model.DesignerModel;
+import sk.benko.appsresource.client.model.ObjectRelation;
+
+import java.util.Collection;
 
 /**
  * A widget to display object type in table row.
- *
  */
-public class ObjectRelationRowView extends FlexTable implements 
-    DesignerModel.ObjectRelationObserver {
+public class ObjectRelationRowView extends FlexTable implements DesignerModel.ObjectRelationObserver {
 
-  private DesignerModel model;
+  private DesignerView designerView;
   private ObjectRelation objectRelation;
-  
+
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView   the top level view
+   * @param objectRelation the object relation
    */
-  public ObjectRelationRowView(final DesignerModel model, final ObjectRelation or) {
-    setModel(model);
-    setObjectRelation(or);
-    
+  public ObjectRelationRowView(final DesignerView designerView, final ObjectRelation objectRelation) {
+    this.designerView = designerView;
+    this.objectRelation = objectRelation;
+
     setStyleName("content-row");
 
-    generateWidget(getObjectRelation());
+    generateWidget(objectRelation);
 
     // invoke dialog on double click
     addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
-        new ObjectRelationDialog(getModel(), getObjectRelation());
-      }});
+        designerView.getObjectRelationDialog().setItem(objectRelation);
+        designerView.getObjectRelationDialog().show();
+      }
+    });
 
     // disable text highlighting
     addDomHandler(new MouseDownHandler() {
       public void onMouseDown(MouseDownEvent event) {
         event.preventDefault();
-      }}, MouseDownEvent.getType());
+      }
+    }, MouseDownEvent.getType());
+  }
+
+  @Override
+  public void onObjectRelationCreated(ObjectRelation objectRelation) {
+  }
+
+  @Override
+  public void onObjectRelationUpdated(ObjectRelation objectRelation) {
+    if (this.objectRelation.getId() == objectRelation.getId())
+      generateWidget(objectRelation);
+  }
+
+  @Override
+  public void onObjectRelationsLoaded(int otId, Collection<ObjectRelation> objectRelations) {
+  }
+
+  @Override
+  public void onLoad() {
+    designerView.getDesignerModel().addObjectRelationObserver(this);
+  }
+
+  @Override
+  public void onUnload() {
+    designerView.getDesignerModel().removeObjectRelationObserver(this);
   }
 
   private void generateWidget(ObjectRelation or) {
@@ -60,21 +85,21 @@ public class ObjectRelationRowView extends FlexTable implements
     setWidget(0, 3, lblOt1);
     Label lblOt2 = new Label(or.getOt2().getName());
     setWidget(0, 4, lblOt2);
-    
+
     String type = "";
     switch (or.getType()) {
-    case ObjectRelation.RT_11:
-      type = Main.constants.relationType11();
-      break;
-    case ObjectRelation.RT_1N:
-      type = Main.constants.relationType1N();
-      break;
-    case ObjectRelation.RT_N1:
-      type = Main.constants.relationTypeN1();
-      break;
-    case ObjectRelation.RT_NN:
-      type = Main.constants.relationTypeNN();
-      break;
+      case ObjectRelation.RT_11:
+        type = Main.constants.relationType11();
+        break;
+      case ObjectRelation.RT_1N:
+        type = Main.constants.relationType1N();
+        break;
+      case ObjectRelation.RT_N1:
+        type = Main.constants.relationTypeN1();
+        break;
+      case ObjectRelation.RT_NN:
+        type = Main.constants.relationTypeNN();
+        break;
     }
     Label lblType = new Label(type);
     setWidget(0, 5, lblType);
@@ -84,58 +109,5 @@ public class ObjectRelationRowView extends FlexTable implements
     else
       lblComprel = new Label("");
     setWidget(0, 6, lblComprel);
-  }
-
-  @Override
-  public void onObjectRelationCreated(ObjectRelation objectRelation) {
-  }
-
-  @Override
-  public void onObjectRelationUpdated(ObjectRelation objectRelation) {
-    if (getObjectRelation().getId() == objectRelation.getId()) 
-      generateWidget(objectRelation);    
-  }
-
-  @Override
-  public void onObjectRelationsLoaded(int otId,
-      Collection<ObjectRelation> objectRelations) {
-  }
-  
-  @Override
-  public void onLoad() {
-    getModel().addObjectRelationObserver(this);
-  }
-
-  @Override
-  public void onUnload() {
-    getModel().removeObjectRelationObserver(this);
-  }
-
-  /**
-   * @return the model
-   */
-  public DesignerModel getModel() {
-    return model;
-  }
-
-  /**
-   * @param model the model to set
-   */
-  public void setModel(DesignerModel model) {
-    this.model = model;
-  }
-
-  /**
-   * @return the objectRelation
-   */
-  public ObjectRelation getObjectRelation() {
-    return objectRelation;
-  }
-
-  /**
-   * @param objectRelation the objectRelation to set
-   */
-  public void setObjectRelation(ObjectRelation objectRelation) {
-    this.objectRelation = objectRelation;
   }
 }

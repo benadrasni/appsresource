@@ -9,10 +9,11 @@ import com.google.gwt.user.client.ui.Tree.Resources;
 import sk.benko.appsresource.client.CSSConstants;
 import sk.benko.appsresource.client.ClientUtils;
 import sk.benko.appsresource.client.TreeResource;
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.dnd.ApplicationDialogDragController;
 import sk.benko.appsresource.client.dnd.ApplicationDialogDropController;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.NavigationLabelView;
+import sk.benko.appsresource.client.layout.NavigationLabel;
 import sk.benko.appsresource.client.model.*;
 import sk.benko.appsresource.client.model.loader.TemplateLoader;
 
@@ -24,9 +25,18 @@ import java.util.List;
 /**
  *
  */
-public class ApplicationDialog extends DesignerDialog implements
-    Model.ApplicationObserver, DesignerModel.ApplicationObserver,
-    DesignerModel.TemplateObserver {
+public class ApplicationDialog extends DesignerDialog implements Model.ApplicationObserver,
+    DesignerModel.ApplicationObserver, DesignerModel.TemplateObserver {
+
+  private static FlowPanel apptMsg;
+
+  static {
+    apptMsg = new FlowPanel();
+    apptMsg.setStyleName("hint-frame");
+    Label lblMessage = new Label(Main.messages.dragTemplates());
+    lblMessage.setStyleName("hint-message");
+    apptMsg.add(lblMessage);
+  }
 
   private TextBox tbCat;
   private CheckBox cbPublic;
@@ -37,67 +47,63 @@ public class ApplicationDialog extends DesignerDialog implements
   private FlowPanel templatePanel;
   private Tree templateTree;
   private Tree apptTree;
-  private FlowPanel apptMsg;
   private HashMap<Integer, TreeItem> hmAppts;
   private ApplicationDialogDragController templateDragController;
-  private ApplicationDialogDropController apptDropController;
+  private NavigationLabel menu2;
 
   /**
-   * @param model the model to which the UI will bind itself
-   * @param app   the application for editing
+   * @param designerView the top level view
    */
-  public ApplicationDialog(final DesignerModel model, Application app) {
-    super(model, app);
-    getModel().addDataObserver(this);
-    getModel().addTemplateObserver(this);
-    getModel().setApplication(app);
+  public ApplicationDialog(final DesignerView designerView) {
+    super(designerView);
+    setHeaderText(Main.constants.application());
 
-    getHeader().add(new Label((getModel().getApplication() == null ?
-        Main.constants.newItem() + " " : "") + Main.constants.application()));
-
-    NavigationLabelView menu1 = new NavigationLabelView(
-        model, Main.constants.application(), new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        model.notifyDialogNavigationItemClicked(event.getRelativeElement());
-        getBodyRight().clear();
-        getBodyRight().add(getWidgetApp());
-      }
+    menu2 = new NavigationLabel(designerView, Main.constants.templates(),
+        new ClickHandler() {
+          public void onClick(ClickEvent event) {
+            if (getApplication() != null) {
+              designerView.getDesignerModel().notifyDialogNavigationItemClicked(event.getRelativeElement());
+              getBodyRight().clear();
+              getBodyRight().add(getWidgetTemplates());
+            }
+          }
     });
-    menu1.addStyleName("dialog-box-navigation-item dialog-box-navigation-item-selected");
-    getBodyLeft().add(menu1);
-
-    NavigationLabelView menu2 = new NavigationLabelView(
-        model, Main.constants.templates(), new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        if (getModel().getApplication() != null) {
-          model.notifyDialogNavigationItemClicked(event.getRelativeElement());
-          getBodyRight().clear();
-          getBodyRight().add(getWidgetTemplates());
-        }
-      }
-    });
-    if (getModel().getApplication() != null)
-      menu2.addStyleName("dialog-box-navigation-item");
-    else
-      menu2.addStyleName("dialog-box-navigation-item-disabled");
-    getBodyLeft().add(menu2);
-
-    getBodyRight().add(getWidgetApp());
+    getMenu().add(menu2);
 
     getBOk().addDomHandler(
         new ClickHandler() {
           public void onClick(ClickEvent event) {
             if (getModel().getApplication() == null)
-              getModel().setApplication(new Application(getTbName().getText()));
+              setItem(new Application(getTbName().getText()));
 
-            fill(getModel().getApplication());
-            model.createOrUpdateApplication(getModel().getApplication(), getAppts());
-            ApplicationDialog.this.hide();
+            fill(getApplication());
+            designerView.getDesignerModel().createOrUpdateApplication(getApplication(), getAppts());
+            close();
           }
         }, ClickEvent.getType());
-    getBOk().getElement().setInnerText(getModel().getApplication() == null ?
-        Main.constants.create() : Main.constants.save());
-    model.getStatusObserver().onTaskFinished();
+
+    templateDragController = new ApplicationDialogDragController(getMain());
+    templateDragController.registerDropController(new ApplicationDialogDropController(this));
+    hmAppts = new HashMap<Integer, TreeItem>();
+    templateTree = new Tree((Resources) GWT.create(TreeResource.class), false);
+    apptTree = new Tree((Resources) GWT.create(TreeResource.class), false);
+    apptTree.setHeight("100%");
+    apptTree.setWidth("100%");
+
+    tbCat = new TextBox();
+    cbPublic = new CheckBox(Main.constants.applicationPublic());
+    cbRecommended = new CheckBox(Main.constants.applicationRecommended());
+
+    if (getModel().getTemplates() == null) {
+      TemplateLoader tl = new TemplateLoader(getModel());
+      tl.start();
+    } else {
+      onTemplatesLoaded(getModel().getTemplates());
+    }
+
+    // must be called after initializing UI components
+    getBodyRight().add(getItemWidget());
+    reset();
   }
 
   @Override
@@ -110,8 +116,11 @@ public class ApplicationDialog extends DesignerDialog implements
 
   @Override
   public void onApplicationTemplatesLoaded(List<ApplicationTemplate> appts) {
-    for (ApplicationTemplate appt : appts)
+    apptTree.clear();
+    for (ApplicationTemplate appt : appts) {
       insertItem(appt);
+    }
+    getDesignerView().getDesignerModel().getStatusObserver().onTaskFinished();
   }
 
   @Override
@@ -128,36 +137,29 @@ public class ApplicationDialog extends DesignerDialog implements
       TemplateRowView leafWidget = new TemplateRowView(ti, "tree-row");
       leafWidget.generateWidgetTree();
 
-      getTemplateDragController().makeDraggable(leafWidget.getWidget(0, 0));
+      templateDragController.makeDraggable(leafWidget.getWidget(0, 0));
       TreeItem leafItem = new TreeItem(leafWidget);
       leafItem.setUserObject(ti);
-      getTemplateTree().addItem(leafItem);
+      templateTree.addItem(leafItem);
     }
-
-    if (getModel().getAppTemplatesByApp().get(getModel().getApplication().getId()) == null) {
-      ApplicationTemplateLoader atl = new ApplicationTemplateLoader(getModel(),
-          getModel().getApplication());
-      atl.start();
-    } else
-      onApplicationTemplatesLoaded(getModel().getAppTemplatesByApp()
-          .get(getModel().getApplication().getId()));
+    getDesignerView().getDesignerModel().getStatusObserver().onTaskFinished();
   }
 
   public void insertItem(ApplicationTemplate appt) {
-    if (getApptTree().getItemCount() == 0) {
-      getApptMsg().removeFromParent();
-      getApptPanel().add(getApptTree());
+    if (apptTree.getItemCount() == 0) {
+      apptMsg.removeFromParent();
+      getApptPanel().add(apptTree);
     }
 
     TreeItem treeItem = createTreeItem(appt);
     treeItem.setUserObject(appt);
-    getHmAppts().put(appt.getTId(), treeItem);
+    hmAppts.put(appt.getTId(), treeItem);
 
     if (appt.getParentMenuId() == 0) {
       if (appt.getRank() == -1)
-        getApptTree().insertItem(0, treeItem);
+        apptTree.insertItem(0, treeItem);
       else
-        getApptTree().addItem(treeItem);
+        apptTree.addItem(treeItem);
     } else {
       TreeItem parent = getHmAppts().get(appt.getParentMenuId());
       parent.addItem(treeItem);
@@ -172,28 +174,10 @@ public class ApplicationDialog extends DesignerDialog implements
   }
 
   /**
-   * Getter for property 'templateDragController'.
-   *
-   * @return Value for property 'templateDragController'.
+   * @return the objectType
    */
-  public ApplicationDialogDragController getTemplateDragController() {
-    if (templateDragController == null) {
-      templateDragController = new ApplicationDialogDragController(getMain());
-      templateDragController.registerDropController(getApptDropController());
-    }
-    return templateDragController;
-  }
-
-  /**
-   * Getter for property 'apptDropController'.
-   *
-   * @return Value for property 'apptDropController'.
-   */
-  public ApplicationDialogDropController getApptDropController() {
-    if (apptDropController == null) {
-      apptDropController = new ApplicationDialogDropController(this);
-    }
-    return apptDropController;
+  public Application getApplication() {
+    return (Application) getItem();
   }
 
   /**
@@ -202,67 +186,7 @@ public class ApplicationDialog extends DesignerDialog implements
    * @return Value for property 'hmAppts'.
    */
   public HashMap<Integer, TreeItem> getHmAppts() {
-    if (hmAppts == null)
-      hmAppts = new HashMap<Integer, TreeItem>();
     return hmAppts;
-  }
-
-  /**
-   * Getter for property 'tbCat'.
-   *
-   * @return Value for property 'tbCat'.
-   */
-  public TextBox getTbCat() {
-    if (tbCat == null) {
-      tbCat = new TextBox();
-      if (getModel().getApplication() != null)
-        tbCat.setText(getModel().getApplication().getCategory());
-    }
-    return tbCat;
-  }
-
-  /**
-   * Getter for property 'cbPublic'.
-   *
-   * @return Value for property 'cbPublic'.
-   */
-  public CheckBox getCbPublic() {
-    if (cbPublic == null) {
-      cbPublic = new CheckBox();
-      cbPublic.setText(Main.constants.applicationPublic());
-      if (getModel().getApplication() != null)
-        cbPublic.setValue(ClientUtils
-            .getFlag(Application.FLAG_PUBLIC, getModel().getApplication().getFlags()));
-    }
-    return cbPublic;
-  }
-
-  /**
-   * Getter for property 'cbRecommended'.
-   *
-   * @return Value for property 'cbRecommended'.
-   */
-  public CheckBox getCbRecommended() {
-    if (cbRecommended == null) {
-      cbRecommended = new CheckBox();
-      cbRecommended.setText(Main.constants.applicationRecommended());
-      if (getModel().getApplication() != null)
-        cbRecommended.setValue(ClientUtils
-            .getFlag(Application.FLAG_RECOMMENDED, getModel().getApplication().getFlags()));
-    }
-    return cbRecommended;
-  }
-
-  /**
-   * Getter for property 'templateTree'.
-   *
-   * @return Value for property 'templateTree'.
-   */
-  public Tree getTemplateTree() {
-    if (templateTree == null) {
-      templateTree = new Tree((Resources) GWT.create(TreeResource.class), false);
-    }
-    return templateTree;
   }
 
   /**
@@ -271,11 +195,6 @@ public class ApplicationDialog extends DesignerDialog implements
    * @return Value for property 'apptTree'.
    */
   public Tree getApptTree() {
-    if (apptTree == null) {
-      apptTree = new Tree((Resources) GWT.create(TreeResource.class), false);
-      apptTree.setHeight("100%");
-      apptTree.setWidth("100%");
-    }
     return apptTree;
   }
 
@@ -294,7 +213,7 @@ public class ApplicationDialog extends DesignerDialog implements
       label.setStyleName(ClientUtils.CSS_DIALOGBOX_LABEL);
       label.addStyleDependentName(CSSConstants.SUFFIX_BOLD);
       apptPanel.add(label);
-      apptPanel.add(getApptMsg());
+      apptPanel.add(apptMsg);
     }
 
     return apptPanel;
@@ -313,26 +232,10 @@ public class ApplicationDialog extends DesignerDialog implements
       label.setStyleName(ClientUtils.CSS_DIALOGBOX_LABEL);
       label.addStyleDependentName(CSSConstants.SUFFIX_BOLD);
       templatePanel.add(label);
-      templatePanel.add(getTemplateTree());
+      templatePanel.add(templateTree);
     }
 
     return templatePanel;
-  }
-
-  /**
-   * Getter for property 'apptMsg'.
-   *
-   * @return Value for property 'apptMsg'.
-   */
-  public FlowPanel getApptMsg() {
-    if (apptMsg == null) {
-      apptMsg = new FlowPanel();
-      apptMsg.setStyleName("hint-frame");
-      Label lblMessage = new Label(Main.messages.dragTemplates());
-      lblMessage.setStyleName("hint-message");
-      apptMsg.add(lblMessage);
-    }
-    return apptMsg;
   }
 
   /**
@@ -340,7 +243,8 @@ public class ApplicationDialog extends DesignerDialog implements
    *
    * @return Value for property 'widgetApp'.
    */
-  public FlexTable getWidgetApp() {
+  @Override
+  public FlexTable getItemWidget() {
     if (widgetApp == null) {
       widgetApp = new FlexTable();
 
@@ -354,10 +258,10 @@ public class ApplicationDialog extends DesignerDialog implements
 
       Label lblCat = new Label(Main.constants.applicationCat());
       widgetApp.setWidget(2, 0, lblCat);
-      widgetApp.setWidget(2, 1, getTbCat());
+      widgetApp.setWidget(2, 1, tbCat);
 
-      widgetApp.setWidget(3, 0, getCbPublic());
-      widgetApp.setWidget(3, 1, getCbRecommended());
+      widgetApp.setWidget(3, 0, cbPublic);
+      widgetApp.setWidget(3, 1, cbRecommended);
 
       Label lblDesc = new Label(Main.constants.applicationDesc());
       widgetApp.setWidget(4, 0, lblDesc);
@@ -385,42 +289,83 @@ public class ApplicationDialog extends DesignerDialog implements
 
       widgetTemplates.setWidget(0, 0, getApptPanel());
       widgetTemplates.setWidget(0, 1, getTemplatePanel());
-
-      if (getModel().getTemplates() == null) {
-        TemplateLoader tl = new TemplateLoader(getModel());
-        tl.start();
-      } else
-        onTemplatesLoaded(getModel().getTemplates());
     }
     return widgetTemplates;
   }
 
-  // private methods
-
-  private void fill(Application app) {
+  /**
+   * Fill {@link Application} with values from UI. Parent method must be called first.
+   *
+   * @param app the application which should be filled with UI values
+   */
+  protected void fill(Application app) {
     super.fill(app);
 
     // category
-    app.setCategory(getTbCat().getText().trim());
+    app.setCategory(tbCat.getText().trim());
 
     // flags
     int flags = 0;
-    if (getCbPublic().getValue())
+    if (cbPublic.getValue())
       flags = ClientUtils.setFlag(Application.FLAG_PUBLIC, flags);
     else
       flags = ClientUtils.unsetFlag(Application.FLAG_PUBLIC, flags);
-    if (getCbRecommended().getValue())
+    if (cbRecommended.getValue())
       flags = ClientUtils.setFlag(Application.FLAG_RECOMMENDED, flags);
     else
       flags = ClientUtils.unsetFlag(Application.FLAG_RECOMMENDED, flags);
     app.setFlags(flags);
   }
 
+  /**
+   * Load {@link Application} to UI. Parent method must be called first.
+   *
+   * @param item the application which should be loaded to UI
+   */
+  @Override
+  protected void load(DesignItem item) {
+    assert (item != null);
+    super.load(item);
+
+    Application application = (Application) item;
+    tbCat.setText(application.getCategory());
+    cbPublic.setValue(ClientUtils.getFlag(Application.FLAG_PUBLIC, application.getFlags()));
+    cbRecommended.setValue(ClientUtils.getFlag(Application.FLAG_RECOMMENDED, application.getFlags()));
+
+    if (getModel().getAppTemplatesByApp().get(application.getId()) == null) {
+      ApplicationTemplateLoader atl = new ApplicationTemplateLoader(getModel(), application);
+      atl.start();
+    } else {
+      onApplicationTemplatesLoaded(getModel().getAppTemplatesByApp().get(application.getId()));
+    }
+
+    menu2.removeStyleName("dialog-box-navigation-item-disabled");
+    menu2.addStyleName("dialog-box-navigation-item");
+  }
+
+  /**
+   * Reset UI fields. Parent method must be called first.
+   */
+  @Override
+  protected void reset() {
+    super.reset();
+    tbCat.setText("");
+    cbPublic.setValue(false);
+    cbRecommended.setValue(false);
+    templateTree.clear();
+    apptTree.clear();
+
+    menu2.removeStyleName("dialog-box-navigation-item");
+    menu2.addStyleName("dialog-box-navigation-item-disabled");
+  }
+
+  // private methods
+
   private ArrayList<ApplicationTemplate> getAppts() {
     ArrayList<ApplicationTemplate> appts = new ArrayList<ApplicationTemplate>();
-    if (getApptTree() != null)
-      for (int i = 0; i < getApptTree().getItemCount(); i++) {
-        TreeItem ti = getApptTree().getItem(i);
+    if (apptTree != null)
+      for (int i = 0; i < apptTree.getItemCount(); i++) {
+        TreeItem ti = apptTree.getItem(i);
         ApplicationTemplate appt = (ApplicationTemplate) ti.getUserObject();
         appt.setRank(i);
         // flags
@@ -479,17 +424,17 @@ public class ApplicationDialog extends DesignerDialog implements
     ti.remove();
     getHmAppts().remove(appt.getTId());
 
-    if (getApptTree().getItemCount() == 0) {
-      getApptTree().removeFromParent();
-      getApptPanel().add(getApptMsg());
+    if (apptTree.getItemCount() == 0) {
+      apptTree.removeFromParent();
+      getApptPanel().add(apptMsg);
     }
 
     setVisibility(appt, true);
   }
 
   private void setVisibility(ApplicationTemplate appt, boolean b) {
-    for (int i = 0; i < getTemplateTree().getItemCount(); i++) {
-      TreeItem ti = getTemplateTree().getItem(i);
+    for (int i = 0; i < templateTree.getItemCount(); i++) {
+      TreeItem ti = templateTree.getItem(i);
       if (appt.getTId() == ((Template) ti.getUserObject()).getId()) {
         ti.setVisible(b);
       }

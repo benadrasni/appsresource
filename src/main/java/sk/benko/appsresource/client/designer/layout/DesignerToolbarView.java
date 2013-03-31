@@ -27,18 +27,19 @@ import java.util.List;
 public class DesignerToolbarView extends FlowPanel implements ChangeHandler,
     UserModel.ApplicationObserver, Model.ApplicationObserver,
     DesignerModel.ApplicationObserver, DesignerModel.ObjectTypeObserver {
-  private DesignerModel model;
+
+  private DesignerView designerView;
   private FlexTable toolbar;
   private DropDownBox ddbApplication;
   private DropDownBox ddbTemplate;
   private DropDownBox ddbObjectType;
 
   /**
-   * @param model the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public DesignerToolbarView(DesignerModel model) {
+  public DesignerToolbarView(final DesignerView designerView) {
     getElement().setId(CSSConstants.CSS_CONTENT_TOOLBAR);
-    setModel(model);
+    this.designerView = designerView;
     this.addDomHandler(this, ChangeEvent.getType());
   }
 
@@ -127,14 +128,7 @@ public class DesignerToolbarView extends FlowPanel implements ChangeHandler,
    * @return the model
    */
   public DesignerModel getModel() {
-    return model;
-  }
-
-  /**
-   * @param model the model to set
-   */
-  public void setModel(DesignerModel model) {
-    this.model = model;
+    return designerView.getDesignerModel();
   }
 
   /**

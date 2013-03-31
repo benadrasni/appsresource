@@ -13,11 +13,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class DesignerHeaderView extends FlowPanel {
 
-  /**
-   * @param model
-   *          the model to which the UI will bind itself
-   */
-  public DesignerHeaderView(final DesignerModel model) {
+  public DesignerHeaderView() {
     getElement().setId(CSSConstants.CSS_HEADER);
     
     add(new LogoView(Main.constants.designerMode()));

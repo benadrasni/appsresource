@@ -9,11 +9,11 @@ import sk.benko.appsresource.client.ClientUtils;
 import sk.benko.appsresource.client.DropDownBox;
 import sk.benko.appsresource.client.DropDownObject;
 import sk.benko.appsresource.client.DropDownObjectImpl;
-import sk.benko.appsresource.client.TreeResource;
 import sk.benko.appsresource.client.application.ObjectTemplate;
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.designer.model.ObjectAttributeLoader;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.NavigationLabelView;
+import sk.benko.appsresource.client.layout.NavigationLabel;
 import sk.benko.appsresource.client.model.ApplicationModel;
 import sk.benko.appsresource.client.model.ApplicationTemplate;
 import sk.benko.appsresource.client.model.DesignerModel;
@@ -26,7 +26,6 @@ import sk.benko.appsresource.client.model.ValueType;
 import sk.benko.appsresource.client.ui.widget.IntegerTextBox;
 import sk.benko.appsresource.client.util.DateHelper;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -39,8 +38,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.Tree.Resources;
 
 /**
  *
@@ -139,16 +136,14 @@ public class TemplateAttributeDialog extends DesignerDialog implements
   final AlignListBox tbAlign = new AlignListBox();
   final AlignListBox tbUnitAlign = new AlignListBox();
   
-  Tree menu = new Tree((Resources) GWT.create(TreeResource.class), false);
-  
-  FlexTable widgetTemplateAttribute = new FlexTable();
+  private FlexTable widgetTemplateAttribute;
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public TemplateAttributeDialog(final DesignerModel model, TemplateAttribute ta) {
-    super(model, ta);
+  public TemplateAttributeDialog(final DesignerView designerView) {
+    super(designerView);
+    setHeaderText(Main.constants.templateAttribute());
     
     assert(getModel().getApplication() != null);
     assert(getModel().getTemplate() != null);
@@ -158,30 +153,14 @@ public class TemplateAttributeDialog extends DesignerDialog implements
     getModel().addTemplateGroupObserver(this);
     getModel().addObjectAttributeObserver(this);
     
-    amodel = new ApplicationModel(model.getUserModel(), null);
-
-    getHeader().add(new Label((getTemplateAttribute() == null ? Main.constants.newItem() + " " 
-        : "") + Main.constants.templateAttribute()));
-
-    NavigationLabelView menu1 = new NavigationLabelView(
-        model, Main.constants.templateAttribute(), new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        model.notifyDialogNavigationItemClicked(event.getRelativeElement());
-        widgetTemplateAttribute.setVisible(true);
-        getObjectTemplate().setVisible(false);
-      }
-    }); 
-    menu1.addStyleName(ClientUtils.CSS_DIALOGBOX_NAVIGATIONITEM + " " 
-        + ClientUtils.CSS_DIALOGBOX_NAVIGATIONITEM_SELECTED);
-    menu.addItem(menu1);
-    initializeTemplateAttribute();
+    amodel = new ApplicationModel(designerView.getDesignerModel().getUserModel(), null);
 
     if (getTemplateAttribute() != null) {
-      NavigationLabelView menu2 = new NavigationLabelView(
-          model, Main.constants.templateView(), new ClickHandler() {
+      NavigationLabel menu2 = new NavigationLabel(
+          designerView, Main.constants.templateView(), new ClickHandler() {
         public void onClick(ClickEvent event) {
           if (getTemplateAttribute() != null) {
-            model.notifyDialogNavigationItemClicked(event.getRelativeElement());
+            designerView.getDesignerModel().notifyDialogNavigationItemClicked(event.getRelativeElement());
             widgetTemplateAttribute.setVisible(false);
             if (objectTemplate == null)
               getBodyRight().add(getObjectTemplate());
@@ -190,11 +169,8 @@ public class TemplateAttributeDialog extends DesignerDialog implements
           }
         }
       });
-      menu.addItem(menu2);
+      getMenu().addItem(menu2);
     }
-    
-    getBodyLeft().add(menu);
-    getBodyRight().add(widgetTemplateAttribute);
 
     getBCancel().addDomHandler(
         new ClickHandler() {
@@ -211,12 +187,10 @@ public class TemplateAttributeDialog extends DesignerDialog implements
                 setItem(new TemplateAttribute(getTbName().getText(),
                     getDdbTemplateGroup().getSelection().getId()));
               fill(getTemplateAttribute());
-              model.createOrUpdateTemplateAttribute(getTemplateAttribute());
+              designerView.getDesignerModel().createOrUpdateTemplateAttribute(getTemplateAttribute());
               close();
             }
         }, ClickEvent.getType());
-    getBOk().getElement().setInnerText(getTemplateAttribute() == null ? 
-        Main.constants.create() : Main.constants.save());
   }
   
   public void close() {
@@ -263,111 +237,116 @@ public class TemplateAttributeDialog extends DesignerDialog implements
   public void onTemplateGroupsLoaded(Collection<TemplateGroup> templateGroups) {
     fillTemplateGroups(templateGroups);
   }
-  
-  private void initializeTemplateAttribute() {
-    // first column
-    widgetTemplateAttribute.setWidget(0, 0, getLblCode());
-    widgetTemplateAttribute.setWidget(0, 1, getLblCodeValue());
 
-    widgetTemplateAttribute.setWidget(1, 0, getLblName());
-    widgetTemplateAttribute.setWidget(1, 1, getTbName());
+  @Override
+  protected FlexTable getItemWidget() {
+    if (widgetTemplateAttribute == null) {
+      widgetTemplateAttribute = new FlexTable();
 
-    widgetTemplateAttribute.setWidget(2, 0, getLblDesc());
-    widgetTemplateAttribute.setWidget(2, 1, getTbDesc());
+      // first column
+      widgetTemplateAttribute.setWidget(0, 0, getLblCode());
+      widgetTemplateAttribute.setWidget(0, 1, getLblCodeValue());
 
-    widgetTemplateAttribute.setWidget(3, 0, getLblTg());
-    widgetTemplateAttribute.setWidget(3, 1, getDdbTemplateGroup());
-    widgetTemplateAttribute.getFlexCellFormatter().addStyleName(3, 1, ClientUtils.CSS_ALIGN_RIGHT);
+      widgetTemplateAttribute.setWidget(1, 0, getLblName());
+      widgetTemplateAttribute.setWidget(1, 1, getTbName());
 
-    widgetTemplateAttribute.setWidget(4, 0, getLblOa());
-    widgetTemplateAttribute.setWidget(4, 1, getDdbObjectAttribute());
-    widgetTemplateAttribute.getFlexCellFormatter().addStyleName(4, 1, ClientUtils.CSS_ALIGN_RIGHT);
+      widgetTemplateAttribute.setWidget(2, 0, getLblDesc());
+      widgetTemplateAttribute.setWidget(2, 1, getTbDesc());
 
-    widgetTemplateAttribute.setWidget(5, 1, getCbMandatory());
-    widgetTemplateAttribute.setWidget(6, 1, getCbDesc());
-    widgetTemplateAttribute.setWidget(7, 1, getCbDerived());
-    
-    widgetTemplateAttribute.setWidget(8, 0, getLblStyle());
-    widgetTemplateAttribute.setWidget(8, 1, getDdbStyle());
-    widgetTemplateAttribute.getFlexCellFormatter().addStyleName(8, 1, ClientUtils.CSS_ALIGN_RIGHT);
+      widgetTemplateAttribute.setWidget(3, 0, getLblTg());
+      widgetTemplateAttribute.setWidget(3, 1, getDdbTemplateGroup());
+      widgetTemplateAttribute.getFlexCellFormatter().addStyleName(3, 1, ClientUtils.CSS_ALIGN_RIGHT);
 
-    NativeEvent eventStyle = Document.get().createChangeEvent();
-    DomEvent.fireNativeEvent(eventStyle, getDdbStyle());
-    
-    // space between columns
-    widgetTemplateAttribute.getCellFormatter().setWidth(0, 2, TBWIDTH_SMALL);
-    
-    // second column
-    widgetTemplateAttribute.setWidget(0, 4, getCbLabel());
-    widgetTemplateAttribute.setWidget(0, 5, getCbValue());
-    widgetTemplateAttribute.setWidget(0, 6, getCbUnit());
+      widgetTemplateAttribute.setWidget(4, 0, getLblOa());
+      widgetTemplateAttribute.setWidget(4, 1, getDdbObjectAttribute());
+      widgetTemplateAttribute.getFlexCellFormatter().addStyleName(4, 1, ClientUtils.CSS_ALIGN_RIGHT);
 
-    widgetTemplateAttribute.setWidget(1, 3, getLblTop());
-    widgetTemplateAttribute.setWidget(1, 4, getTbLabelTop());
-    widgetTemplateAttribute.setWidget(1, 5, getTbTop());
-    widgetTemplateAttribute.setWidget(1, 6, getTbUnitTop());
+      widgetTemplateAttribute.setWidget(5, 1, getCbMandatory());
+      widgetTemplateAttribute.setWidget(6, 1, getCbDesc());
+      widgetTemplateAttribute.setWidget(7, 1, getCbDerived());
 
-    widgetTemplateAttribute.setWidget(2, 3, lblLeft);
-    if (getTemplateAttribute() != null) tbLabelLeft.setText(""+getTemplateAttribute().getLabelLeft());
-    else tbLabelLeft.setText(""+DEFAULT_LABELLEFT);
-    tbLabelLeft.setWidth(TBWIDTH_SMALL);
-    widgetTemplateAttribute.setWidget(2, 4, tbLabelLeft);
-    if (getTemplateAttribute() != null) tbLeft.setText(""+getTemplateAttribute().getLeft());
-    else tbLeft.setText(""+DEFAULT_LEFT);
-    tbLeft.setWidth(TBWIDTH_SMALL);
-    widgetTemplateAttribute.setWidget(2, 5, tbLeft);
-    if (getTemplateAttribute() != null) tbUnitLeft.setText(""+getTemplateAttribute().getUnitLeft());
-    else tbUnitLeft.setText(""+DEFAULT_UNITLEFT);
-    tbUnitLeft.setWidth(TBWIDTH_SMALL);
-    widgetTemplateAttribute.setWidget(2, 6, tbUnitLeft);
+      widgetTemplateAttribute.setWidget(8, 0, getLblStyle());
+      widgetTemplateAttribute.setWidget(8, 1, getDdbStyle());
+      widgetTemplateAttribute.getFlexCellFormatter().addStyleName(8, 1, ClientUtils.CSS_ALIGN_RIGHT);
 
-    widgetTemplateAttribute.setWidget(3, 3, lblWidth);
-    if (getTemplateAttribute() != null) tbLabelWidth.setText(""+getTemplateAttribute().getLabelWidth());
-    else tbLabelWidth.setText(""+DEFAULT_LABELWIDTH);
-    tbLabelWidth.setWidth(TBWIDTH_SMALL);
-    widgetTemplateAttribute.setWidget(3, 4, tbLabelWidth);
-    if (getTemplateAttribute() != null) tbWidth.setText(""+getTemplateAttribute().getWidth());
-    else tbWidth.setText(""+DEFAULT_WIDTH);
-    tbWidth.setWidth(TBWIDTH_SMALL);
-    widgetTemplateAttribute.setWidget(3, 5, tbWidth);
-    if (getTemplateAttribute() != null) tbUnitWidth.setText(""+getTemplateAttribute().getUnitWidth());
-    else tbUnitWidth.setText(""+DEFAULT_UNITWIDTH);
-    tbUnitWidth.setWidth(TBWIDTH_SMALL);
-    widgetTemplateAttribute.setWidget(3, 6, tbUnitWidth);
+      NativeEvent eventStyle = Document.get().createChangeEvent();
+      DomEvent.fireNativeEvent(eventStyle, getDdbStyle());
 
-    Label lblWidthUnit = new Label(Main.constants.templateAttributeWidthUnit());
-    widgetTemplateAttribute.setWidget(4, 3, lblWidthUnit);
-    if (getTemplateAttribute() != null) tbLabelWidthUnit.setText(""+getTemplateAttribute().getLabelWidthUnit());
-    widgetTemplateAttribute.setWidget(4, 4, tbLabelWidthUnit);
-    if (getTemplateAttribute() != null) tbWidthUnit.setText(""+getTemplateAttribute().getWidthUnit());
-    widgetTemplateAttribute.setWidget(4, 5, tbWidthUnit);
-    if (getTemplateAttribute() != null) tbUnitWidthUnit.setText(""+getTemplateAttribute().getUnitWidthUnit());
-    widgetTemplateAttribute.setWidget(4, 6, tbUnitWidthUnit);
+      // space between columns
+      widgetTemplateAttribute.getCellFormatter().setWidth(0, 2, TBWIDTH_SMALL);
 
-    Label lblAlign = new Label(Main.constants.templateAttributeAlign());
-    widgetTemplateAttribute.setWidget(5, 3, lblAlign);
-    if (getTemplateAttribute() != null) tbLabelAlign.setText(""+getTemplateAttribute().getLabelAlign());
-    widgetTemplateAttribute.setWidget(5, 4, tbLabelAlign);
-    if (getTemplateAttribute() != null) tbAlign.setText(""+getTemplateAttribute().getAlign());
-    widgetTemplateAttribute.setWidget(5, 5, tbAlign);
-    if (getTemplateAttribute() != null) tbUnitAlign.setText(""+getTemplateAttribute().getUnitAlign());
-    widgetTemplateAttribute.setWidget(5, 6, tbUnitAlign);
-    
-    Label lblDef = new Label(Main.constants.templateAttributeDefault());
-    widgetTemplateAttribute.setWidget(6, 3, lblDef);
-    if (getTemplateAttribute() != null) tbDef.setText(getTemplateAttribute().getDef());
-    widgetTemplateAttribute.setWidget(6, 4, tbDef);
-    widgetTemplateAttribute.getFlexCellFormatter().setColSpan(6, 4, 3);
+      // second column
+      widgetTemplateAttribute.setWidget(0, 4, getCbLabel());
+      widgetTemplateAttribute.setWidget(0, 5, getCbValue());
+      widgetTemplateAttribute.setWidget(0, 6, getCbUnit());
 
-    widgetTemplateAttribute.setWidget(7, 3, lblLength);
-    if (getTemplateAttribute() != null) tbLength.setText(""+getTemplateAttribute().getLength());
-    else tbLength.setText(""+DEFAULT_LENGTH);
-    tbLength.setWidth(TBWIDTH_SMALL);
-    widgetTemplateAttribute.setWidget(7, 4, tbLength);
-    
-    widgetTemplateAttribute.setWidget(8, 3, getLblTabIndex());
-    widgetTemplateAttribute.setWidget(8, 4, getTbTabIndex());
+      widgetTemplateAttribute.setWidget(1, 3, getLblTop());
+      widgetTemplateAttribute.setWidget(1, 4, getTbLabelTop());
+      widgetTemplateAttribute.setWidget(1, 5, getTbTop());
+      widgetTemplateAttribute.setWidget(1, 6, getTbUnitTop());
 
+      widgetTemplateAttribute.setWidget(2, 3, lblLeft);
+      if (getTemplateAttribute() != null) tbLabelLeft.setText(""+getTemplateAttribute().getLabelLeft());
+      else tbLabelLeft.setText(""+DEFAULT_LABELLEFT);
+      tbLabelLeft.setWidth(TBWIDTH_SMALL);
+      widgetTemplateAttribute.setWidget(2, 4, tbLabelLeft);
+      if (getTemplateAttribute() != null) tbLeft.setText(""+getTemplateAttribute().getLeft());
+      else tbLeft.setText(""+DEFAULT_LEFT);
+      tbLeft.setWidth(TBWIDTH_SMALL);
+      widgetTemplateAttribute.setWidget(2, 5, tbLeft);
+      if (getTemplateAttribute() != null) tbUnitLeft.setText(""+getTemplateAttribute().getUnitLeft());
+      else tbUnitLeft.setText(""+DEFAULT_UNITLEFT);
+      tbUnitLeft.setWidth(TBWIDTH_SMALL);
+      widgetTemplateAttribute.setWidget(2, 6, tbUnitLeft);
+
+      widgetTemplateAttribute.setWidget(3, 3, lblWidth);
+      if (getTemplateAttribute() != null) tbLabelWidth.setText(""+getTemplateAttribute().getLabelWidth());
+      else tbLabelWidth.setText(""+DEFAULT_LABELWIDTH);
+      tbLabelWidth.setWidth(TBWIDTH_SMALL);
+      widgetTemplateAttribute.setWidget(3, 4, tbLabelWidth);
+      if (getTemplateAttribute() != null) tbWidth.setText(""+getTemplateAttribute().getWidth());
+      else tbWidth.setText(""+DEFAULT_WIDTH);
+      tbWidth.setWidth(TBWIDTH_SMALL);
+      widgetTemplateAttribute.setWidget(3, 5, tbWidth);
+      if (getTemplateAttribute() != null) tbUnitWidth.setText(""+getTemplateAttribute().getUnitWidth());
+      else tbUnitWidth.setText(""+DEFAULT_UNITWIDTH);
+      tbUnitWidth.setWidth(TBWIDTH_SMALL);
+      widgetTemplateAttribute.setWidget(3, 6, tbUnitWidth);
+
+      Label lblWidthUnit = new Label(Main.constants.templateAttributeWidthUnit());
+      widgetTemplateAttribute.setWidget(4, 3, lblWidthUnit);
+      if (getTemplateAttribute() != null) tbLabelWidthUnit.setText(""+getTemplateAttribute().getLabelWidthUnit());
+      widgetTemplateAttribute.setWidget(4, 4, tbLabelWidthUnit);
+      if (getTemplateAttribute() != null) tbWidthUnit.setText(""+getTemplateAttribute().getWidthUnit());
+      widgetTemplateAttribute.setWidget(4, 5, tbWidthUnit);
+      if (getTemplateAttribute() != null) tbUnitWidthUnit.setText(""+getTemplateAttribute().getUnitWidthUnit());
+      widgetTemplateAttribute.setWidget(4, 6, tbUnitWidthUnit);
+
+      Label lblAlign = new Label(Main.constants.templateAttributeAlign());
+      widgetTemplateAttribute.setWidget(5, 3, lblAlign);
+      if (getTemplateAttribute() != null) tbLabelAlign.setText(""+getTemplateAttribute().getLabelAlign());
+      widgetTemplateAttribute.setWidget(5, 4, tbLabelAlign);
+      if (getTemplateAttribute() != null) tbAlign.setText(""+getTemplateAttribute().getAlign());
+      widgetTemplateAttribute.setWidget(5, 5, tbAlign);
+      if (getTemplateAttribute() != null) tbUnitAlign.setText(""+getTemplateAttribute().getUnitAlign());
+      widgetTemplateAttribute.setWidget(5, 6, tbUnitAlign);
+
+      Label lblDef = new Label(Main.constants.templateAttributeDefault());
+      widgetTemplateAttribute.setWidget(6, 3, lblDef);
+      if (getTemplateAttribute() != null) tbDef.setText(getTemplateAttribute().getDef());
+      widgetTemplateAttribute.setWidget(6, 4, tbDef);
+      widgetTemplateAttribute.getFlexCellFormatter().setColSpan(6, 4, 3);
+
+      widgetTemplateAttribute.setWidget(7, 3, lblLength);
+      if (getTemplateAttribute() != null) tbLength.setText(""+getTemplateAttribute().getLength());
+      else tbLength.setText(""+DEFAULT_LENGTH);
+      tbLength.setWidth(TBWIDTH_SMALL);
+      widgetTemplateAttribute.setWidget(7, 4, tbLength);
+
+      widgetTemplateAttribute.setWidget(8, 3, getLblTabIndex());
+      widgetTemplateAttribute.setWidget(8, 4, getTbTabIndex());
+    }
+    return widgetTemplateAttribute;
   }
 
   // getters and setters

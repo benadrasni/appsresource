@@ -1,8 +1,9 @@
 package sk.benko.appsresource.client.designer;
 
 import com.google.gwt.user.client.ui.Label;
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.TableView;
+import sk.benko.appsresource.client.designer.layout.TableView;
 import sk.benko.appsresource.client.model.*;
 
 import java.util.Collection;
@@ -14,10 +15,10 @@ import java.util.List;
 public class TemplateTableView extends TableView implements Model.ApplicationObserver, DesignerModel.TemplateObserver {
 
   /**
-   * @param model the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public TemplateTableView(DesignerModel model) {
-    super(model);
+  public TemplateTableView(final DesignerView designerView) {
+    super(designerView);
   }
 
   @Override
@@ -29,9 +30,7 @@ public class TemplateTableView extends TableView implements Model.ApplicationObs
 
   @Override
   public void onTemplateCreated(Template template) {
-    TemplateRowView trw = new TemplateRowView(template, "content-row");
-    trw.setModel(getModel());
-    trw.addHandlers();
+    TemplateRowView trw = new TemplateRowView(getDesignerView(), template, "content-row");
     trw.generateWidgetFull();
     add(trw);
   }
@@ -86,9 +85,7 @@ public class TemplateTableView extends TableView implements Model.ApplicationObs
 
   public void displayRows(List<ApplicationTemplate> appts) {
     for (ApplicationTemplate appt : appts) {
-      TemplateRowView trw = new TemplateRowView(appt.getT(), "content-row");
-      trw.setModel(getModel());
-      trw.addHandlers();
+      TemplateRowView trw = new TemplateRowView(getDesignerView(), appt.getT(), "content-row");
       trw.generateWidgetFull();
       add(trw);
     }

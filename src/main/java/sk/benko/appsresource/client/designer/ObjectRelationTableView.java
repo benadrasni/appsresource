@@ -2,8 +2,9 @@ package sk.benko.appsresource.client.designer;
 
 import java.util.Collection;
 
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.TableView;
+import sk.benko.appsresource.client.designer.layout.TableView;
 import sk.benko.appsresource.client.model.DesignerModel;
 import sk.benko.appsresource.client.model.ObjectRelation;
 import sk.benko.appsresource.client.model.loader.ObjectRelationLoader;
@@ -18,16 +19,15 @@ public class ObjectRelationTableView extends TableView implements
     DesignerModel.ObjectRelationObserver {
 
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public ObjectRelationTableView(DesignerModel model) {
-    super(model);
+  public ObjectRelationTableView(final DesignerView designerView) {
+    super(designerView);
   }
 
   @Override
   public void onObjectRelationCreated(ObjectRelation objectRelation) {
-    add(new ObjectRelationRowView(getModel(), objectRelation));
+    add(new ObjectRelationRowView(getDesignerView(), objectRelation));
   }
 
   @Override
@@ -76,7 +76,7 @@ public class ObjectRelationTableView extends TableView implements
 
   public void displayRows(Collection<ObjectRelation> oas) {
     for (ObjectRelation oa : oas) {
-      add(new ObjectRelationRowView(getModel(), oa));
+      add(new ObjectRelationRowView(getDesignerView(), oa));
     }
   }
   

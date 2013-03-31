@@ -1,4 +1,4 @@
-package sk.benko.appsresource.client.layout;
+package sk.benko.appsresource.client.designer.layout;
 
 import java.util.HashMap;
 
@@ -14,7 +14,6 @@ import sk.benko.appsresource.client.designer.TemplateRelationTableView;
 import sk.benko.appsresource.client.designer.TemplateTableView;
 import sk.benko.appsresource.client.designer.UnitTableView;
 import sk.benko.appsresource.client.designer.ValueTypeTableView;
-import sk.benko.appsresource.client.designer.layout.DesignerToolbarView;
 import sk.benko.appsresource.client.model.DesignerModel;
 
 import com.google.gwt.user.client.Window;
@@ -26,18 +25,17 @@ import com.google.gwt.user.client.ui.ScrollPanel;
  */
 public class TableDispatcher extends ScrollPanel {
 
-  private DesignerModel model;
+  private DesignerView designerView;
   private HashMap<Sections, TableView> views;
   private TableView actualView;
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public TableDispatcher(final DesignerModel model) {
+  public TableDispatcher(final DesignerView designerView) {
+    this.designerView = designerView;
+
     getElement().setId(CSSConstants.CSS_CONTENT_TEMPLATE);
-    setModel(model);
-    
     setStyleName("content");
     setHeight(Window.getClientHeight()-150+"px");
   }
@@ -57,14 +55,7 @@ public class TableDispatcher extends ScrollPanel {
    * @return the model
    */
   public DesignerModel getModel() {
-    return model;
-  }
-
-  /**
-   * @param model the model to set
-   */
-  public void setModel(DesignerModel model) {
-    this.model = model;
+    return designerView.getDesignerModel();
   }
 
   /**
@@ -104,34 +95,34 @@ public class TableDispatcher extends ScrollPanel {
     if (getActualView() == null) {
       switch (section) {
       case APPLICATION:
-        setActualView(new ApplicationTableView(getModel()));
+        setActualView(new ApplicationTableView(designerView));
         break;
       case TEMPLATE:
-        setActualView(new TemplateTableView(getModel()));
+        setActualView(new TemplateTableView(designerView));
         break;
       case TEMPLATEGROUP:
-        setActualView(new TemplateGroupTableView(getModel()));
+        setActualView(new TemplateGroupTableView(designerView));
         break;
       case TEMPLATEATTRIBUTE:
-        setActualView(new TemplateAttributeTableView(getModel()));
+        setActualView(new TemplateAttributeTableView(designerView));
         break;
       case TEMPLATERELATION:
-        setActualView(new TemplateRelationTableView(getModel()));
+        setActualView(new TemplateRelationTableView(designerView));
         break;
       case OBJECTTYPE:
-        setActualView(new ObjectTypeTableView(getModel()));
+        setActualView(new ObjectTypeTableView(designerView));
         break;
       case OBJECTATTRIBUTE:
-        setActualView(new ObjectAttributeTableView(getModel()));
+        setActualView(new ObjectAttributeTableView(designerView));
         break;
       case OBJECTRELATION:
-        setActualView(new ObjectRelationTableView(getModel()));
+        setActualView(new ObjectRelationTableView(designerView));
         break;
       case VALUETYPE:
-        setActualView(new ValueTypeTableView(getModel()));
+        setActualView(new ValueTypeTableView(designerView));
         break;
       case UNIT:
-        setActualView(new UnitTableView(getModel()));
+        setActualView(new UnitTableView(designerView));
         break;
       case NONE:
         break;

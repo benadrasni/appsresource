@@ -958,7 +958,7 @@ public class DesignerModel extends Model {
    *
    * @param observer
    */
-  public void removeTemplateAttributeUpdateObserver(TemplateAttributeObserver observer) {
+  public void removeTemplateAttributeUpdateObserver(TemplateAttributeUpdateObserver observer) {
     templateAttributeUpdateObservers.remove(observer);
   }
   

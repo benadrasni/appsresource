@@ -1,5 +1,6 @@
 package sk.benko.appsresource.client.designer;
 
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.model.DesignerModel;
 import sk.benko.appsresource.client.model.TemplateAttribute;
@@ -15,26 +16,36 @@ import com.google.gwt.user.client.ui.Label;
  * A widget to display object type in table row.
  *
  */
-public class TemplateAttributeRowView extends FlexTable implements 
-    DesignerModel.TemplateAttributeUpdateObserver {
+public class TemplateAttributeRowView extends FlexTable implements DesignerModel.TemplateAttributeUpdateObserver {
 
+  private DesignerView designerView;
   private TemplateAttribute templateAttribute;
   
   /**
-   * @param ta
-   * @param style
+   * @param templateAttribute   the template attribute
+   * @param style               css style
    */
-  public TemplateAttributeRowView(final TemplateAttribute ta, String style) {
+  public TemplateAttributeRowView(final TemplateAttribute templateAttribute, String style) {
     setStyleName(style);
-    setTemplateAttribute(ta);
-    getElement().setId(""+templateAttribute.getId());
+    this.templateAttribute = templateAttribute;
+    getElement().setId(""+ this.templateAttribute.getId());
   }
 
-  public void addHandlers(final DesignerModel model) {
+  /**
+   * @param designerView        the top level view
+   * @param templateAttribute   the template attribute
+   * @param style               css style
+   */
+  public TemplateAttributeRowView(final DesignerView designerView, final TemplateAttribute templateAttribute,
+                                  final String style) {
+    this(templateAttribute, style);
+    this.designerView = designerView;
     // invoke dialog on double click
     addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
-        new TemplateAttributeDialog(model, getTemplateAttribute());
+
+        designerView.getTemplateAttributeDialog().setItem(templateAttribute);
+        designerView.getTemplateAttributeDialog().show();
       }});
 
     // disable text highlighting
@@ -42,8 +53,8 @@ public class TemplateAttributeRowView extends FlexTable implements
       public void onMouseDown(MouseDownEvent event) {
         event.preventDefault();
       }}, MouseDownEvent.getType());
-  }    
-  
+  }
+
   public void generateWidgetTree() {
     Label lblName = new Label(getTemplateAttribute().getName() + 
         " (" + getTemplateAttribute().getCode() + ")");
@@ -136,8 +147,22 @@ public class TemplateAttributeRowView extends FlexTable implements
 
   @Override
   public void onTemplateAttributeUpdated(TemplateAttribute templateAttribute) {
-    if (getTemplateAttribute().getId() == templateAttribute.getId()) 
+    if (this.templateAttribute.getId() == templateAttribute.getId())
       generateWidgetFull();    
+  }
+
+  @Override
+  public void onLoad() {
+    if (designerView != null) {
+      designerView.getDesignerModel().addTemplateAttributeUpdateObserver(this);
+    }
+  }
+
+  @Override
+  public void onUnload() {
+    if (designerView != null) {
+      designerView.getDesignerModel().removeTemplateAttributeUpdateObserver(this);
+    }
   }
 
   // getters and setters
@@ -147,12 +172,5 @@ public class TemplateAttributeRowView extends FlexTable implements
    */
   public TemplateAttribute getTemplateAttribute() {
     return templateAttribute;
-  }
-
-  /**
-   * @param templateAttribute the templateAttribute to set
-   */
-  public void setTemplateAttribute(TemplateAttribute templateAttribute) {
-    this.templateAttribute = templateAttribute;
   }
 }

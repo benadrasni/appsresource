@@ -2,6 +2,7 @@ package sk.benko.appsresource.client.designer;
 
 import java.util.Collection;
 
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.model.DesignerModel;
 import sk.benko.appsresource.client.model.ObjectAttribute;
@@ -21,25 +22,26 @@ import com.google.gwt.user.client.ui.Label;
 public class ObjectAttributeRowView extends FlexTable implements 
     DesignerModel.ObjectAttributeObserver {
 
-  private DesignerModel model;
+  private DesignerView designerView;
   private ObjectAttribute objectAttribute;
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView    the top level view
+   * @param objectAttribute the object attribute
    */
-  public ObjectAttributeRowView(DesignerModel model, ObjectAttribute oa) {
-    setModel(model);
-    setObjectAttribute(oa);
+  public ObjectAttributeRowView(final DesignerView designerView, final ObjectAttribute objectAttribute) {
+    this.designerView = designerView;
+    this.objectAttribute = objectAttribute;
     
     setStyleName("content-row");
 
-    generateWidget(getObjectAttribute());
+    generateWidget(objectAttribute);
 
     // invoke dialog on double click
     addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
-        new ObjectAttributeDialog(getModel(), getObjectAttribute());
+        designerView.getObjectAttributeDialog().setItem(objectAttribute);
+        designerView.getObjectAttributeDialog().show();
       }});
 
     // disable text highlighting
@@ -114,26 +116,12 @@ public class ObjectAttributeRowView extends FlexTable implements
   
   @Override
   public void onLoad() {
-    getModel().addObjectAttributeObserver(this);
+    designerView.getDesignerModel().addObjectAttributeObserver(this);
   }
 
   @Override
   public void onUnload() {
-    getModel().removeObjectAttributeObserver(this);
-  }
-
-  /**
-   * @return the model
-   */
-  public DesignerModel getModel() {
-    return model;
-  }
-
-  /**
-   * @param model the model to set
-   */
-  public void setModel(DesignerModel model) {
-    this.model = model;
+    designerView.getDesignerModel().removeObjectAttributeObserver(this);
   }
 
   public ObjectAttribute getObjectAttribute() {

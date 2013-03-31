@@ -2,8 +2,9 @@ package sk.benko.appsresource.client.designer;
 
 import java.util.Collection;
 
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.TableView;
+import sk.benko.appsresource.client.designer.layout.TableView;
 import sk.benko.appsresource.client.model.DesignerModel;
 import sk.benko.appsresource.client.model.TemplateGroup;
 import sk.benko.appsresource.client.model.TemplateGroupLoader;
@@ -18,16 +19,15 @@ public class TemplateGroupTableView extends TableView implements
     DesignerModel.TemplateGroupObserver {
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public TemplateGroupTableView(DesignerModel model) {
-    super(model);
+  public TemplateGroupTableView(final DesignerView designerView) {
+    super(designerView);
   }
 
   @Override
   public void onTemplateGroupCreated(TemplateGroup templateGroup) {
-    add(new TemplateGroupRowView(getModel(), templateGroup));
+    add(new TemplateGroupRowView(getDesignerView(), templateGroup));
   }
 
   @Override
@@ -83,7 +83,7 @@ public class TemplateGroupTableView extends TableView implements
 
   public void displayRows(Collection<TemplateGroup> tgs) {
     for (TemplateGroup tg : tgs) {
-      add(new TemplateGroupRowView(getModel(), tg));
+      add(new TemplateGroupRowView(getDesignerView(), tg));
     }
   }  
 }

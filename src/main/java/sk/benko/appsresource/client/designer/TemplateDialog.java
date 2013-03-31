@@ -7,13 +7,14 @@ import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.Tree.Resources;
 import sk.benko.appsresource.client.*;
 import sk.benko.appsresource.client.application.ObjectTemplate;
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.designer.model.ObjectAttributeLoader;
 import sk.benko.appsresource.client.dnd.TemplateDialogDragController;
 import sk.benko.appsresource.client.dnd.TemplateDialogListDropController;
 import sk.benko.appsresource.client.dnd.TemplateDialogTreeDropController;
 import sk.benko.appsresource.client.layout.ButtonView;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.NavigationLabelView;
+import sk.benko.appsresource.client.layout.NavigationLabel;
 import sk.benko.appsresource.client.model.*;
 import sk.benko.appsresource.client.model.loader.ObjectTypeLoader;
 import sk.benko.appsresource.client.model.loader.TemplateAttributeLoader;
@@ -23,21 +24,15 @@ import java.util.*;
 /**
  *
  */
-public class TemplateDialog extends DesignerDialog implements
-    ApplicationModel.TemplateTreeItemObserver,
-    ApplicationModel.TemplateListItemObserver,
-    DesignerModel.ObjectTypeObserver,
-    DesignerModel.ObjectAttributeObserver,
-    Model.TemplateTreeObserver,
-    Model.TemplateListObserver,
-    Model.TemplateAttributeObserver {
+public class TemplateDialog extends DesignerDialog implements ApplicationModel.TemplateTreeItemObserver,
+    ApplicationModel.TemplateListItemObserver, DesignerModel.ObjectTypeObserver, DesignerModel.ObjectAttributeObserver,
+    Model.TemplateTreeObserver, Model.TemplateListObserver, Model.TemplateAttributeObserver {
 
   final static FlowPanel attrMsgTree = initializeHintMessage();
   final static FlowPanel attrMsgList = initializeHintMessage();
-  Tree menu = new Tree((Resources) GWT.create(TreeResource.class), false);
-  TemplateDialogDragController attributeDragController;
-  TemplateDialogTreeDropController treeDropController;
-  TemplateDialogListDropController listDropController;
+  private TemplateDialogDragController attributeDragController;
+  private TemplateDialogTreeDropController treeDropController;
+  private TemplateDialogListDropController listDropController;
   private ObjectTemplate objectTemplate;
   private DropDownBox ddbObjectType;
   private DropDownBox ddbObjectAttribute;
@@ -59,7 +54,7 @@ public class TemplateDialog extends DesignerDialog implements
   private TemplateTree templateTree;
   private Tree attributeList;
   private TemplateList templateList;
-  private NavigationLabelView menuItem;
+  private NavigationLabel menuItem;
   private FlowPanel treePanel;
   private FlowPanel listPanel;
   private FlexTable ddTable;
@@ -68,70 +63,65 @@ public class TemplateDialog extends DesignerDialog implements
   private HashMap<TemplateList, ArrayList<TemplateListItem>> tlists;
   private HashMap<Integer, Tree> trees;
   private HashMap<Integer, Tree> lists;
+  private NavigationLabel menu2;
+  private NavigationLabel menu3;
+  private NavigationLabel menu4;
 
   /**
-   * @param model the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public TemplateDialog(final DesignerModel model, Template t) {
-    super(model, t);
-    getModel().setTemplate(t);
-    getModel().addObjectTypeObserver(this);
-    getModel().addObjectAttributeObserver(this);
-    getModel().addTemplateAttributeObserver(this);
-    getModel().addDataObserver(this);
+  public TemplateDialog(final DesignerView designerView) {
+    super(designerView);
+    setHeaderText(Main.constants.template());
 
     attributeDragController = new TemplateDialogDragController(getMain());
     treeDropController = new TemplateDialogTreeDropController(this);
     listDropController = new TemplateDialogListDropController(this);
 
-    getHeader().add(new Label((getModel().getTemplate() == null ?
-        Main.constants.newItem() + " " : "") + Main.constants.template()));
+    ddbObjectType = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER,
+        new ChangeHandler() {
 
-    NavigationLabelView menu1 = new NavigationLabelView(
-        model, Main.constants.template(), new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        model.notifyDialogNavigationItemClicked(event.getRelativeElement());
-        getBodyRight().clear();
-        getBodyRight().add(getWidgetTemplate());
-      }
-    });
-    menu1.addStyleName("dialog-box-navigation-item dialog-box-navigation-item-selected");
-    menu.addItem(menu1);
+          @Override
+          public void onChange(ChangeEvent event) {
+            loadObjectAttributes();
+          }
 
-    if (getModel().getTemplate() != null && getModel().getTemplate().getOtId() > 0) {
-      NavigationLabelView menu2 = new NavigationLabelView(
-          model, Main.constants.templateTrees(), new ClickHandler() {
-        public void onClick(ClickEvent event) {
-          model.notifyDialogNavigationItemClicked(event.getRelativeElement());
-          getBodyRight().clear();
-          getBodyRight().add(getWidgetNewTree());
-        }
-      });
-      menu.addItem(menu2);
+        });
+    ddbObjectAttribute = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
 
-      NavigationLabelView menu3 = new NavigationLabelView(
-          model, Main.constants.templateLists(), new ClickHandler() {
-        public void onClick(ClickEvent event) {
-          model.notifyDialogNavigationItemClicked(event.getRelativeElement());
-          getBodyRight().clear();
-          getBodyRight().add(getWidgetNewList());
-        }
-      });
-      menu.addItem(menu3);
-
-      NavigationLabelView menu4 = new NavigationLabelView(
-          model, Main.constants.templateView(), new ClickHandler() {
-        public void onClick(ClickEvent event) {
-          model.notifyDialogNavigationItemClicked(event.getRelativeElement());
-          getBodyRight().clear();
-          getBodyRight().add(getObjectTemplate());
-        }
-      });
-      menu.addItem(menu4);
+    if (getModel().getObjectTypes() == null) {
+      ObjectTypeLoader otl = new ObjectTypeLoader(getModel());
+      otl.start();
+    } else {
+      fillObjectTypes(getModel().getObjectTypes());
     }
 
-    getBodyLeft().add(menu);
-    getBodyRight().add(getWidgetTemplate());
+    menu2 = new NavigationLabel(
+        designerView, Main.constants.templateTrees(), new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        designerView.getDesignerModel().notifyDialogNavigationItemClicked(event.getRelativeElement());
+        getBodyRight().clear();
+        getBodyRight().add(getWidgetNewTree());
+      }
+    });
+
+    menu3 = new NavigationLabel(
+        designerView, Main.constants.templateLists(), new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        designerView.getDesignerModel().notifyDialogNavigationItemClicked(event.getRelativeElement());
+        getBodyRight().clear();
+        getBodyRight().add(getWidgetNewList());
+      }
+    });
+
+    menu4 = new NavigationLabel(
+        designerView, Main.constants.templateView(), new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        designerView.getDesignerModel().notifyDialogNavigationItemClicked(event.getRelativeElement());
+        getBodyRight().clear();
+        getBodyRight().add(getObjectTemplate());
+      }
+    });
 
     getBOk().addDomHandler(
         new ClickHandler() {
@@ -140,31 +130,12 @@ public class TemplateDialog extends DesignerDialog implements
               getModel().setTemplate(new Template(getTbName().getText()));
             fill(getModel().getTemplate());
 
-            model.createOrUpdateTemplate(getModel().getTemplate(),
-                getTtrees(), getTlists());
+            designerView.getDesignerModel().createOrUpdateTemplate(getModel().getTemplate(), getTtrees(), getTlists());
             close();
           }
         }, ClickEvent.getType());
-    getBOk().getElement().setInnerText(getModel().getTemplate() == null ?
-        Main.constants.create() : Main.constants.save());
 
-    if (getModel().getTemplate() != null) {
-      if (getModel().getTrees().get(getModel().getTemplate().getId()) == null) {
-        TemplateTreeLoader ttl = new TemplateTreeLoader(getModel(),
-            getModel().getTemplate().getId());
-        ttl.start();
-      } else
-        onTemplateTreesLoaded(getModel().getTrees().get(getModel().getTemplate().getId()));
-
-      if (getModel().getLists().get(getModel().getTemplate().getId()) == null) {
-        TemplateListLoader ttl = new TemplateListLoader(toString(), getModel(),
-            getModel().getTemplate().getId());
-        ttl.start();
-      } else
-        onTemplateListsLoaded(toString(), getModel().getTemplate().getId(),
-            getModel().getLists().get(getModel().getTemplate().getId()));
-    }
-    model.getStatusObserver().onTaskFinished();
+    designerView.getDesignerModel().getStatusObserver().onTaskFinished();
   }
 
   private static FlowPanel initializeHintMessage() {
@@ -174,6 +145,15 @@ public class TemplateDialog extends DesignerDialog implements
     lblMessage.setStyleName("hint-message");
     apptMsg.add(lblMessage);
     return apptMsg;
+  }
+
+  /**
+   * @param item the item to set
+   */
+  @Override
+  public void setItem(DesignItem item) {
+    super.setItem(item);
+    getModel().setTemplate((Template) getItem());
   }
 
   public void insertItemTree(TemplateAttribute ta) {
@@ -244,8 +224,7 @@ public class TemplateDialog extends DesignerDialog implements
   }
 
   @Override
-  public void onObjectAttributesLoaded(int otId,
-                                       Collection<ObjectAttribute> objectAttributes) {
+  public void onObjectAttributesLoaded(int otId, Collection<ObjectAttribute> objectAttributes) {
     fillObjectAttributes(objectAttributes);
   }
 
@@ -282,6 +261,7 @@ public class TemplateDialog extends DesignerDialog implements
       getTreePanel().add(attrMsgTree);
     initializeTree();
     getBodyRight().add(getDDTable());
+    getDesignerView().getDesignerModel().getStatusObserver().onTaskFinished();
   }
 
   @Override
@@ -318,6 +298,7 @@ public class TemplateDialog extends DesignerDialog implements
       getListPanel().add(attrMsgList);
     initializeList();
     getBodyRight().add(getDDTable());
+    getDesignerView().getDesignerModel().getStatusObserver().onTaskFinished();
   }
 
   @Override
@@ -337,15 +318,6 @@ public class TemplateDialog extends DesignerDialog implements
       synchronize(getAttributeTree());
     if (getAttributeList() != null)
       synchronize(getAttributeList());
-  }
-
-  @Override
-  public void close() {
-    getModel().removeObjectTypeObserver(this);
-    getModel().removeObjectAttributeObserver(this);
-    getModel().removeTemplateAttributeObserver(this);
-    getModel().removeDataObserver(this);
-    hide();
   }
 
   /**
@@ -439,14 +411,14 @@ public class TemplateDialog extends DesignerDialog implements
   /**
    * @return the menuItem
    */
-  public NavigationLabelView getMenuItem() {
+  public NavigationLabel getMenuItem() {
     return menuItem;
   }
 
   /**
    * @param menuItem the menuItem to set
    */
-  public void setMenuItem(NavigationLabelView menuItem) {
+  public void setMenuItem(NavigationLabel menuItem) {
     this.menuItem = menuItem;
   }
 
@@ -470,7 +442,8 @@ public class TemplateDialog extends DesignerDialog implements
    *
    * @return Value for property 'widgetTemplate'.
    */
-  public FlexTable getWidgetTemplate() {
+  @Override
+  public FlexTable getItemWidget() {
     if (widgetTemplate == null) {
       widgetTemplate = new FlexTable();
 
@@ -488,12 +461,12 @@ public class TemplateDialog extends DesignerDialog implements
 
       Label lblOt = new Label(Main.constants.templateOt());
       widgetTemplate.setWidget(3, 0, lblOt);
-      widgetTemplate.setWidget(3, 1, getDdbObjectType());
+      widgetTemplate.setWidget(3, 1, ddbObjectType);
       widgetTemplate.getFlexCellFormatter().addStyleName(3, 1, ClientUtils.CSS_ALIGN_RIGHT);
 
       Label lblOa = new Label(Main.constants.templateTa());
       widgetTemplate.setWidget(4, 0, lblOa);
-      widgetTemplate.setWidget(4, 1, getDdbObjectAttribute());
+      widgetTemplate.setWidget(4, 1, ddbObjectAttribute);
       widgetTemplate.getFlexCellFormatter().addStyleName(4, 1, ClientUtils.CSS_ALIGN_RIGHT);
     }
     return widgetTemplate;
@@ -523,14 +496,14 @@ public class TemplateDialog extends DesignerDialog implements
               final TemplateTree tt = new TemplateTree(getTbTreeName().getText(),
                   getModel().getTemplate().getId());
               tt.setDesc(getTbTreeDesc().getText());
-              tt.setRank(menu.getItem(1).getChildCount());
+              tt.setRank(getMenu().getItem(1).getChildCount());
 
               Tree newTree = new Tree((Resources) GWT.create(TreeResource.class), false);
               newTree.setHeight("100%");
               newTree.setWidth("100%");
               getTrees().put(tt.getId(), newTree);
 
-              NavigationLabelView menuTree = createMenuItem(tt);
+              NavigationLabel menuTree = createMenuItem(tt);
               menuTree.fireEvent(event);
               menuTree.onDialogNavigationItemClicked(menuTree.getElement());
             }
@@ -568,14 +541,14 @@ public class TemplateDialog extends DesignerDialog implements
               final TemplateList tl = new TemplateList(getTbListName().getText(),
                   getModel().getTemplate().getId());
               tl.setDesc(getTbListDesc().getText());
-              tl.setRank(menu.getItem(2).getChildCount());
+              tl.setRank(getMenu().getItem(2).getChildCount());
 
               Tree newList = new Tree((Resources) GWT.create(TreeResource.class), false);
               newList.setHeight("100%");
               newList.setWidth("100%");
               getLists().put(tl.getId(), newList);
 
-              NavigationLabelView menuList = createMenuItem(tl);
+              NavigationLabel menuList = createMenuItem(tl);
               menuList.fireEvent(event);
               menuList.onDialogNavigationItemClicked(menuList.getElement());
             }
@@ -654,13 +627,13 @@ public class TemplateDialog extends DesignerDialog implements
       }
     });
     getTbTreeDesc().setText(getTemplateTree().getDesc());
-    getTbTreeDesc().addBlurHandler(new
-                                       BlurHandler() {
-                                         @Override
-                                         public void onBlur(BlurEvent event) {
-                                           getTemplateTree().setDesc(getTbTreeDesc().getText().trim());
-                                         }
-                                       });
+    getTbTreeDesc().addBlurHandler(
+        new BlurHandler() {
+             @Override
+             public void onBlur(BlurEvent event) {
+               getTemplateTree().setDesc(getTbTreeDesc().getText().trim());
+             }
+           });
     treeHeaderTable.setWidget(0, 0, getLblTreeName());
     treeHeaderTable.setWidget(0, 1, getTbTreeName());
     treeHeaderTable.setWidget(0, 2, getLblTreeDesc());
@@ -692,13 +665,13 @@ public class TemplateDialog extends DesignerDialog implements
       }
     });
     getTbListDesc().setText(getTemplateList().getDesc());
-    getTbListDesc().addBlurHandler(new
-                                       BlurHandler() {
-                                         @Override
-                                         public void onBlur(BlurEvent event) {
-                                           getTemplateList().setDesc(getTbListDesc().getText().trim());
-                                         }
-                                       });
+    getTbListDesc().addBlurHandler(
+        new BlurHandler() {
+          @Override
+          public void onBlur(BlurEvent event) {
+            getTemplateList().setDesc(getTbListDesc().getText().trim());
+          }
+        });
     listHeaderTable.setWidget(0, 0, getLblListName());
     listHeaderTable.setWidget(0, 1, getTbListName());
     listHeaderTable.setWidget(0, 2, getLblListDesc());
@@ -816,76 +789,6 @@ public class TemplateDialog extends DesignerDialog implements
   }
 
   /**
-   * Getter for property 'ddbObjectType'.
-   *
-   * @return Value for property 'ddbObjectType'.
-   */
-  protected DropDownBox getDdbObjectType() {
-    if (ddbObjectType == null) {
-      ddbObjectType = new DropDownBox(this, null,
-          CSSConstants.SUFFIX_DESIGNER, new ChangeHandler() {
-
-        @Override
-        public void onChange(ChangeEvent event) {
-          getDdbObjectAttribute().setSelection(new DropDownObjectImpl(0,
-              Main.constants.chooseObjectAttribute()));
-          Collection<ObjectAttribute> oas = getModel().getObjectAttributes().get(getDdbObjectType().getSelection());
-          if (oas == null) {
-            ObjectAttributeLoader oal = new ObjectAttributeLoader(getModel(),
-                getDdbObjectType().getSelection().getId());
-            oal.start();
-          } else
-            fillObjectAttributes(oas);
-        }
-
-      });
-      if (getModel().getTemplate() != null && getModel().getTemplate().getOt() != null)
-        ddbObjectType.setSelection(new DropDownObjectImpl(getModel().getTemplate().getOtId(),
-            getModel().getTemplate().getOt().getName(), getModel().getTemplate().getOt()));
-      else
-        ddbObjectType.setSelection(new DropDownObjectImpl(0,
-            Main.constants.chooseObjectType()));
-
-      if (getModel().getObjectTypes() == null) {
-        ObjectTypeLoader otl = new ObjectTypeLoader(getModel());
-        otl.start();
-      } else
-        fillObjectTypes(getModel().getObjectTypes());
-    }
-    return ddbObjectType;
-  }
-
-  /**
-   * Getter for property 'ddbObjectAttribute'.
-   *
-   * @return Value for property 'ddbObjectAttribute'.
-   */
-  protected DropDownBox getDdbObjectAttribute() {
-    if (ddbObjectAttribute == null) {
-      ddbObjectAttribute = new DropDownBox(this, null,
-          CSSConstants.SUFFIX_DESIGNER);
-      if (getModel().getTemplate() != null && getModel().getTemplate().getOa() != null)
-        ddbObjectAttribute.setSelection(new DropDownObjectImpl(getModel().getTemplate().getOaId(),
-            getModel().getTemplate().getOa().getName(), getModel().getTemplate().getOa()));
-      else
-        ddbObjectAttribute.setSelection(new DropDownObjectImpl(0,
-            Main.constants.chooseObjectAttribute()));
-
-      if (getDdbObjectType().getSelection().getId() > 0) {
-        Collection<ObjectAttribute> oas = getModel().getObjectAttributes().get(getDdbObjectType().getSelection());
-        if (oas == null) {
-          ObjectAttributeLoader oal = new ObjectAttributeLoader(getModel(),
-              getDdbObjectType().getSelection().getId());
-          oal.start();
-        } else
-          fillObjectAttributes(oas);
-      }
-
-    }
-    return ddbObjectAttribute;
-  }
-
-  /**
    * Getter for property 'ddbTemplateAttribute'.
    *
    * @return Value for property 'ddbTemplateAttribute'.
@@ -901,7 +804,7 @@ public class TemplateDialog extends DesignerDialog implements
       ddbTemplateAttribute.setSelection(new DropDownObjectImpl(0,
           Main.constants.chooseTemplateAttribute()));
     }
-    return ddbObjectAttribute;
+    return ddbTemplateAttribute;
   }
 
   /**
@@ -952,6 +855,78 @@ public class TemplateDialog extends DesignerDialog implements
     return lists;
   }
 
+  /**
+   * Fill {@link Template} with values from UI. Parent method must be called first.
+   *
+   * @param template the template which should be filled with UI values
+   */
+  protected void fill(Template template) {
+    super.fill(template);
+
+    // object type
+    int iot = ddbObjectType.getSelection().getId();
+    if (iot > 0) {
+      template.setOtId(iot);
+      template.setOt((ObjectType) ddbObjectType.getSelection().getUserObject());
+    }
+    // leaf attribute
+    int ioa = ddbObjectAttribute.getSelection().getId();
+    if (ioa > 0) {
+      template.setOaId(ioa);
+      template.setOa((ObjectAttribute) ddbObjectAttribute.getSelection().getUserObject());
+    }
+  }
+
+  /**
+   * Load {@link Template} to UI. Parent method must be called first.
+   *
+   * @param item the template which should be loaded to UI
+   */
+  @Override
+  protected void load(DesignItem item) {
+    assert (item != null);
+    super.load(item);
+
+    getMenu().addItem(menu2);
+    getMenu().addItem(menu3);
+    getMenu().addItem(menu4);
+
+    Template template = (Template) item;
+    ddbObjectType.setSelection(new DropDownObjectImpl(template.getOtId(), template.getOt().getName(),
+        template.getOt()));
+    ddbObjectAttribute.setSelection(new DropDownObjectImpl(template.getOaId(), template.getOa().getName(),
+        template.getOa()));
+
+    loadObjectAttributes();
+
+    if (getModel().getTrees().get(template.getId()) == null) {
+      TemplateTreeLoader ttl = new TemplateTreeLoader(getModel(), template.getId());
+      ttl.start();
+    } else {
+      onTemplateTreesLoaded(getModel().getTrees().get(template.getId()));
+    }
+
+    if (getModel().getLists().get(template.getId()) == null) {
+      TemplateListLoader ttl = new TemplateListLoader(toString(), getModel(), template.getId());
+      ttl.start();
+    } else {
+      onTemplateListsLoaded(toString(), template.getId(), getModel().getLists().get(template.getId()));
+    }
+  }
+
+  /**
+   * Reset UI fields. Parent method must be called first.
+   */
+  @Override
+  protected void reset() {
+    super.reset();
+
+    ddbObjectType.setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectType()));
+    ddbObjectAttribute.setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectAttribute()));
+  }
+
+  // private methods
+
   private void initializeTree() {
     if (listDropController != null)
       attributeDragController.unregisterDropController(listDropController);
@@ -966,10 +941,10 @@ public class TemplateDialog extends DesignerDialog implements
     getDDTable().setWidget(0, 0, getListPanel());
   }
 
-  private NavigationLabelView createMenuItem(final TemplateTree tt) {
+  private NavigationLabel createMenuItem(final TemplateTree tt) {
 
-    final NavigationLabelView menuTree = new NavigationLabelView(
-        getModel(), tt.getName(), new ClickHandler() {
+    final NavigationLabel menuTree = new NavigationLabel(
+        getDesignerView(), tt.getName(), new ClickHandler() {
       public void onClick(ClickEvent event) {
         assert getModel().getTemplate() != null;
 
@@ -977,7 +952,7 @@ public class TemplateDialog extends DesignerDialog implements
         // set actual state
         setAttributeTree(getTrees().get(tt.getId()));
         setTemplateTree(tt);
-        setMenuItem((NavigationLabelView) event.getSource());
+        setMenuItem((NavigationLabel) event.getSource());
 
         getBodyRight().clear();
         getBodyRight().add(getTreeHeaderTable());
@@ -1011,16 +986,16 @@ public class TemplateDialog extends DesignerDialog implements
     menuItem.getCellFormatter().setStyleName(0, 1, "tree-row-x");
     menuItem.setWidth("100%");
 
-    menu.getItem(1).addItem(menuItem);
-    menu.getItem(1).setState(true);
+    getMenu().getItem(1).addItem(menuItem);
+    getMenu().getItem(1).setState(true);
 
     return menuTree;
   }
 
-  private NavigationLabelView createMenuItem(final TemplateList tl) {
+  private NavigationLabel createMenuItem(final TemplateList tl) {
 
-    final NavigationLabelView menuList = new NavigationLabelView(
-        getModel(), tl.getName(), new ClickHandler() {
+    final NavigationLabel menuList = new NavigationLabel(
+        getDesignerView(), tl.getName(), new ClickHandler() {
       public void onClick(ClickEvent event) {
         assert getModel().getTemplate() != null;
 
@@ -1028,7 +1003,7 @@ public class TemplateDialog extends DesignerDialog implements
         // set actual state
         setAttributeList(getLists().get(tl.getId()));
         setTemplateList(tl);
-        setMenuItem((NavigationLabelView) event.getSource());
+        setMenuItem((NavigationLabel) event.getSource());
 
         getBodyRight().clear();
         getBodyRight().add(getListHeaderTable());
@@ -1061,8 +1036,8 @@ public class TemplateDialog extends DesignerDialog implements
     menuItem.getCellFormatter().setStyleName(0, 1, "tree-row-x");
     menuItem.setWidth("100%");
 
-    menu.getItem(2).addItem(menuItem);
-    menu.getItem(2).setState(true);
+    getMenu().getItem(2).addItem(menuItem);
+    getMenu().getItem(2).setState(true);
 
     return menuList;
   }
@@ -1192,31 +1167,23 @@ public class TemplateDialog extends DesignerDialog implements
     return ti;
   }
 
-  // private methods
-
-  private void fill(Template template) {
-    super.fill(template);
-
-    // object type
-    int iot = getDdbObjectType().getSelection().getId();
-    if (iot > 0) {
-      template.setOtId(iot);
-      template.setOt((ObjectType) getDdbObjectType().getSelection().getUserObject());
-    }
-    // leaf attribute
-    int ioa = getDdbObjectAttribute().getSelection().getId();
-    if (ioa > 0) {
-      template.setOaId(ioa);
-      template.setOa((ObjectAttribute) getDdbObjectAttribute().getSelection().getUserObject());
-    }
-  }
-
   private void fillObjectTypes(Collection<ObjectType> objectTypes) {
     ArrayList<DropDownObject> items = new ArrayList<DropDownObject>();
     for (ObjectType ot : objectTypes) {
       items.add(new DropDownObjectImpl(ot.getId(), ot.getName(), ot));
     }
-    getDdbObjectType().setItems(items);
+    ddbObjectType.setItems(items);
+  }
+
+  private void loadObjectAttributes() {
+    ddbObjectAttribute.setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectAttribute()));
+    Collection<ObjectAttribute> oas = getModel().getObjectAttributes().get(ddbObjectType.getSelection().getId());
+    if (oas == null) {
+      ObjectAttributeLoader oal = new ObjectAttributeLoader(getModel(), ddbObjectType.getSelection().getId());
+      oal.start();
+    } else {
+      fillObjectAttributes(oas);
+    }
   }
 
   private void fillObjectAttributes(Collection<ObjectAttribute> objectAttributes) {
@@ -1224,6 +1191,6 @@ public class TemplateDialog extends DesignerDialog implements
     for (ObjectAttribute oa : objectAttributes) {
       items.add(new DropDownObjectImpl(oa.getId(), oa.getName(), oa));
     }
-    getDdbObjectAttribute().setItems(items);
+    ddbObjectAttribute.setItems(items);
   }
 }

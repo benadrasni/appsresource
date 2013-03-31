@@ -5,7 +5,7 @@ import java.util.Collection;
 import sk.benko.appsresource.client.ClientUtils;
 import sk.benko.appsresource.client.layout.ApplicationWidget;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.NavigationLabelView;
+import sk.benko.appsresource.client.layout.NavigationLabel;
 import sk.benko.appsresource.client.model.Application;
 import sk.benko.appsresource.client.model.ApplicationUser;
 import sk.benko.appsresource.client.model.UserModel;
@@ -27,7 +27,7 @@ public class SubscriptionDialog extends UserDialog {
   private static int DEFAULT_HEIGHT = 100;
   private static int DEFAULT_FLAGS = 1; // just visible
 
-  FlexTable widget = new FlexTable();
+  private FlexTable widget;
   
   /**
    * @param model
@@ -38,8 +38,8 @@ public class SubscriptionDialog extends UserDialog {
     
     getHeader().add(new Label(Main.constants.subscription()));
 
-    NavigationLabelView menu1 = new NavigationLabelView(
-        model, Main.constants.all(), new ClickHandler() {
+    NavigationLabel menu1 = new NavigationLabel(
+        Main.constants.all(), new ClickHandler() {
       public void onClick(ClickEvent event) {
         model.notifyDialogNavigationItemClicked(event.getRelativeElement());
         Node oldChild = getBodyRight().getElement().getChild(0);
@@ -52,7 +52,6 @@ public class SubscriptionDialog extends UserDialog {
     getBodyLeft().add(menu1);
     
     initializeApps();
-    getBodyRight().add(widget);
 
     getBOk().addDomHandler(
         new ClickHandler() {
@@ -90,7 +89,7 @@ public class SubscriptionDialog extends UserDialog {
       }
     });
   }
-  
+
   private void initializeApps() {
     Collection<Application> apps = getModel().getApplications().values();
     Collection<ApplicationUser> appus = getModel().getApplicationUsers().values();

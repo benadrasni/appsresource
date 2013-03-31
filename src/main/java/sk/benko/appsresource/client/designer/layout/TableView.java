@@ -1,9 +1,8 @@
-package sk.benko.appsresource.client.layout;
-
-import sk.benko.appsresource.client.model.DesignerModel;
+package sk.benko.appsresource.client.designer.layout;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import sk.benko.appsresource.client.model.DesignerModel;
 
 /**
  * A widget to display .
@@ -11,15 +10,15 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public abstract class TableView extends FlowPanel {
 
-  private DesignerModel model;
+  private DesignerView designerView;
   private FlexTable header;
 
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public TableView(final DesignerModel model) {
-    setModel(model);
+  public TableView(final DesignerView designerView) {
+    this.designerView = designerView;
+
     setStyleName("content-table");
     filter();
   }
@@ -31,17 +30,17 @@ public abstract class TableView extends FlowPanel {
   // getters and setters
   
   /**
-   * @return the model
+   * @return the designerView
    */
-  public DesignerModel getModel() {
-    return model;
+  public DesignerView getDesignerView() {
+    return designerView;
   }
 
   /**
-   * @param model the model to set
+   * @return the model
    */
-  public void setModel(DesignerModel model) {
-    this.model = model;
+  public DesignerModel getModel() {
+    return designerView.getDesignerModel();
   }
 
   /**

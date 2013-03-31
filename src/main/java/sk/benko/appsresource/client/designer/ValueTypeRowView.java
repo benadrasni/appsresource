@@ -2,6 +2,7 @@ package sk.benko.appsresource.client.designer;
 
 import java.util.Collection;
 
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.model.DesignerModel;
 import sk.benko.appsresource.client.model.ValueType;
@@ -20,27 +21,26 @@ import com.google.gwt.user.client.ui.Label;
 public class ValueTypeRowView extends FlexTable implements 
     DesignerModel.ValueTypeObserver {
 
-  private DesignerModel model;
+  private DesignerView designerView;
   private ValueType valueType;
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
-   * @param vt
-   *          the value type
+   * @param designerView    the top level view
+   * @param valueType       the value type
    */
-  public ValueTypeRowView(final DesignerModel model, final ValueType vt) {
-    setModel(model);
-    setValueType(vt);
+  public ValueTypeRowView(final DesignerView designerView, final ValueType valueType) {
+    this.designerView = designerView;
+    this.valueType = valueType;
     
     setStyleName("content-row");
 
-    generateWidget(getValueType());
+    generateWidget(valueType);
 
     // invoke dialog on double click
     addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
-        new ValueTypeDialog(model, getValueType());
+        designerView.getValueTypeDialog().setItem(valueType);
+        designerView.getValueTypeDialog().show();
       }});
 
     // disable text highlighting
@@ -108,29 +108,15 @@ public class ValueTypeRowView extends FlexTable implements
   
   @Override
   public void onLoad() {
-    getModel().addValueTypeObserver(this);
+    designerView.getDesignerModel().addValueTypeObserver(this);
   }
 
   @Override
   public void onUnload() {
-    getModel().removeValueTypeObserver(this);
+    designerView.getDesignerModel().removeValueTypeObserver(this);
   }
 
   // getters and setters
-
-  /**
-   * @return the model
-   */
-  public DesignerModel getModel() {
-    return model;
-  }
-
-  /**
-   * @param model the model to set
-   */
-  public void setModel(DesignerModel model) {
-    this.model = model;
-  }
 
   /**
    * @return the valueType

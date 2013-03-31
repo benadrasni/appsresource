@@ -2,6 +2,7 @@ package sk.benko.appsresource.client.designer;
 
 import java.util.Collection;
 
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.model.Application;
 import sk.benko.appsresource.client.model.DesignerModel;
@@ -21,25 +22,27 @@ import com.google.gwt.user.client.ui.Label;
 public class ApplicationRowView extends FlexTable implements 
     DesignerModel.ApplicationObserver, UserModel.ApplicationObserver {
 
+  private DesignerView designerView;
   private Application application;
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView    the top level view
+   * @param application     the application
    */
-  public ApplicationRowView(final DesignerModel model, final Application app) {
-    model.addDataObserver(this);
-    
+  public ApplicationRowView(final DesignerView designerView, final Application application) {
+    this.designerView = designerView;
+    this.application = application;
+
     setStyleName("content-row");
-    setApplication(app);
 
-    generateWidget(getApplication());
+    generateWidget(application);
 
-    // invoke dialog on double click
+    // invoke dialog on click
     addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
         Main.status.showTaskStatus(Main.constants.loading());
-        new ApplicationDialog(model, getApplication());
+        designerView.getApplicationDialog().setItem(application);
+        designerView.getApplicationDialog().show();
       }});
 
     // disable text highlighting
@@ -67,7 +70,7 @@ public class ApplicationRowView extends FlexTable implements
 
   @Override
   public void onApplicationUpdated(Application application) {
-    if (getApplication().getId() == application.getId()) 
+    if (this.application.getId() == application.getId())
       generateWidget(application);    
   }
 
@@ -75,19 +78,13 @@ public class ApplicationRowView extends FlexTable implements
   public void onApplicationsLoaded(Collection<Application> applications) {
   }
 
-  /**
-   * @return the application
-   */
-  public Application getApplication() {
-    return application;
+  @Override
+  public void onLoad() {
+    designerView.getDesignerModel().addDataObserver(this);
   }
 
-  /**
-   * @param application the application to set
-   */
-  public void setApplication(Application application) {
-    this.application = application;
+  @Override
+  public void onUnload() {
+    designerView.getDesignerModel().removeDataObserver(this);
   }
-  
-  
 }

@@ -1,101 +1,99 @@
 package sk.benko.appsresource.client.layout;
 
-import sk.benko.appsresource.client.designer.ApplicationDialog;
-import sk.benko.appsresource.client.designer.ObjectAttributeDialog;
-import sk.benko.appsresource.client.designer.ObjectRelationDialog;
-import sk.benko.appsresource.client.designer.ObjectTypeDialog;
-import sk.benko.appsresource.client.designer.TemplateAttributeDialog;
-import sk.benko.appsresource.client.designer.TemplateDialog;
-import sk.benko.appsresource.client.designer.TemplateGroupDialog;
-import sk.benko.appsresource.client.designer.TemplateRelationDialog;
-import sk.benko.appsresource.client.designer.UnitDialog;
-import sk.benko.appsresource.client.designer.ValueTypeDialog;
-import sk.benko.appsresource.client.model.DesignerModel;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 
 /**
  * A widget to display the button.
- *
  */
 public class CreateMenuView extends FlowPanel {
 
   /**
-   * @param dModel
-   *          the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public CreateMenuView(final DesignerModel dModel) {
+  public CreateMenuView(final DesignerView designerView) {
     setStyleName("menu-designer");
 
     add(new MenuItemView(Main.constants.application(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dModel.notifyMenuItemClicked();
-        new ApplicationDialog(dModel, null);
+        Main.status.showTaskStatus(Main.constants.loading());
+        designerView.getDesignerModel().notifyMenuItemClicked();
+        designerView.getApplicationDialog().setItem(null);
+        designerView.getApplicationDialog().show();
       }
     }));
 
     add(new MenuItemView(Main.constants.template(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dModel.notifyMenuItemClicked();
-        new TemplateDialog(dModel, null);
+        designerView.getDesignerModel().notifyMenuItemClicked();
+        designerView.getTemplateDialog().setItem(null);
+        designerView.getTemplateDialog().show();
       }
     }));
 
     add(new MenuItemView(Main.constants.templateGroup(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dModel.notifyMenuItemClicked();
-        new TemplateGroupDialog(dModel, null);
+        designerView.getDesignerModel().notifyMenuItemClicked();
+        designerView.getTemplateGroupDialog().setItem(null);
+        designerView.getTemplateGroupDialog().show();
       }
     }));
 
     add(new MenuItemView(Main.constants.templateAttribute(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dModel.notifyMenuItemClicked();
-        new TemplateAttributeDialog(dModel, null);
+        designerView.getDesignerModel().notifyMenuItemClicked();
+        designerView.getTemplateAttributeDialog().setItem(null);
+        designerView.getTemplateAttributeDialog().show();
       }
     }));
 
     add(new MenuItemView(Main.constants.templateRelation(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dModel.notifyMenuItemClicked();
-        new TemplateRelationDialog(dModel, null);
+        designerView.getDesignerModel().notifyMenuItemClicked();
+        designerView.getTemplateRelationDialog().setItem(null);
+        designerView.getTemplateRelationDialog().show();
       }
     }));
 
     add(new MenuItemView(Main.constants.objectType(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dModel.notifyMenuItemClicked();
-        new ObjectTypeDialog(dModel, null);
+        designerView.getDesignerModel().notifyMenuItemClicked();
+        designerView.getObjectTypeDialog().setItem(null);
+        designerView.getObjectTypeDialog().show();
       }
     }));
-    
+
     add(new MenuItemView(Main.constants.objectAttribute(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dModel.notifyMenuItemClicked();
-        new ObjectAttributeDialog(dModel, null);
+        designerView.getDesignerModel().notifyMenuItemClicked();
+        designerView.getObjectAttributeDialog().setItem(null);
+        designerView.getObjectAttributeDialog().show();
       }
     }));
 
     add(new MenuItemView(Main.constants.objectRelation(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dModel.notifyMenuItemClicked();
-        new ObjectRelationDialog(dModel, null);
+        designerView.getDesignerModel().notifyMenuItemClicked();
+        designerView.getObjectRelationDialog().setItem(null);
+        designerView.getObjectRelationDialog().show();
       }
     }));
 
     add(new MenuItemView(Main.constants.valueType(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dModel.notifyMenuItemClicked();
-        new ValueTypeDialog(dModel, null);
+        designerView.getDesignerModel().notifyMenuItemClicked();
+        designerView.getValueTypeDialog().setItem(null);
+        designerView.getValueTypeDialog().show();
       }
     }));
 
     add(new MenuItemView(Main.constants.unit(), new ClickHandler() {
       public void onClick(ClickEvent event) {
-        dModel.notifyMenuItemClicked();
-        new UnitDialog(dModel, null);
+        designerView.getDesignerModel().notifyMenuItemClicked();
+        designerView.getUnitDialog().setItem(null);
+        designerView.getUnitDialog().show();
       }
     }));
   }

@@ -2,8 +2,9 @@ package sk.benko.appsresource.client.designer;
 
 import java.util.Collection;
 
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.TableView;
+import sk.benko.appsresource.client.designer.layout.TableView;
 import sk.benko.appsresource.client.model.DesignerModel;
 import sk.benko.appsresource.client.model.ValueType;
 import sk.benko.appsresource.client.model.loader.ValueTypeLoader;
@@ -19,11 +20,10 @@ public class ValueTypeTableView extends TableView implements
     DesignerModel.ValueTypeObserver {
 
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public ValueTypeTableView(DesignerModel model) {
-    super(model);
+  public ValueTypeTableView(final DesignerView designerView) {
+    super(designerView);
 
     if (getModel().getValueTypes() == null) {
       ValueTypeLoader vtl = new ValueTypeLoader(getModel());
@@ -34,7 +34,7 @@ public class ValueTypeTableView extends TableView implements
 
   @Override
   public void onValueTypeCreated(ValueType valueType) {
-    add(new ValueTypeRowView(getModel(), valueType));
+    add(new ValueTypeRowView(getDesignerView(), valueType));
   }
 
   @Override
@@ -73,8 +73,8 @@ public class ValueTypeTableView extends TableView implements
   
   public void displayRows(Collection<ValueType> valueTypes) {
     boolean line = false;
-    for (ValueType vt : valueTypes) {
-      if (!line && !vt.isSystem()) {
+    for (ValueType valueType : valueTypes) {
+      if (!line && !valueType.isSystem()) {
         // separator between system and custom value types
         line = true;
         FlexTable ft = new FlexTable();
@@ -82,7 +82,7 @@ public class ValueTypeTableView extends TableView implements
         ft.setWidth("100%");
         add(ft);
       }
-      add(new ValueTypeRowView(getModel(), vt));
+      add(new ValueTypeRowView(getDesignerView(), valueType));
     }
   }
 }

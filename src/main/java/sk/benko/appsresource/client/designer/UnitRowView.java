@@ -2,6 +2,7 @@ package sk.benko.appsresource.client.designer;
 
 import java.util.Collection;
 
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
 import sk.benko.appsresource.client.model.DesignerModel;
 import sk.benko.appsresource.client.model.Unit;
@@ -17,28 +18,28 @@ import com.google.gwt.user.client.ui.Label;
  * A widget to display unit in table row.
  *
  */
-public class UnitRowView extends FlexTable implements 
-    DesignerModel.UnitObserver {
+public class UnitRowView extends FlexTable implements DesignerModel.UnitObserver {
 
-  private DesignerModel model;
+  private DesignerView designerView;
   private Unit unit;
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView    the top level view
+   * @param unit            the unit
    */
-  public UnitRowView(final DesignerModel model, final Unit u) {
-    setModel(model);
-    setUnit(u);
+  public UnitRowView(final DesignerView designerView, final Unit unit) {
+    this.designerView = designerView;
+    this.unit = unit;
 
     setStyleName("content-row");
 
-    generateWidget(getUnit());
+    generateWidget(unit);
 
     // invoke dialog on left click
     addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
-        new UnitDialog(model, getUnit());
+        designerView.getUnitDialog().setItem(unit);
+        designerView.getUnitDialog().show();
       }});
 
     // disable text highlighting
@@ -96,7 +97,7 @@ public class UnitRowView extends FlexTable implements
 
   @Override
   public void onUnitUpdated(Unit unit) {
-    if (getUnit().getId() == unit.getId()) 
+    if (this.unit.getId() == unit.getId())
       generateWidget(unit);    
   }
 
@@ -106,41 +107,11 @@ public class UnitRowView extends FlexTable implements
   
   @Override
   public void onLoad() {
-    getModel().addUnitObserver(this);
+    designerView.getDesignerModel().addUnitObserver(this);
   }
 
   @Override
   public void onUnload() {
-    getModel().removeUnitObserver(this);
-  }
-
-  // getters and setters
-
-  /**
-   * @return the model
-   */
-  public DesignerModel getModel() {
-    return model;
-  }
-
-  /**
-   * @param model the model to set
-   */
-  public void setModel(DesignerModel model) {
-    this.model = model;
-  }
-
-  /**
-   * @return the unit
-   */
-  public Unit getUnit() {
-    return unit;
-  }
-
-  /**
-   * @param unit the unit to set
-   */
-  public void setUnit(Unit unit) {
-    this.unit = unit;
+    designerView.getDesignerModel().removeUnitObserver(this);
   }
 }

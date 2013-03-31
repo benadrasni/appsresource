@@ -2,7 +2,6 @@ package sk.benko.appsresource.client.designer.layout;
 
 import sk.benko.appsresource.client.CSSConstants;
 import sk.benko.appsresource.client.designer.Sections;
-import sk.benko.appsresource.client.layout.TableDispatcher;
 import sk.benko.appsresource.client.model.DesignerModel;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -14,17 +13,16 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class DesignerContentView extends FlowPanel implements ChangeHandler {
 
-  private DesignerModel model;
   private DesignerToolbarView toolbar;
   private TableDispatcher table;
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public DesignerContentView(DesignerModel model) {
+  public DesignerContentView(final DesignerView designerView) {
     getElement().setId(CSSConstants.CSS_CONTENT);
-    setModel(model);
+    toolbar = new DesignerToolbarView(designerView);
+    table = new TableDispatcher(designerView);
     this.addDomHandler(this, ChangeEvent.getType());
   }
   
@@ -42,28 +40,11 @@ public class DesignerContentView extends FlowPanel implements ChangeHandler {
   }
 
   /**
-   * @return the model
-   */
-  public DesignerModel getModel() {
-    return model;
-  }
-
-  /**
-   * @param model the model to set
-   */
-  public void setModel(DesignerModel model) {
-    this.model = model;
-  }
-
-  /**
    * Getter for property 'toolbar'.
    * 
    * @return Value for property 'toolbar'.
    */
   protected DesignerToolbarView getToolbar() {
-    if (toolbar == null) {
-      toolbar = new DesignerToolbarView(getModel());
-    }
     return toolbar;
   }
 
@@ -73,9 +54,6 @@ public class DesignerContentView extends FlowPanel implements ChangeHandler {
    * @return Value for property 'table'.
    */
   protected TableDispatcher getTable() {
-    if (table == null) {
-      table = new TableDispatcher(getModel());
-    }
     return table;
   }
 

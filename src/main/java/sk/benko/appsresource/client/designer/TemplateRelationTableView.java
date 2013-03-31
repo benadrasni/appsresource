@@ -1,8 +1,9 @@
 package sk.benko.appsresource.client.designer;
 
 import com.google.gwt.user.client.ui.Label;
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.TableView;
+import sk.benko.appsresource.client.designer.layout.TableView;
 import sk.benko.appsresource.client.model.DesignerModel;
 import sk.benko.appsresource.client.model.Model;
 import sk.benko.appsresource.client.model.Template;
@@ -20,15 +21,15 @@ public class TemplateRelationTableView extends TableView implements
     DesignerModel.TemplateRelationUpdateObserver {
 
   /**
-   * @param model the model to which the UI will bind itself
+   * @param designerView the top level view
    */
-  public TemplateRelationTableView(DesignerModel model) {
-    super(model);
+  public TemplateRelationTableView(final DesignerView designerView) {
+    super(designerView);
   }
 
   @Override
   public void onTemplateRelationCreated(TemplateRelation templateRelation) {
-    add(new TemplateRelationRowView(getModel(), templateRelation));
+    add(new TemplateRelationRowView(getDesignerView(), templateRelation));
   }
 
   @Override
@@ -91,7 +92,7 @@ public class TemplateRelationTableView extends TableView implements
   public void displayRows(List<TemplateRelation> trs) {
     Collections.sort(trs);
     for (TemplateRelation tr : trs) {
-      add(new TemplateRelationRowView(getModel(), tr));
+      add(new TemplateRelationRowView(getDesignerView(), tr));
     }
   }
 

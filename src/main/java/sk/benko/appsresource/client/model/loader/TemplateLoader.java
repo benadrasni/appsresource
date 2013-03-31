@@ -26,7 +26,6 @@ public class TemplateLoader extends RetryTimer implements AsyncCallback<List<Tem
   }
 
   public void start() {
-    Main.status.showTaskStatus(Main.constants.loading());
     ((DbServiceAsync) model.getService()).getTemplates(this);
   }
 

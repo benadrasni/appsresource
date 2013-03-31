@@ -1,42 +1,30 @@
 package sk.benko.appsresource.client.designer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import sk.benko.appsresource.client.CSSConstants;
-import sk.benko.appsresource.client.ClientUtils;
-import sk.benko.appsresource.client.DropDownBox;
-import sk.benko.appsresource.client.DropDownObject;
-import sk.benko.appsresource.client.DropDownObjectImpl;
-import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.NavigationLabelView;
-import sk.benko.appsresource.client.model.DesignerModel;
-import sk.benko.appsresource.client.model.ObjectAttribute;
-import sk.benko.appsresource.client.model.ObjectRelation;
-import sk.benko.appsresource.client.model.ObjectType;
-import sk.benko.appsresource.client.model.Unit;
-import sk.benko.appsresource.client.model.ValueType;
-import sk.benko.appsresource.client.model.loader.ObjectRelationLoader;
-import sk.benko.appsresource.client.model.loader.ObjectTypeLoader;
-import sk.benko.appsresource.client.model.loader.UnitLoader;
-import sk.benko.appsresource.client.model.loader.ValueTypeLoader;
-
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
+import sk.benko.appsresource.client.*;
+import sk.benko.appsresource.client.designer.layout.DesignerView;
+import sk.benko.appsresource.client.layout.Main;
+import sk.benko.appsresource.client.model.*;
+import sk.benko.appsresource.client.model.loader.ObjectRelationLoader;
+import sk.benko.appsresource.client.model.loader.ObjectTypeLoader;
+import sk.benko.appsresource.client.model.loader.UnitLoader;
+import sk.benko.appsresource.client.model.loader.ValueTypeLoader;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  *
  */
-public class ObjectAttributeDialog extends DesignerDialog implements 
-    DesignerModel.ObjectTypeObserver, 
-    DesignerModel.ValueTypeObserver,
-    DesignerModel.UnitObserver,
-    DesignerModel.ObjectRelationObserver {
-  
+public class ObjectAttributeDialog extends DesignerDialog implements DesignerModel.ObjectTypeObserver,
+    DesignerModel.ValueTypeObserver, DesignerModel.UnitObserver, DesignerModel.ObjectRelationObserver {
+  private ArrayList<DropDownObject> objectTypesItems;
+
   private DropDownBox ddbObjectType;
   private DropDownBox ddbValueType;
   private DropDownBox ddbUnit;
@@ -44,56 +32,85 @@ public class ObjectAttributeDialog extends DesignerDialog implements
   private DropDownBox ddbRelatedObjectType;
   private Label lblRelation;
   private DropDownBox ddbRelation;
-  
   private FlexTable widgetObjectAttribute;
-  
+
   /**
-   * @param model
-   *          the model to which the UI will bind itself
+   * @param designerView the top level view
    */
-  public ObjectAttributeDialog(final DesignerModel model, ObjectAttribute oa) {
-    super(model, oa);
-    getModel().addObjectTypeObserver(this);
-    getModel().addValueTypeObserver(this);
-    getModel().addUnitObserver(this);
-    getModel().addObjectRelationObserver(this);
-    
-    getHeader().add(new Label((getObjectAttribute() == null ? Main.constants.newItem() + " " 
-        : "") + Main.constants.objectAttribute()));
-
-    NavigationLabelView menu1 = new NavigationLabelView(
-        model, Main.constants.objectAttribute(), new ClickHandler() {
-      public void onClick(ClickEvent event) {
-      }
-    }); 
-    menu1.addStyleName("dialog-box-navigation-item dialog-box-navigation-item-selected");
-
-    getBodyLeft().add(menu1);
-    getBodyRight().add(getWidgetObjectAttribute());
+  public ObjectAttributeDialog(final DesignerView designerView) {
+    super(designerView);
+    setHeaderText(Main.constants.objectAttribute());
+    objectTypesItems = new ArrayList<DropDownObject>();
 
     getBOk().addDomHandler(
         new ClickHandler() {
           public void onClick(ClickEvent event) {
-              if (getObjectAttribute() == null)
-                setItem(new ObjectAttribute(getTbName().getText(),
-                    getDdbObjectType().getSelection().getId(),
-                    getDdbValueType().getSelection().getId()));
-              fill(getObjectAttribute());
-              model.createOrUpdateObjectAttribute(getObjectAttribute());
-              ObjectAttributeDialog.this.hide();
-            }
+            if (getObjectAttribute() == null)
+              setItem(new ObjectAttribute(getTbName().getText(),
+                  ddbObjectType.getSelection().getId(),
+                  ddbValueType.getSelection().getId()));
+            fill(getObjectAttribute());
+            designerView.getDesignerModel().createOrUpdateObjectAttribute(getObjectAttribute());
+            ObjectAttributeDialog.this.hide();
+          }
         }, ClickEvent.getType());
+
+    ddbObjectType = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
+    ddbValueType = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER,
+        new ChangeHandler() {
+
+          @Override
+          public void onChange(ChangeEvent event) {
+            setVisibility();
+          }
+        });
+    ddbUnit = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
+    lblRelatedObjectType = new Label(Main.constants.objectAttributeRCOT());
+    ddbRelatedObjectType = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER,
+        new ChangeHandler() {
+
+          @Override
+          public void onChange(ChangeEvent event) {
+            loadRelations();
+          }
+    });
+    lblRelation = new Label(Main.constants.objectAttributeRCOR());
+    ddbRelatedObjectType = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER,
+        new ChangeHandler() {
+
+          @Override
+          public void onChange(ChangeEvent event) {
+            loadRelations();
+          }
+    });
+    ddbRelation = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
+
+    if (getModel().getObjectTypes() == null) {
+      ObjectTypeLoader otl = new ObjectTypeLoader(getModel());
+      otl.start();
+    } else {
+      fillObjectTypes(getModel().getObjectTypes());
+    }
+
+    if (getModel().getValueTypes() == null) {
+      ValueTypeLoader vtl = new ValueTypeLoader(getModel());
+      vtl.start();
+    } else {
+      fillValueTypes(getModel().getValueTypes());
+    }
+
+    if (getModel().getUnits() == null) {
+      UnitLoader ul = new UnitLoader(getModel());
+      ul.start();
+    } else {
+      fillUnits(getModel().getUnits());
+    }
+
+    // must be called after initializing UI components
+    getBodyRight().add(getItemWidget());
+    reset();
   }
 
-  @Override
-  public void close() {
-    getModel().removeObjectTypeObserver(this);
-    getModel().removeValueTypeObserver(this);
-    getModel().removeUnitObserver(this);
-    getModel().removeObjectRelationObserver(this);
-    hide();
-  }    
-  
   @Override
   public void onUnitCreated(Unit unit) {
   }
@@ -132,7 +149,6 @@ public class ObjectAttributeDialog extends DesignerDialog implements
   public void onObjectTypesLoaded(Collection<ObjectType> objectTypes) {
     fillObjectTypes(objectTypes);
   }
-  
 
   @Override
   public void onObjectRelationCreated(ObjectRelation objectRelation) {
@@ -143,156 +159,24 @@ public class ObjectAttributeDialog extends DesignerDialog implements
   }
 
   @Override
-  public void onObjectRelationsLoaded(int otId,
-      Collection<ObjectRelation> objectRelations) {
+  public void onObjectRelationsLoaded(int otId, Collection<ObjectRelation> objectRelations) {
     fillObjectRelations(objectRelations);
   }
-  
+
   /**
    * @return the objectAttribute
    */
   public ObjectAttribute getObjectAttribute() {
-    return (ObjectAttribute)getItem();
+    return (ObjectAttribute) getItem();
   }
-  
-  /**
-   * Getter for property 'ddbObjectType'.
-   * 
-   * @return Value for property 'ddbObjectType'.
-   */
-  protected DropDownBox getDdbObjectType() {
-    if (ddbObjectType == null) {
-      ddbObjectType = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
 
-      if (getModel().getObjectTypes() == null) {
-        ObjectTypeLoader otl = new ObjectTypeLoader(getModel());
-        otl.start();    
-      } else
-        fillObjectTypes(getModel().getObjectTypes());
-    }
-    return ddbObjectType;
-  }  
-  
-  /**
-   * Getter for property 'ddbValueType'.
-   * 
-   * @return Value for property 'ddbValueType'.
-   */
-  protected DropDownBox getDdbValueType() {
-    if (ddbValueType == null) {
-      ddbValueType = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER,
-          new ChangeHandler() {
-        
-        @Override
-        public void onChange(ChangeEvent event) {
-          setVisibility();
-        }
-      });
-      
-      if (getObjectAttribute() != null && getObjectAttribute().getVt() != null) { 
-        ddbValueType.setSelection(new DropDownObjectImpl(getObjectAttribute().getVtId(), 
-            getObjectAttribute().getVt().getName(), getObjectAttribute().getVt()));
-        setVisibility();
-      } else
-        ddbValueType.setSelection(new DropDownObjectImpl(0, 
-            Main.constants.chooseValueType()));
-      
-      if (getModel().getValueTypes() == null) {
-        ValueTypeLoader vtl = new ValueTypeLoader(getModel());
-        vtl.start();    
-      } else
-        fillValueTypes(getModel().getValueTypes());
-    }
-    return ddbValueType;
-  }
-  
-  /**
-   * Getter for property 'ddbUnit'.
-   * 
-   * @return Value for property 'ddbUnit'.
-   */
-  protected DropDownBox getDdbUnit() {
-    if (ddbUnit == null) {
-      ddbUnit = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
-      if (getObjectAttribute() != null && getObjectAttribute().getUnit() != null)  
-        ddbUnit.setSelection(new DropDownObjectImpl(getObjectAttribute().getUnitId(), 
-            getObjectAttribute().getUnit().getName(), getObjectAttribute().getUnit()));
-      else
-        ddbUnit.setSelection(new DropDownObjectImpl(0, 
-            Main.constants.chooseUnit()));
-      
-      if (getModel().getUnits() == null) {
-        UnitLoader ul = new UnitLoader(getModel());
-        ul.start();    
-      } else
-        fillUnits(getModel().getUnits());
-    }
-    return ddbUnit;
-  }
-  
-  /**
-   * Getter for property 'lblRelatedObjectType'.
-   * 
-   * @return Value for property 'lblRelatedObjectType'.
-   */
-  protected Label getLblRelatedObjectType() {
-    if (lblRelatedObjectType == null) {
-      lblRelatedObjectType = new Label(Main.constants.objectAttributeRCOT());
-    }
-    return lblRelatedObjectType;
-  } 
-  
-  /**
-   * Getter for property 'ddbRelatedObjectType'.
-   * 
-   * @return Value for property 'ddbRelatedObjectType'.
-   */
-  protected DropDownBox getRelatedObjectTypeDropDownBox() {
-    if (ddbRelatedObjectType == null) {
-      ddbRelatedObjectType = new DropDownBox(this, null,
-          CSSConstants.SUFFIX_DESIGNER, new ChangeHandler() {
-
-            @Override
-            public void onChange(ChangeEvent event) {
-              loadRelations();
-            }
-      });
-    }
-    
-    return ddbRelatedObjectType;
-  }  
-
-  /**
-   * Getter for property 'lblRelation'.
-   * 
-   * @return Value for property 'lblRelation'.
-   */
-  protected Label getLblRelation() {
-    if (lblRelation == null) {
-      lblRelation = new Label(Main.constants.objectAttributeRCOR());
-    }
-    return lblRelation;
-  } 
-  
-  /**
-   * Getter for property 'ddbRelation'.
-   * 
-   * @return Value for property 'ddbRelation'.
-   */
-  protected DropDownBox getRelationDropDownBox() {
-    if (ddbRelation == null) {
-      ddbRelation = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
-      ddbRelation.setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectRelation()));
-    }
-    return ddbRelation;
-  } 
-  
   /**
    * Getter for property 'widgetObjectAttribute'.
-   * 
+   *
    * @return Value for property 'widgetObjectAttribute'.
    */
-  public FlexTable getWidgetObjectAttribute() {
+  @Override
+  public FlexTable getItemWidget() {
     if (widgetObjectAttribute == null) {
       widgetObjectAttribute = new FlexTable();
       Label lblCode = new Label(Main.constants.objectAttributeCode());
@@ -309,41 +193,46 @@ public class ObjectAttributeDialog extends DesignerDialog implements
 
       Label lblOt = new Label(Main.constants.objectAttributeOt());
       widgetObjectAttribute.setWidget(3, 0, lblOt);
-      widgetObjectAttribute.setWidget(3, 1, getDdbObjectType());
+      widgetObjectAttribute.setWidget(3, 1, ddbObjectType);
       widgetObjectAttribute.getFlexCellFormatter().addStyleName(3, 1, ClientUtils.CSS_ALIGN_RIGHT);
 
       Label lblType = new Label(Main.constants.objectAttributeType());
       widgetObjectAttribute.setWidget(4, 0, lblType);
-      widgetObjectAttribute.setWidget(4, 1, getDdbValueType());
+      widgetObjectAttribute.setWidget(4, 1, ddbValueType);
       widgetObjectAttribute.getFlexCellFormatter().addStyleName(4, 1, ClientUtils.CSS_ALIGN_RIGHT);
-      
+
       Label lblUnit = new Label(Main.constants.objectAttributeUnit());
       widgetObjectAttribute.setWidget(5, 0, lblUnit);
-      widgetObjectAttribute.setWidget(5, 1, getDdbUnit());
+      widgetObjectAttribute.setWidget(5, 1, ddbUnit);
       widgetObjectAttribute.getFlexCellFormatter().addStyleName(5, 1, ClientUtils.CSS_ALIGN_RIGHT);
     }
-    
+
     return widgetObjectAttribute;
   }
 
+  /**
+   * Fill {@link ObjectAttribute} with values from UI. Parent method must be called first.
+   *
+   * @param objectAttribute    the object attribute which should be filled with UI values
+   */
   protected void fill(ObjectAttribute objectAttribute) {
     super.fill(objectAttribute);
 
     // object type
-    objectAttribute.setOtId(getDdbObjectType().getSelection().getId());
-    objectAttribute.setOt((ObjectType)getDdbObjectType().getSelection().getUserObject());
+    objectAttribute.setOtId(ddbObjectType.getSelection().getId());
+    objectAttribute.setOt((ObjectType) ddbObjectType.getSelection().getUserObject());
     // value type
-    objectAttribute.setVtId(getDdbValueType().getSelection().getId());
-    objectAttribute.setVt((ValueType)getDdbValueType().getSelection().getUserObject());
+    objectAttribute.setVtId(ddbValueType.getSelection().getId());
+    objectAttribute.setVt((ValueType) ddbValueType.getSelection().getUserObject());
     // unit
-    objectAttribute.setUnitId(getDdbUnit().getSelection().getId());
-    objectAttribute.setUnit((Unit)getDdbUnit().getSelection().getUserObject());
+    objectAttribute.setUnitId(ddbUnit.getSelection().getId());
+    objectAttribute.setUnit((Unit) ddbUnit.getSelection().getUserObject());
 
     // shared
     switch (objectAttribute.getVt().getType()) {
       case ValueType.VT_REF:
-        objectAttribute.setShared1(getRelatedObjectTypeDropDownBox().getSelection().getId());
-        objectAttribute.setShared2(getRelationDropDownBox().getSelection().getId());
+        objectAttribute.setShared1(ddbRelatedObjectType.getSelection().getId());
+        objectAttribute.setShared2(ddbRelation.getSelection().getId());
         objectAttribute.setShared4(0);
         objectAttribute.setShared5(0);
         break;
@@ -358,96 +247,146 @@ public class ObjectAttributeDialog extends DesignerDialog implements
     }
   }
 
+  /**
+   * Load {@link ObjectAttribute} to UI. Parent method must be called first.
+   *
+   * @param item    the object attribute which should be loaded to UI
+   */
+  @Override
+  protected void load(DesignItem item) {
+    super.load(item);
+
+    ObjectAttribute objectAttribute = (ObjectAttribute)item;
+    if (objectAttribute != null) {
+      if (objectAttribute.getOt() != null) {
+        ddbObjectType.setSelection(new DropDownObjectImpl(objectAttribute.getOtId(),
+            objectAttribute.getOt().getName(), objectAttribute.getOt()));
+      }
+      if (objectAttribute.getVt() != null) {
+        ddbValueType.setSelection(new DropDownObjectImpl(objectAttribute.getVtId(),
+            objectAttribute.getVt().getName(), objectAttribute.getVt()));
+        setVisibility();
+      }
+      if (objectAttribute.getUnit() != null) {
+        ddbUnit.setSelection(new DropDownObjectImpl(objectAttribute.getUnitId(),
+            objectAttribute.getUnit().getName(), objectAttribute.getUnit()));
+      }
+      if (objectAttribute.getShared1() > 0) {
+        for (DropDownObject objectTypeItem : objectTypesItems) {
+          if (objectTypeItem.getId() == objectAttribute.getShared1()) {
+            ddbRelatedObjectType.setSelection(objectTypeItem);
+            loadRelations();
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Reset UI fields. Parent method must be called first.
+   */
+  @Override
+  protected void reset() {
+    super.reset();
+
+    ddbObjectType.setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectType()));
+    ddbValueType.setSelection(new DropDownObjectImpl(0, Main.constants.chooseValueType()));
+    ddbUnit.setSelection(new DropDownObjectImpl(0, Main.constants.chooseUnit()));
+    ddbRelatedObjectType.setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectType()));
+    ddbRelation.setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectRelation()));
+    ddbRelation.clearItems();
+
+    setVisibility();
+  }
+
   // private methods
-  
-  private void fillObjectTypes (Collection<ObjectType> objectTypes) {
-    ArrayList<DropDownObject> items = new ArrayList<DropDownObject>();
+
+  private void fillObjectTypes(Collection<ObjectType> objectTypes) {
     DropDownObjectImpl chooseItem = new DropDownObjectImpl(0, Main.constants.chooseObjectType());
 
     for (ObjectType ot : objectTypes) {
       DropDownObjectImpl item = new DropDownObjectImpl(ot.getId(), ot.getName(), ot);
-      items.add(item);
+      objectTypesItems.add(item);
 
       if (getObjectAttribute() != null) {
         if (getObjectAttribute().getOt() != null) {
           if (getObjectAttribute().getOtId() == ot.getId()) {
-            getDdbObjectType().setSelection(item);
+            ddbObjectType.setSelection(item);
           }
         } else {
-          getDdbObjectType().setSelection(chooseItem);
+          ddbObjectType.setSelection(chooseItem);
         }
         if (getObjectAttribute().getShared1() == ot.getId()) {
-          getRelatedObjectTypeDropDownBox().setSelection(item);
+          ddbRelatedObjectType.setSelection(item);
           loadRelations();
         }
       } else {
-        getRelatedObjectTypeDropDownBox().setSelection(chooseItem);
-        getDdbObjectType().setSelection(chooseItem);
+        ddbRelatedObjectType.setSelection(chooseItem);
+        ddbObjectType.setSelection(chooseItem);
       }
     }
 
-    getDdbObjectType().setItems(items);
-    getRelatedObjectTypeDropDownBox().setItems(items);
+    ddbObjectType.setItems(objectTypesItems);
+    ddbRelatedObjectType.setItems(objectTypesItems);
   }
 
-  private void fillValueTypes (Collection<ValueType> valueTypes) {
+  private void fillValueTypes(Collection<ValueType> valueTypes) {
     ArrayList<DropDownObject> items = new ArrayList<DropDownObject>();
     items.add(new DropDownObjectImpl(0, Main.constants.chooseValueType()));
     for (ValueType vt : valueTypes) {
       items.add(new DropDownObjectImpl(vt.getId(), vt.getName(), vt));
     }
-    getDdbValueType().setItems(items);
+    ddbValueType.setItems(items);
   }
 
-  private void fillUnits (Collection<Unit> units) {
+  private void fillUnits(Collection<Unit> units) {
     ArrayList<DropDownObject> items = new ArrayList<DropDownObject>();
     items.add(new DropDownObjectImpl(0, Main.constants.chooseUnit()));
     for (Unit u : units) {
       items.add(new DropDownObjectImpl(u.getId(), u.getName(), u));
     }
-    getDdbUnit().setItems(items);
+    ddbUnit.setItems(items);
   }
-  
+
   private void fillObjectRelations(Collection<ObjectRelation> objectRelations) {
     ArrayList<DropDownObject> items = new ArrayList<DropDownObject>();
-    getRelationDropDownBox().setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectRelation()));
+    ddbRelation.setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectRelation()));
     for (ObjectRelation or : objectRelations) {
-      if (or.getOt2Id() == getRelatedObjectTypeDropDownBox().getSelection().getId()
-           && or.getOt1Id() == getDdbObjectType().getSelection().getId()) {
+      if (or.getOt2Id() == ddbRelatedObjectType.getSelection().getId()
+          && or.getOt1Id() == ddbObjectType.getSelection().getId()) {
         items.add(new DropDownObjectImpl(or.getId(), or.getName(), or));
         if (getObjectAttribute() != null && getObjectAttribute().getShared2() == or.getId())
-          getRelationDropDownBox().setSelection(items.get(items.size() - 1));
+          ddbRelation.setSelection(items.get(items.size() - 1));
       }
     }
-    getRelationDropDownBox().setItems(items);
+    ddbRelation.setItems(items);
   }
 
   private void setVisibility() {
-    ValueType vt = (ValueType)getDdbValueType().getSelection().getUserObject();
+    ValueType vt = (ValueType) ddbValueType.getSelection().getUserObject();
     if (vt != null && vt.getType() == ValueType.VT_REF) {
-      getWidgetObjectAttribute().setWidget(6, 0, getLblRelatedObjectType());
-      getWidgetObjectAttribute().setWidget(6, 1, getRelatedObjectTypeDropDownBox());
-      getWidgetObjectAttribute().getFlexCellFormatter().addStyleName(6, 1, ClientUtils.CSS_ALIGN_RIGHT);
+      widgetObjectAttribute.setWidget(6, 0, lblRelatedObjectType);
+      widgetObjectAttribute.setWidget(6, 1, ddbRelatedObjectType);
+      widgetObjectAttribute.getFlexCellFormatter().addStyleName(6, 1, ClientUtils.CSS_ALIGN_RIGHT);
 
-      getWidgetObjectAttribute().setWidget(7, 0, getLblRelation());
-      getWidgetObjectAttribute().setWidget(7, 1, getRelationDropDownBox());
-      getWidgetObjectAttribute().getFlexCellFormatter().addStyleName(7, 1, ClientUtils.CSS_ALIGN_RIGHT);
+      widgetObjectAttribute.setWidget(7, 0, lblRelation);
+      widgetObjectAttribute.setWidget(7, 1, ddbRelation);
+      widgetObjectAttribute.getFlexCellFormatter().addStyleName(7, 1, ClientUtils.CSS_ALIGN_RIGHT);
     } else {
-      if (getWidgetObjectAttribute().getRowCount() == 8) {
-        getWidgetObjectAttribute().removeRow(7);
-        getWidgetObjectAttribute().removeRow(6);
+      if (widgetObjectAttribute.getRowCount() == 8) {
+        widgetObjectAttribute.removeRow(7);
+        widgetObjectAttribute.removeRow(6);
       }
     }
   }
-  
+
   private void loadRelations() {
-    if (getRelatedObjectTypeDropDownBox().getSelection().getId() > 0) {
-      Collection<ObjectRelation> ors = getModel().getObjectRelations()
-          .get(getRelatedObjectTypeDropDownBox().getSelection().getId());
+    if (ddbRelatedObjectType.getSelection().getId() > 0) {
+      Collection<ObjectRelation> ors = getModel().getObjectRelations().get(ddbRelatedObjectType.getSelection().getId());
       if (ors == null) {
-        ObjectRelationLoader orl = new ObjectRelationLoader(getModel(), 
-            getRelatedObjectTypeDropDownBox().getSelection().getId());
-        orl.start();    
+        ObjectRelationLoader orl = new ObjectRelationLoader(getModel(), ddbRelatedObjectType.getSelection().getId());
+        orl.start();
       } else
         fillObjectRelations(ors);
     }

@@ -125,6 +125,11 @@ public class DropDownBox extends FocusPanel {
     }
   }
 
+  public void clearItems() {
+    getContent().clear();
+    getContent().setHeight("0px");
+  }
+
   public void showList(FlowPanel outerBox) {
     getList().show();
 

@@ -2,8 +2,9 @@ package sk.benko.appsresource.client.designer;
 
 import java.util.Collection;
 
+import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.layout.Main;
-import sk.benko.appsresource.client.layout.TableView;
+import sk.benko.appsresource.client.designer.layout.TableView;
 import sk.benko.appsresource.client.model.DesignerModel;
 import sk.benko.appsresource.client.model.Unit;
 import sk.benko.appsresource.client.model.loader.UnitLoader;
@@ -14,15 +15,13 @@ import com.google.gwt.user.client.ui.Label;
  * A widget to display table of object types.
  *
  */
-public class UnitTableView extends TableView implements 
-    DesignerModel.UnitObserver {
+public class UnitTableView extends TableView implements DesignerModel.UnitObserver {
   
   /**
-   * @param model
-   *          the model to which the Ui will bind itself
+   * @param designerView the top level view
    */
-  public UnitTableView(DesignerModel model) {
-    super(model);
+  public UnitTableView(final DesignerView designerView) {
+    super(designerView);
 
     if (getModel().getUnits() == null) {
       UnitLoader ul = new UnitLoader(getModel());
@@ -33,7 +32,7 @@ public class UnitTableView extends TableView implements
 
   @Override
   public void onUnitCreated(Unit unit) {
-    add(new UnitRowView(getModel(), unit));
+    add(new UnitRowView(getDesignerView(), unit));
   }
 
   @Override
@@ -75,7 +74,7 @@ public class UnitTableView extends TableView implements
   
   public void displayRows(Collection<Unit> units) {
     for (Unit unit : units) {
-      add(new UnitRowView(getModel(), unit));
+      add(new UnitRowView(getDesignerView(), unit));
     }
   }
 }
