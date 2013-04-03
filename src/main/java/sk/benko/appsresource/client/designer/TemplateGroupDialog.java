@@ -27,7 +27,7 @@ public class TemplateGroupDialog extends DesignerDialog implements Model.Applica
   private final static int DEFAULT_LABELWIDTH = 50;
   private final static String DEFAULT_LABELWIDTHUNIT = "px";
   private final static String DEFAULT_LABELALIGN = "left";
-  final CheckBox cbLabel = new CheckBox();
+  private CheckBox cbLabel;
   final Label lblRank = new Label(Main.constants.templateGroupRank());
   final Label lblSubrank = new Label(Main.constants.templateGroupSubrank());
   final Label lblLabelTop = new Label(Main.constants.templateGroupLabelTop());
@@ -50,30 +50,30 @@ public class TemplateGroupDialog extends DesignerDialog implements Model.Applica
     super(designerView);
     setHeaderText(Main.constants.templateGroup());
 
-    getModel().addDataObserver(this);
-
     getBOk().addDomHandler(
         new ClickHandler() {
           public void onClick(ClickEvent event) {
             if (getTemplateGroup() == null)
-              setItem(new TemplateGroup(getTbName().getText(),
-                  getDdbTemplate().getSelection().getId()));
+              setItem(new TemplateGroup(getTbName().getText(), ddbTemplate.getSelection().getId()));
             fill(getTemplateGroup());
             designerView.getDesignerModel().createOrUpdateTemplateGroup(getTemplateGroup());
             close();
           }
         }, ClickEvent.getType());
-  }
 
-  @Override
-  public void close() {
-    getModel().removeDataObserver(this);
-    hide();
+    ddbTemplate = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
+    cbLabel = new CheckBox(Main.constants.templateGroupLabel());
+
+    // must be called after initializing UI components
+    getBodyRight().add(getItemWidget());
+    reset();
   }
 
   @Override
   public void onApplicationTemplatesLoaded(List<ApplicationTemplate> appts) {
     fillTemplates(appts);
+
+    getModel().getStatusObserver().onTaskFinished();
   }
 
   /**
@@ -107,49 +107,32 @@ public class TemplateGroupDialog extends DesignerDialog implements Model.Applica
 
       Label lblT = new Label(Main.constants.templateGroupT());
       widgetTemplateGroup.setWidget(3, 0, lblT);
-      widgetTemplateGroup.setWidget(3, 1, getDdbTemplate());
+      widgetTemplateGroup.setWidget(3, 1, ddbTemplate);
       widgetTemplateGroup.getFlexCellFormatter().addStyleName(3, 1, ClientUtils.CSS_ALIGN_RIGHT);
 
-      cbLabel.setText(Main.constants.templateGroupLabel());
-      if (getTemplateGroup() != null) cbLabel.setValue(ClientUtils
-          .getFlag(TemplateGroup.FLAG_SHOW_LABEL, getTemplateGroup().getFlags()));
       widgetTemplateGroup.setWidget(4, 1, cbLabel);
 
       widgetTemplateGroup.setWidget(5, 0, lblRank);
-      if (getTemplateGroup() != null) tbRank.setText("" + getTemplateGroup().getRank());
-      else tbRank.setText("" + DEFAULT_RANK);
       widgetTemplateGroup.setWidget(5, 1, tbRank);
 
       widgetTemplateGroup.setWidget(6, 0, lblSubrank);
-      if (getTemplateGroup() != null) tbSubrank.setText("" + getTemplateGroup().getSubRank());
-      else tbSubrank.setText("" + DEFAULT_SUBRANK);
       widgetTemplateGroup.setWidget(6, 1, tbSubrank);
 
       widgetTemplateGroup.setWidget(7, 0, lblLabelTop);
-      if (getTemplateGroup() != null) tbLabelTop.setText("" + getTemplateGroup().getLabelTop());
-      else tbLabelTop.setText("" + DEFAULT_LABELTOP);
       widgetTemplateGroup.setWidget(7, 1, tbLabelTop);
 
       widgetTemplateGroup.setWidget(8, 0, lblLabelLeft);
-      if (getTemplateGroup() != null) tbLabelLeft.setText("" + getTemplateGroup().getLabelLeft());
-      else tbLabelLeft.setText("" + DEFAULT_LABELLEFT);
       widgetTemplateGroup.setWidget(8, 1, tbLabelLeft);
 
       widgetTemplateGroup.setWidget(9, 0, lblLabelWidth);
-      if (getTemplateGroup() != null) tbLabelWidth.setText("" + getTemplateGroup().getLabelWidth());
-      else tbLabelWidth.setText("" + DEFAULT_LABELWIDTH);
       widgetTemplateGroup.setWidget(9, 1, tbLabelWidth);
 
       Label lblLabelWidthUnit = new Label(Main.constants.templateGroupLabelWidthUnit());
       widgetTemplateGroup.setWidget(10, 0, lblLabelWidthUnit);
-      if (getTemplateGroup() != null) tbLabelWidthUnit.setText(getTemplateGroup().getLabelWidthUnit());
-      else tbLabelWidthUnit.setText(DEFAULT_LABELWIDTHUNIT);
       widgetTemplateGroup.setWidget(10, 1, tbLabelWidthUnit);
 
       Label lblLabelAlign = new Label(Main.constants.templateGroupLabelAlign());
       widgetTemplateGroup.setWidget(11, 0, lblLabelAlign);
-      if (getTemplateGroup() != null) tbLabelAlign.setText(getTemplateGroup().getLabelAlign());
-      else tbLabelAlign.setText(DEFAULT_LABELALIGN);
       widgetTemplateGroup.setWidget(11, 1, tbLabelAlign);
     }
 
@@ -157,38 +140,15 @@ public class TemplateGroupDialog extends DesignerDialog implements Model.Applica
   }
 
   /**
-   * Getter for property 'ddbTemplate'.
+   * Fill {@link TemplateGroup} with values from UI. Parent method must be called first.
    *
-   * @return Value for property 'ddbTemplate'.
+   * @param templateGroup the template group which should be filled with UI values
    */
-  protected DropDownBox getDdbTemplate() {
-    if (ddbTemplate == null) {
-      ddbTemplate = new DropDownBox(this, null,
-          CSSConstants.SUFFIX_DESIGNER);
-      if (getTemplateGroup() != null && getModel().getTemplate().getOa() != null)
-        ddbTemplate.setSelection(new DropDownObjectImpl(getTemplateGroup().getTId(),
-            getTemplateGroup().getT().getName(), getTemplateGroup().getT()));
-      else
-        ddbTemplate.setSelection(new DropDownObjectImpl(0,
-            Main.constants.chooseTemplate()));
-
-      if (getModel().getAppTemplateByApp(getModel().getApplication().getId()) == null) {
-        ApplicationTemplateLoader atl = new ApplicationTemplateLoader(getModel(),
-            getModel().getApplication());
-        atl.start();
-      } else
-        fillTemplates(getModel().getAppTemplateByApp(getModel().getApplication().getId()));
-
-    }
-    return ddbTemplate;
-  }
-
-  // private methods
   private void fill(TemplateGroup templateGroup) {
     super.fill(templateGroup);
 
-    templateGroup.setTId(getDdbTemplate().getSelection().getId());
-    templateGroup.setT((Template) getDdbTemplate().getSelection().getUserObject());
+    templateGroup.setTId(ddbTemplate.getSelection().getId());
+    templateGroup.setT((Template) ddbTemplate.getSelection().getUserObject());
 
     // flags
     int flags = 0;
@@ -213,11 +173,64 @@ public class TemplateGroupDialog extends DesignerDialog implements Model.Applica
 
   }
 
+  /**
+   * Load {@link TemplateGroup} to UI. Parent method must be called first.
+   *
+   * @param item the template group which should be loaded to UI
+   */
+  @Override
+  protected void load(DesignItem item) {
+    assert (item != null);
+    super.load(item);
+
+    TemplateGroup templateGroup = (TemplateGroup) item;
+    ddbTemplate.setSelection(new DropDownObjectImpl(templateGroup.getTId(),
+        templateGroup.getT().getName(), templateGroup.getT()));
+    cbLabel.setValue(ClientUtils.getFlag(TemplateGroup.FLAG_SHOW_LABEL, getTemplateGroup().getFlags()));
+    tbRank.setText("" + templateGroup.getRank());
+    tbSubrank.setText("" + templateGroup.getSubRank());
+    tbLabelTop.setText("" + templateGroup.getLabelTop());
+    tbLabelLeft.setText("" + templateGroup.getLabelLeft());
+    tbLabelWidth.setText("" + templateGroup.getLabelWidth());
+    tbLabelWidthUnit.setText(templateGroup.getLabelWidthUnit());
+    tbLabelAlign.setText(templateGroup.getLabelAlign());
+
+    if (getModel().getAppTemplateByApp(getModel().getApplication().getId()) == null) {
+      ApplicationTemplateLoader atl = new ApplicationTemplateLoader(getModel(),
+          getModel().getApplication());
+      atl.start();
+    } else {
+      fillTemplates(getModel().getAppTemplateByApp(getModel().getApplication().getId()));
+    }
+  }
+
+  /**
+   * Reset UI fields. Parent method must be called first.
+   */
+  @Override
+  protected void reset() {
+    super.reset();
+
+    ddbTemplate.setSelection(new DropDownObjectImpl(0, Main.constants.chooseTemplate()));
+    cbLabel.setValue(false);
+    tbRank.setText("" + DEFAULT_RANK);
+    tbSubrank.setText("" + DEFAULT_SUBRANK);
+    tbLabelTop.setText("" + DEFAULT_LABELTOP);
+    tbLabelLeft.setText("" + DEFAULT_LABELLEFT);
+    tbLabelWidth.setText("" + DEFAULT_LABELWIDTH);
+    tbLabelWidthUnit.setText(DEFAULT_LABELWIDTHUNIT);
+    tbLabelAlign.setText(DEFAULT_LABELALIGN);
+
+    getModel().getStatusObserver().onTaskFinished();
+  }
+
+  // private methods
+
   private void fillTemplates(Collection<ApplicationTemplate> templates) {
     ArrayList<DropDownObject> items = new ArrayList<DropDownObject>();
     for (ApplicationTemplate appt : templates) {
       items.add(new DropDownObjectImpl(appt.getTId(), appt.getT().getName(), appt.getT()));
     }
-    getDdbTemplate().setItems(items);
+    ddbTemplate.setItems(items);
   }
 }

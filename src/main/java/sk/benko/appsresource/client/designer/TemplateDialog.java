@@ -135,7 +135,9 @@ public class TemplateDialog extends DesignerDialog implements ApplicationModel.T
           }
         }, ClickEvent.getType());
 
-    designerView.getDesignerModel().getStatusObserver().onTaskFinished();
+    // must be called after initializing UI components
+    getBodyRight().add(getItemWidget());
+    reset();
   }
 
   private static FlowPanel initializeHintMessage() {
@@ -261,6 +263,7 @@ public class TemplateDialog extends DesignerDialog implements ApplicationModel.T
       getTreePanel().add(attrMsgTree);
     initializeTree();
     getBodyRight().add(getDDTable());
+
     getDesignerView().getDesignerModel().getStatusObserver().onTaskFinished();
   }
 
@@ -298,6 +301,7 @@ public class TemplateDialog extends DesignerDialog implements ApplicationModel.T
       getListPanel().add(attrMsgList);
     initializeList();
     getBodyRight().add(getDDTable());
+
     getDesignerView().getDesignerModel().getStatusObserver().onTaskFinished();
   }
 

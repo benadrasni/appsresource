@@ -28,8 +28,11 @@ public abstract class DesignerDialog extends CommonDialog {
   private Tree menu;
   private NavigationLabel menu1;
   private Label lblHeader;
+  private Label lblCode;
   private Label lblCodeValue;
+  private Label lblName;
   private TextBox tbName;
+  private Label lblDesc;
   private TextBox tbDesc;
 
   /**
@@ -40,8 +43,15 @@ public abstract class DesignerDialog extends CommonDialog {
 
     lblHeader = new Label();
     getHeader().add(lblHeader);
+    lblCode = new Label(Main.constants.templateAttributeCode());
     lblCodeValue = new Label();
     lblCodeValue.setStyleName(ClientUtils.CSS_DIALOG_LABEL_DISABLED);
+    lblName = new Label(Main.constants.templateAttributeName());
+    tbName = new TextBox();
+    tbName.setWidth(TBWIDTH);
+    lblDesc = new Label(Main.constants.templateAttributeDesc());
+    tbDesc = new TextBox();
+    tbDesc.setWidth(TBWIDTH);
 
     menu = new Tree((Tree.Resources) GWT.create(TreeResource.class), false);
     menu1 = new NavigationLabel(designerView, new ClickHandler() {
@@ -56,10 +66,7 @@ public abstract class DesignerDialog extends CommonDialog {
 
     getBodyLeft().add(menu);
 
-    tbName = new TextBox();
-    tbName.setWidth(TBWIDTH);
-    tbDesc = new TextBox();
-    tbDesc.setWidth(TBWIDTH);
+
   }
 
   protected abstract FlexTable getItemWidget();
@@ -131,10 +138,24 @@ public abstract class DesignerDialog extends CommonDialog {
   }
 
   /**
+   * @return Value for property 'lblCode'.
+   */
+  public Label getLblCode() {
+    return lblCode;
+  }
+
+  /**
    * @return Value for property 'lblCodeValue'.
    */
   public Label getLblCodeValue() {
     return lblCodeValue;
+  }
+
+  /**
+   * @return Value for property 'lblName'.
+   */
+  public Label getLblName() {
+    return lblName;
   }
 
   /**
@@ -144,6 +165,13 @@ public abstract class DesignerDialog extends CommonDialog {
    */
   public TextBox getTbName() {
     return tbName;
+  }
+
+  /**
+   * @return Value for property 'lblDesc'.
+   */
+  public Label getLblDesc() {
+    return lblDesc;
   }
 
   /**

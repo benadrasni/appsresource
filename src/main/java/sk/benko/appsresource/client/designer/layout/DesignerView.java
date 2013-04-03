@@ -56,6 +56,13 @@ public class DesignerView extends FlowPanel {
       designerModel.removeTemplateAttributeObserver(templateDialog);
       designerModel.removeDataObserver(templateDialog);
     }
+    if (templateGroupDialog != null) {
+      designerModel.removeDataObserver(templateGroupDialog);
+    }
+    if (templateAttributeDialog != null) {
+      designerModel.removeTemplateGroupObserver(templateAttributeDialog);
+      designerModel.removeObjectAttributeObserver(templateAttributeDialog);
+    }
     if (templateRelationDialog != null) {
       designerModel.removeDataObserver(templateRelationDialog);
       designerModel.removeObjectRelationObserver(templateRelationDialog);
@@ -100,6 +107,8 @@ public class DesignerView extends FlowPanel {
   public TemplateGroupDialog getTemplateGroupDialog() {
     if (templateGroupDialog == null) {
       templateGroupDialog = new TemplateGroupDialog(this);
+
+      designerModel.addDataObserver(templateGroupDialog);
     }
     return templateGroupDialog;
   }
@@ -107,6 +116,9 @@ public class DesignerView extends FlowPanel {
   public TemplateAttributeDialog getTemplateAttributeDialog() {
     if (templateAttributeDialog == null) {
       templateAttributeDialog = new TemplateAttributeDialog(this);
+
+      designerModel.addTemplateGroupObserver(templateAttributeDialog);
+      designerModel.addObjectAttributeObserver(templateAttributeDialog);
     }
     return templateAttributeDialog;
   }
