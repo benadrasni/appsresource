@@ -19,8 +19,8 @@ public class TemplateAttributeLoader extends RetryTimer implements AsyncCallback
    * Creates a new loader that is bound to the given model.
    *
    * @param model the model to which this loader is bound
-   * @param t     the template to which template attributes belong
-   * @param tr    the template relation to which template attributes belong
+   * @param t     the template to which template filterAttributes belong
+   * @param tr    the template relation to which template filterAttributes belong
    */
   public TemplateAttributeLoader(Model model, Template t,
                                  TemplateRelation tr) {

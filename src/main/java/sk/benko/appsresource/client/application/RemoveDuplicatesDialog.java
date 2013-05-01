@@ -114,7 +114,7 @@ public class RemoveDuplicatesDialog extends PopupPanel implements ApplicationMod
       }
     });
     
-    // load template attributes for actual template
+    // load template filterAttributes for actual template
     tas = objectView.getModel().getAttrsByTemplate().get(getModel().getAppt().getTId());
     
     int offset = -2;

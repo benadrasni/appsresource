@@ -41,7 +41,7 @@ public class ThemeImage extends Image {
   }
 
   /**
-   * Creates an instance of this class and initializes the internal fields and widget attributes.
+   * Creates an instance of this class and initializes the internal fields and widget filterAttributes.
    *
    * @param shortName is an image short name.
    */

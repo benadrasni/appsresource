@@ -77,7 +77,7 @@ public interface Service extends RemoteService {
   List<TemplateListItem> getTemplateListItems(TemplateList tl) throws AccessDeniedException;
   
   /**
-   * Get all template attributes for the template.
+   * Get all template filterAttributes for the template.
    *
    * @param t
    *          template

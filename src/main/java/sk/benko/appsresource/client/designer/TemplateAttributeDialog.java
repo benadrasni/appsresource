@@ -1,14 +1,14 @@
 package sk.benko.appsresource.client.designer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-
-import sk.benko.appsresource.client.CSSConstants;
-import sk.benko.appsresource.client.ClientUtils;
-import sk.benko.appsresource.client.DropDownBox;
-import sk.benko.appsresource.client.DropDownObject;
-import sk.benko.appsresource.client.DropDownObjectImpl;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBox;
+import sk.benko.appsresource.client.*;
 import sk.benko.appsresource.client.application.ObjectTemplate;
 import sk.benko.appsresource.client.designer.layout.DesignerView;
 import sk.benko.appsresource.client.designer.model.ObjectAttributeLoader;
@@ -18,21 +18,12 @@ import sk.benko.appsresource.client.model.*;
 import sk.benko.appsresource.client.ui.widget.IntegerTextBox;
 import sk.benko.appsresource.client.util.DateHelper;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.DomEvent;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextBox;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 
 /**
- *
+ *  Dialog box for creating or editing template attribute. Application and template must be defined in model.
  */
 public class TemplateAttributeDialog extends DesignerDialog implements DesignerModel.TemplateGroupObserver,
     DesignerModel.ObjectAttributeObserver {
@@ -47,7 +38,7 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
     styles.add(new DropDownObjectImpl(TemplateAttribute.STYLE_LABEL, Main.constants.templateAttributeStyle1()));
     styles.add(new DropDownObjectImpl(TemplateAttribute.STYLE_TEXTBOX, Main.constants.templateAttributeStyle2()));
     styles.add(new DropDownObjectImpl(TemplateAttribute.STYLE_DATEPICKER, Main.constants.templateAttributeStyle3()));
-    styles.add(new DropDownObjectImpl(TemplateAttribute.STYLE_DYNAMICCOMBO,  Main.constants.templateAttributeStyle4()));
+    styles.add(new DropDownObjectImpl(TemplateAttribute.STYLE_DYNAMICCOMBO, Main.constants.templateAttributeStyle4()));
     styles.add(new DropDownObjectImpl(TemplateAttribute.STYLE_TABLE, Main.constants.templateAttributeStyle5()));
     styles.add(new DropDownObjectImpl(TemplateAttribute.STYLE_IMAGE, Main.constants.templateAttributeStyle6()));
     styles.add(new DropDownObjectImpl(TemplateAttribute.STYLE_TEXTAREA, Main.constants.templateAttributeStyle7()));
@@ -68,53 +59,41 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
     graphTypes.add(new DropDownObjectImpl(TemplateAttribute.TABLEGRAPHTYPE_AREA, Main.constants.templateAttributeTableGraphType3()));
   }
 
+  final ApplicationModel applicationModel;
   private int DEFAULT_LENGTH = 255;
-  private int DEFAULT_LABELTOP = 10;
-  private int DEFAULT_LABELLEFT = 10;
-  private int DEFAULT_LABELWIDTH = 100;
+  private int DEFAULT_LABEL_TOP = 10;
+  private int DEFAULT_LABEL_LEFT = 10;
+  private int DEFAULT_LABEL_WIDTH = 100;
   private int DEFAULT_TOP = 10;
   private int DEFAULT_LEFT = 100;
   private int DEFAULT_WIDTH = 200;
-  private int DEFAULT_UNITTOP = 10;
-  private int DEFAULT_UNITLEFT = 360;
-  private int DEFAULT_UNITWIDTH = 30;
-  private int DEFAULT_TABINDEX = 0;
-
-  private int DEFAULT_STARTYEAR = 1970;
-  
-  final ApplicationModel amodel;
+  private int DEFAULT_UNIT_TOP = 10;
+  private int DEFAULT_UNIT_LEFT = 360;
+  private int DEFAULT_UNIT_WIDTH = 30;
+  private int DEFAULT_TAB_INDEX = 0;
+  private int DEFAULT_START_YEAR = 1970;
   private ObjectTemplate objectTemplate;
-
-  private Label lblTg;
   private DropDownBox ddbTemplateGroup;
-  private Label lblOa;
   private DropDownBox ddbObjectAttribute;
-  
   private CheckBox cbMandatory;
   private CheckBox cbDerived;
   private CheckBox cbDesc;
   private CheckBox cbLabel;
   private CheckBox cbValue;
   private CheckBox cbUnit;
-
-  private Label lblStyle;
   private DropDownBox ddbStyle;
-
   private Label lblTable;
   private DropDownBox ddbTable;
-
   // date
   private Label lblStartYear;
   private IntegerTextBox tbStartYear;
   private Label lblEndYear;
   private IntegerTextBox tbEndYear;
-  
   // dynamic combo
   private Label lblDCT;
   private DropDownBox ddbDCT;
   private Label lblDCOA;
   private DropDownBox ddbDCOA;
-  
   // table
   private Label lblTType;
   private DropDownBox ddbTType;
@@ -126,7 +105,6 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
   private DropDownBox ddbTGraphX;
   private Label lblTGraphY;
   private DropDownBox ddbTGraphY;
-
   // second column
   private Label lblTop;
   private IntegerTextBox tbLabelTop;
@@ -146,29 +124,27 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
   private AlignListBox tbLabelAlign;
   private AlignListBox tbAlign;
   private AlignListBox tbUnitAlign;
-
   private Label lblTabIndex;
   private IntegerTextBox tbTabIndex;
   private TextBox tbDef;
   private Label lblLength;
   private IntegerTextBox tbLength;
-
   private FlexTable widgetTemplateAttribute;
   private NavigationLabel menu2;
-  
+
   /**
    * @param designerView the top level view
    */
   public TemplateAttributeDialog(final DesignerView designerView) {
     super(designerView);
     setHeaderText(Main.constants.templateAttribute());
-    
-    assert(getModel().getApplication() != null);
-    assert(getModel().getTemplate() != null);
-    if (getTemplateAttribute() != null)
-      assert(getTemplateAttribute().getTg().getTId() == getModel().getTemplate().getId());
 
-    amodel = new ApplicationModel(designerView.getDesignerModel().getUserModel(), null);
+    assert (getModel().getApplication() != null);
+    assert (getModel().getTemplate() != null);
+    if (getTemplateAttribute() != null)
+      assert (getTemplateAttribute().getTg().getTId() == getModel().getTemplate().getId());
+
+    applicationModel = new ApplicationModel(designerView.getDesignerModel().getUserModel(), null);
 
     menu2 = new NavigationLabel(
         designerView, Main.constants.templateView(), new ClickHandler() {
@@ -187,12 +163,12 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
     getBOk().addDomHandler(
         new ClickHandler() {
           public void onClick(ClickEvent event) {
-              if (getTemplateAttribute() == null)
-                setItem(new TemplateAttribute(getTbName().getText(), ddbTemplateGroup.getSelection().getId()));
-              fill(getTemplateAttribute());
-              designerView.getDesignerModel().createOrUpdateTemplateAttribute(getTemplateAttribute());
-              close();
-            }
+            if (getTemplateAttribute() == null)
+              setItem(new TemplateAttribute(getTbName().getText(), ddbTemplateGroup.getSelection().getId()));
+            fill(getTemplateAttribute());
+            designerView.getDesignerModel().createOrUpdateTemplateAttribute(getTemplateAttribute());
+            close();
+          }
         }, ClickEvent.getType());
 
     ddbTemplateGroup = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
@@ -226,10 +202,10 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
         new ChangeHandler() {
           @Override
           public void onChange(ChangeEvent event) {
-            loadAttributes(((Template)ddbDCT.getSelection().getUserObject()).getOtId(), ddbDCOA,
+            loadAttributes(((Template) ddbDCT.getSelection().getUserObject()).getOtId(), ddbDCOA,
                 getTemplateAttribute() != null ? getTemplateAttribute().getShared2() : 0);
           }
-    });
+        });
     lblDCOA = new Label(Main.constants.templateAttributeDCOA());
     ddbDCOA = new DropDownBox(this, null, CSSConstants.SUFFIX_DESIGNER);
 
@@ -299,7 +275,7 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
     getBodyRight().add(getItemWidget());
     reset();
   }
-  
+
   @Override
   public void onObjectAttributeCreated(ObjectAttribute objectAttribute) {
   }
@@ -316,10 +292,10 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
           getTemplateAttribute() != null ? getTemplateAttribute().getOaId() : 0);
       fillDCTemplates();
     }
-    
+
     // fill dynamic combo object attribute
     if (ddbDCT.getSelection() != null && ddbDCT.getSelection().getUserObject() != null
-        && otId == ((Template)ddbDCT.getSelection().getUserObject()).getOtId())
+        && otId == ((Template) ddbDCT.getSelection().getUserObject()).getOtId())
       fillObjectAttributes(ddbDCOA, objectAttributes,
           getTemplateAttribute() != null ? getTemplateAttribute().getShared2() : 0);
   }
@@ -335,6 +311,28 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
   @Override
   public void onTemplateGroupsLoaded(Collection<TemplateGroup> templateGroups) {
     fillTemplateGroups(templateGroups);
+  }
+
+  /**
+   * @return the templateAttribute
+   */
+  public TemplateAttribute getTemplateAttribute() {
+    return (TemplateAttribute) getItem();
+  }
+
+  // getters and setters
+
+  /**
+   * Getter for property 'objectTemplate'.
+   *
+   * @return Value for property 'objectTemplate'.
+   */
+  public ObjectTemplate getObjectTemplate() {
+    if (objectTemplate == null) {
+      objectTemplate = new ObjectTemplate(applicationModel);
+      objectTemplate.initialize(getTemplateAttribute().getTg().getT());
+    }
+    return objectTemplate;
   }
 
   @Override
@@ -421,28 +419,6 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
     return widgetTemplateAttribute;
   }
 
-  // getters and setters
-  
-  /**
-   * @return the templateAttribute
-   */
-  public TemplateAttribute getTemplateAttribute() {
-    return (TemplateAttribute)getItem();
-  }
-
-  /**
-   * Getter for property 'objectTemplate'.
-   * 
-   * @return Value for property 'objectTemplate'.
-   */
-  public ObjectTemplate getObjectTemplate() {
-    if (objectTemplate == null) {
-      objectTemplate = new ObjectTemplate(amodel);
-      objectTemplate.initialize(getTemplateAttribute().getTg().getT());
-    }
-    return objectTemplate;
-  }
-  
   /**
    * Fill {@link TemplateAttribute} with values from UI. Parent method must be called first.
    *
@@ -454,12 +430,12 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
     // template group
     int itg = ddbTemplateGroup.getSelection().getId();
     templateAttribute.setTgId(itg);
-    templateAttribute.setTg((TemplateGroup)ddbTemplateGroup.getSelection().getUserObject());
+    templateAttribute.setTg((TemplateGroup) ddbTemplateGroup.getSelection().getUserObject());
 
     // object attribute
     int ioa = ddbObjectAttribute.getSelection().getId();
     templateAttribute.setOaId(ioa);
-    templateAttribute.setOa((ObjectAttribute)ddbObjectAttribute.getSelection().getUserObject());
+    templateAttribute.setOa((ObjectAttribute) ddbObjectAttribute.getSelection().getUserObject());
 
     // default
     String def = tbDef.getText().trim();
@@ -559,38 +535,38 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
 
     // shared
     switch (templateAttribute.getStyle()) {
-    case TemplateAttribute.STYLE_DATEPICKER:
-      templateAttribute.setShared1(new Integer(ClientUtils.parseInt(tbStartYear.getText().trim())));
-      templateAttribute.setShared2(new Integer(ClientUtils.parseInt(tbEndYear.getText().trim())));
-      break;
-    case TemplateAttribute.STYLE_DYNAMICCOMBO:
-      templateAttribute.setShared1(ddbDCT.getSelection().getId());
-      templateAttribute.setShared2(ddbDCOA.getSelection().getId());
-      templateAttribute.setShared3(0);
-      templateAttribute.setShared4(0);
-      templateAttribute.setShared5(ddbTable.getSelection().getId());
-      break;
-    case TemplateAttribute.STYLE_TABLE:
-      templateAttribute.setShared1(ddbTType.getSelection().getId());
-      templateAttribute.setShared2(ddbTOrientation.getSelection().getId());
-      if (ddbTType.getSelection().getId() == TemplateAttribute.TABLETYPE_GRAPH
-          || ddbTType.getSelection().getId() == TemplateAttribute.TABLETYPE_TABLEGRAPH) {
-        templateAttribute.setShared3(ddbTGraphType.getSelection().getId());
-        templateAttribute.setShared4(ddbTGraphX.getSelection().getId());
-        templateAttribute.setShared5(ddbTGraphY.getSelection().getId());
-      } else {
+      case TemplateAttribute.STYLE_DATEPICKER:
+        templateAttribute.setShared1(new Integer(ClientUtils.parseInt(tbStartYear.getText().trim())));
+        templateAttribute.setShared2(new Integer(ClientUtils.parseInt(tbEndYear.getText().trim())));
+        break;
+      case TemplateAttribute.STYLE_DYNAMICCOMBO:
+        templateAttribute.setShared1(ddbDCT.getSelection().getId());
+        templateAttribute.setShared2(ddbDCOA.getSelection().getId());
         templateAttribute.setShared3(0);
         templateAttribute.setShared4(0);
-        templateAttribute.setShared5(0);
-      }
-      break;
-    default:
-      templateAttribute.setShared1(0);
-      templateAttribute.setShared2(0);
-      templateAttribute.setShared3(0);
-      templateAttribute.setShared4(0);
-      templateAttribute.setShared5(ddbTable.getSelection().getId());
-      break;
+        templateAttribute.setShared5(ddbTable.getSelection().getId());
+        break;
+      case TemplateAttribute.STYLE_TABLE:
+        templateAttribute.setShared1(ddbTType.getSelection().getId());
+        templateAttribute.setShared2(ddbTOrientation.getSelection().getId());
+        if (ddbTType.getSelection().getId() == TemplateAttribute.TABLETYPE_GRAPH
+            || ddbTType.getSelection().getId() == TemplateAttribute.TABLETYPE_TABLEGRAPH) {
+          templateAttribute.setShared3(ddbTGraphType.getSelection().getId());
+          templateAttribute.setShared4(ddbTGraphX.getSelection().getId());
+          templateAttribute.setShared5(ddbTGraphY.getSelection().getId());
+        } else {
+          templateAttribute.setShared3(0);
+          templateAttribute.setShared4(0);
+          templateAttribute.setShared5(0);
+        }
+        break;
+      default:
+        templateAttribute.setShared1(0);
+        templateAttribute.setShared2(0);
+        templateAttribute.setShared3(0);
+        templateAttribute.setShared4(0);
+        templateAttribute.setShared5(ddbTable.getSelection().getId());
+        break;
     }
   }
 
@@ -616,20 +592,20 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
     cbLabel.setValue(ClientUtils.getFlag(TemplateAttribute.FLAG_SHOW_LABEL, templateAttribute.getFlags()));
     cbValue.setValue(ClientUtils.getFlag(TemplateAttribute.FLAG_SHOW_VALUE, templateAttribute.getFlags()));
     cbUnit.setValue(ClientUtils.getFlag(TemplateAttribute.FLAG_SHOW_UNIT, templateAttribute.getFlags()));
-    ddbStyle.setSelection(styles.get(templateAttribute.getStyle()-1));
+    ddbStyle.setSelection(styles.get(templateAttribute.getStyle() - 1));
     ddbTType.setSelection(tableTypes.get(templateAttribute.getShared1()));
     ddbTOrientation.setSelection(tableOrientations.get(templateAttribute.getShared2()));
     ddbTGraphType.setSelection(graphTypes.get(templateAttribute.getShared3()));
 
-    tbLabelTop.setText(""+templateAttribute.getLabelTop());
-    tbTop.setText(""+templateAttribute.getTop());
-    tbUnitTop.setText(""+templateAttribute.getUnitTop());
-    tbLabelLeft.setText(""+templateAttribute.getLabelLeft());
-    tbLeft.setText(""+templateAttribute.getLeft());
-    tbUnitLeft.setText(""+templateAttribute.getUnitLeft());
-    tbLabelWidth.setText(""+templateAttribute.getLabelWidth());
-    tbWidth.setText(""+templateAttribute.getWidth());
-    tbUnitWidth.setText(""+templateAttribute.getUnitWidth());
+    tbLabelTop.setText("" + templateAttribute.getLabelTop());
+    tbTop.setText("" + templateAttribute.getTop());
+    tbUnitTop.setText("" + templateAttribute.getUnitTop());
+    tbLabelLeft.setText("" + templateAttribute.getLabelLeft());
+    tbLeft.setText("" + templateAttribute.getLeft());
+    tbUnitLeft.setText("" + templateAttribute.getUnitLeft());
+    tbLabelWidth.setText("" + templateAttribute.getLabelWidth());
+    tbWidth.setText("" + templateAttribute.getWidth());
+    tbUnitWidth.setText("" + templateAttribute.getUnitWidth());
     tbLabelWidthUnit.setText(templateAttribute.getLabelWidthUnit());
     tbWidthUnit.setText(templateAttribute.getWidthUnit());
     tbUnitWidthUnit.setText(templateAttribute.getUnitWidthUnit());
@@ -637,11 +613,11 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
     tbAlign.setText(templateAttribute.getAlign());
     tbUnitAlign.setText(templateAttribute.getUnitAlign());
 
-    tbTabIndex.setText(""+templateAttribute.getTabIndex());
-    tbStartYear.setText(""+templateAttribute.getShared1());
-    tbEndYear.setText(""+templateAttribute.getShared2());
+    tbTabIndex.setText("" + templateAttribute.getTabIndex());
+    tbStartYear.setText("" + templateAttribute.getShared1());
+    tbEndYear.setText("" + templateAttribute.getShared2());
     tbDef.setText(templateAttribute.getDef());
-    tbLength.setText(""+templateAttribute.getLength());
+    tbLength.setText("" + templateAttribute.getLength());
 
     Collection<TemplateGroup> tgs = getModel().getTemplateGroups().get(getModel().getTemplate().getId());
     if (tgs == null) {
@@ -691,15 +667,15 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
     ddbTGraphX.setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectAttribute()));
     ddbTGraphY.setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectAttribute()));
 
-    tbLabelTop.setText(""+""+DEFAULT_LABELTOP);
-    tbTop.setText(""+""+DEFAULT_TOP);
-    tbUnitTop.setText(""+""+DEFAULT_UNITTOP);
-    tbLabelLeft.setText(""+DEFAULT_LABELLEFT);
-    tbLeft.setText(""+DEFAULT_LEFT);
-    tbUnitLeft.setText(""+DEFAULT_UNITLEFT);
-    tbLabelWidth.setText(""+DEFAULT_LABELWIDTH);
-    tbWidth.setText(""+DEFAULT_WIDTH);
-    tbUnitWidth.setText(""+DEFAULT_UNITWIDTH);
+    tbLabelTop.setText("" + DEFAULT_LABEL_TOP);
+    tbTop.setText("" + DEFAULT_TOP);
+    tbUnitTop.setText("" + DEFAULT_UNIT_TOP);
+    tbLabelLeft.setText("" + DEFAULT_LABEL_LEFT);
+    tbLeft.setText("" + DEFAULT_LEFT);
+    tbUnitLeft.setText("" + DEFAULT_UNIT_LEFT);
+    tbLabelWidth.setText("" + DEFAULT_LABEL_WIDTH);
+    tbWidth.setText("" + DEFAULT_WIDTH);
+    tbUnitWidth.setText("" + DEFAULT_UNIT_WIDTH);
     tbLabelWidthUnit.setText("");
     tbWidthUnit.setText("");
     tbUnitWidthUnit.setText("");
@@ -707,45 +683,45 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
     tbAlign.setText("");
     tbUnitAlign.setText("");
 
-    tbTabIndex.setText(""+DEFAULT_TABINDEX);
+    tbTabIndex.setText("" + DEFAULT_TAB_INDEX);
     DateHelper date = new DateHelper(new Date());
-    tbStartYear.setText(""+DEFAULT_STARTYEAR);
-    tbEndYear.setText(""+date.getYear());
+    tbStartYear.setText("" + DEFAULT_START_YEAR);
+    tbEndYear.setText("" + date.getYear());
     tbDef.setText("");
-    tbLength.setText(""+DEFAULT_LENGTH);
+    tbLength.setText("" + DEFAULT_LENGTH);
 
     ddbDCOA.setSelection(new DropDownObjectImpl(0, Main.constants.chooseObjectAttribute()));
   }
 
   // private methods
 
-  private void fillTemplateGroups (Collection<TemplateGroup> templateGroups) {
-    ArrayList<DropDownObject> items = new ArrayList<DropDownObject>(); 
+  private void fillTemplateGroups(Collection<TemplateGroup> templateGroups) {
+    ArrayList<DropDownObject> items = new ArrayList<DropDownObject>();
     for (TemplateGroup tg : templateGroups) {
       items.add(new DropDownObjectImpl(tg.getId(), tg.getName(), tg));
     }
     ddbTemplateGroup.setItems(items);
   }
-  
-  private void fillObjectAttributes (DropDownBox ddb,  Collection<ObjectAttribute> objectAttributes, int selection) {
-    ArrayList<DropDownObject> items = new ArrayList<DropDownObject>(); 
+
+  private void fillObjectAttributes(DropDownBox ddb, Collection<ObjectAttribute> objectAttributes, int selection) {
+    ArrayList<DropDownObject> items = new ArrayList<DropDownObject>();
     for (ObjectAttribute oa : objectAttributes) {
       items.add(new DropDownObjectImpl(oa.getId(), oa.getName(), oa));
       if (selection == oa.getId())
-        ddb.setSelection(items.get(items.size()-1));
+        ddb.setSelection(items.get(items.size() - 1));
     }
     ddb.setItems(items);
   }
-  
+
   private void fillDCTemplates() {
-    ObjectAttribute oa = (ObjectAttribute)ddbObjectAttribute.getSelection().getUserObject();
+    ObjectAttribute oa = (ObjectAttribute) ddbObjectAttribute.getSelection().getUserObject();
     if (oa != null && oa.getVt().getType() == ValueType.VT_REF) {
       ddbStyle.setSelection(
           new DropDownObjectImpl(TemplateAttribute.STYLE_DYNAMICCOMBO, Main.constants.templateAttributeStyle4()));
 
-      ArrayList<DropDownObject> items = new ArrayList<DropDownObject>(); 
+      ArrayList<DropDownObject> items = new ArrayList<DropDownObject>();
       Collection<ApplicationTemplate> appts = getModel().getAppTemplateByApp(getModel().getApplication().getId());
-      assert(appts != null);
+      assert (appts != null);
       for (ApplicationTemplate appt : appts) {
         if (appt.getT().getOtId() == oa.getShared1()) {
           items.add(new DropDownObjectImpl(appt.getTId(), appt.getT().getName(), appt.getT()));
@@ -754,19 +730,19 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
         }
       }
       ddbDCT.setItems(items);
-      
-      loadAttributes(((Template)ddbDCT.getSelection().getUserObject()).getOtId(), ddbDCOA,
+
+      loadAttributes(((Template) ddbDCT.getSelection().getUserObject()).getOtId(), ddbDCOA,
           getTemplateAttribute() != null ? getTemplateAttribute().getShared2() : 0);
 
       setVisibility();
     }
   }
-  
+
   private void loadAttributes(int otId, DropDownBox ddb, int selection) {
     Collection<ObjectAttribute> oas = getModel().getObjectAttributes().get(otId);
     if (oas == null) {
       ObjectAttributeLoader oal = new ObjectAttributeLoader(getModel(), otId);
-      oal.start();    
+      oal.start();
     } else {
       fillObjectAttributes(ddb, oas, selection);
     }
@@ -792,11 +768,11 @@ public class TemplateAttributeDialog extends DesignerDialog implements DesignerM
       widgetTemplateAttribute.setWidget(11, 1, ddbDCOA);
       widgetTemplateAttribute.getFlexCellFormatter().addStyleName(11, 1, ClientUtils.CSS_ALIGN_RIGHT);
     } else if (tableVisible) {
-//                widgetTemplateAttribute.setWidget(9, 0, getLblTType());
-//                widgetTemplateAttribute.setWidget(9, 1, getLbTType());
+//                widgetTemplateAttribute.setWidget(9, 0, lblTType);
+//                widgetTemplateAttribute.setWidget(9, 1, ddbTType);
 //
-//                widgetTemplateAttribute.setWidget(10, 0, getLblTOrientation());
-//                widgetTemplateAttribute.setWidget(10, 1, getLbTOrientation());
+//                widgetTemplateAttribute.setWidget(10, 0, lblTOrientation);
+//                widgetTemplateAttribute.setWidget(10, 1, ddbTOrientation);
 //
 //                NativeEvent nevent = Document.get().createChangeEvent();
 //                DomEvent.fireNativeEvent(nevent, getLbTType());

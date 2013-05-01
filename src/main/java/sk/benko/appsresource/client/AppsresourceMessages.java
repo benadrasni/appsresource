@@ -21,7 +21,7 @@ public interface AppsresourceMessages extends Messages {
   @DefaultMessage("Drag templates here")
   String dragTemplates();
 
-  @DefaultMessage("Drag attributes here")
+  @DefaultMessage("Drag filterAttributes here")
   String dragAttributes();
   
   @DefaultMessage("{0} objects was imported")

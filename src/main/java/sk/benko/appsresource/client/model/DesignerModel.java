@@ -139,7 +139,7 @@ public class DesignerModel extends Model {
      * @param otId
      *          object type id
      * @param objectAttributes
-     *          the list of object attributes
+     *          the list of object filterAttributes
      */
     void onObjectAttributesLoaded(int otId, 
         Collection<ObjectAttribute> objectAttributes);
@@ -715,7 +715,7 @@ public class DesignerModel extends Model {
    */
   private final List<ObjectTypeObserver> objectTypeObservers = new ArrayList<ObjectTypeObserver>();
 
-  /** Cache for object attributes indexed by object type id */
+  /** Cache for object filterAttributes indexed by object type id */
   private Map<Integer, List<ObjectAttribute>> objectAttributes;
 
   /**
@@ -1127,7 +1127,7 @@ public class DesignerModel extends Model {
   }
 
   /**
-   * Gets object attributes.
+   * Gets object filterAttributes.
    *
    * @return
    */
@@ -1138,7 +1138,7 @@ public class DesignerModel extends Model {
   }
 
   /**
-   * Gets object attributes.
+   * Gets object filterAttributes.
    *
    * @return
    */

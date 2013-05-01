@@ -57,7 +57,7 @@ public class ObjectTemplate extends TabPanel implements
     List<TemplateAttribute> templateAttributes = getModel().getAttrsByTemplate().get(getTemplate().getId());
 
     if (templateAttributes == null) {
-      // load all attributes at once
+      // load all filterAttributes at once
       TemplateAttributeLoader tgl = new TemplateAttributeLoader(getModel(),
           getTemplate(), null);
       tgl.start();
@@ -237,7 +237,7 @@ public class ObjectTemplate extends TabPanel implements
   }
 
   private void addTabs(List<TemplateAttribute> templateAttributes, TemplateRelation tr) {
-    // template attributes are ordered by template group's rank and subrank
+    // template filterAttributes are ordered by template group's rank and subrank
     ObjectGroupTab otv = null;
     int prevTgId = 0;
     for (TemplateAttribute ta : templateAttributes) {
@@ -275,7 +275,7 @@ public class ObjectTemplate extends TabPanel implements
         List<TemplateAttribute> templateAttributes = getModel().getAttrsByTemplate().get(tr.getT2Id());
 
         if (templateAttributes == null) {
-          // load all attributes for related template at once
+          // load all filterAttributes for related template at once
           TemplateAttributeLoader tal = new TemplateAttributeLoader(getModel(),
               tr.getT2(), tr);
           tal.start();

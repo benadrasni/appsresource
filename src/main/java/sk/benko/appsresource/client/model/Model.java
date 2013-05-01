@@ -114,7 +114,7 @@ public abstract class Model {
      * @param t
      *          the template
      * @param tas
-     *          the list of template attributes
+     *          the list of template filterAttributes
      * @param tr
      *          the template relation
      */
@@ -354,7 +354,7 @@ public abstract class Model {
   private HashMap<Integer, List<TemplateListItem>> listItems = new HashMap<Integer, List<TemplateListItem>>();
 
   /**
-   * Cache for loaded attributes indexed by template id.
+   * Cache for loaded filterAttributes indexed by template id.
    */
   private HashMap<Integer, List<TemplateAttribute>> t_attrs;
   

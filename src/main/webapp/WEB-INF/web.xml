@@ -21,24 +21,63 @@
     </context-param>
 
     <servlet>
+        <servlet-name>jersey-rest</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>sk.benko.appsresource.server.rest</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>jersey-rest</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>service</servlet-name>
         <servlet-class>sk.benko.appsresource.server.ServiceImpl</servlet-class>
     </servlet>
+
+    <servlet-mapping>
+        <servlet-name>service</servlet-name>
+        <url-pattern>/appsresource/service</url-pattern>
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>userservice</servlet-name>
         <servlet-class>sk.benko.appsresource.server.AppUserServiceImpl</servlet-class>
     </servlet>
 
+    <servlet-mapping>
+        <servlet-name>userservice</servlet-name>
+        <url-pattern>/appsresource/userservice</url-pattern>
+    </servlet-mapping>
+
     <servlet>
         <servlet-name>dbservice</servlet-name>
         <servlet-class>sk.benko.appsresource.server.DbServiceImpl</servlet-class>
     </servlet>
 
+    <servlet-mapping>
+        <servlet-name>dbservice</servlet-name>
+        <url-pattern>/appsresource/dbservice</url-pattern>
+    </servlet-mapping>
+
     <servlet>
         <servlet-name>appservice</servlet-name>
         <servlet-class>sk.benko.appsresource.server.ApplicationServiceImpl</servlet-class>
     </servlet>
+
+    <servlet-mapping>
+        <servlet-name>appservice</servlet-name>
+        <url-pattern>/appsresource/appservice</url-pattern>
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>uploadServlet</servlet-name>
@@ -47,34 +86,10 @@
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>userservice</servlet-name>
-        <url-pattern>/appsresource/userservice</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>dbservice</servlet-name>
-        <url-pattern>/appsresource/dbservice</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>appservice</servlet-name>
-        <url-pattern>/appsresource/appservice</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>uploadServlet</servlet-name>
         <url-pattern>*.gupld</url-pattern>
     </servlet-mapping>
 
-    <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>all</web-resource-name>
-            <url-pattern>/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>*</role-name>
-        </auth-constraint>
-    </security-constraint>
     <servlet>
         <servlet-name>SystemServiceServlet</servlet-name>
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
@@ -88,9 +103,16 @@
         <servlet-name>SystemServiceServlet</servlet-name>
         <url-pattern>/_ah/spi/*</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>service</servlet-name>
-        <url-pattern>/appsresource/service</url-pattern>
-    </servlet-mapping>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>all</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>*</role-name>
+        </auth-constraint>
+    </security-constraint>
+
 
 </web-app>

@@ -202,9 +202,9 @@ public class CacheApplication {
   }
   
   /**
-   * Attempts to fetch the collection of template attributes.
+   * Attempts to fetch the collection of template filterAttributes.
    *
-   * @return a collection of template attributes if there is a cache entry, 
+   * @return a collection of template filterAttributes if there is a cache entry,
    *        <code>null</code> otherwise
    */
   @SuppressWarnings("unchecked")
@@ -219,10 +219,10 @@ public class CacheApplication {
 
   
   /**
-   * Adds template attributes to the cache.
+   * Adds template filterAttributes to the cache.
    *
    * @param templateAttributes
-   *          template attributes
+   *          template filterAttributes
    * @return <code>templateGroups</code>, for call chaining
    */
   public ArrayList<TemplateAttribute> putTemplateAttributes(Template t,
@@ -232,7 +232,7 @@ public class CacheApplication {
   }
   
   /**
-   * Deletes the collection of template attributes that are cached. This is used
+   * Deletes the collection of template filterAttributes that are cached. This is used
    * to invalidate cache entries.
    *
    */

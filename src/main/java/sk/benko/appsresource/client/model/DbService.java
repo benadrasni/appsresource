@@ -26,7 +26,7 @@ public interface DbService extends Service {
   List<ObjectType> getObjectTypes() throws AccessDeniedException;
 
   /**
-   * Get all object attributes for given object type.
+   * Get all object filterAttributes for given object type.
    *
    * @param otId an id of object type
    * @return

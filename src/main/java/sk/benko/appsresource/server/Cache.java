@@ -113,9 +113,9 @@ public class Cache {
   }
 
   /**
-   * Attempts to fetch the collection of object attributes.
+   * Attempts to fetch the collection of object filterAttributes.
    *
-   * @return a collection of object attributes if there is a cache entry, 
+   * @return a collection of object filterAttributes if there is a cache entry,
    *        <code>null</code> otherwise
    */
   @SuppressWarnings("unchecked")
@@ -133,7 +133,7 @@ public class Cache {
    * Adds object types to the cache.
    *
    * @param otId
-   * @param objectAttributes    the list of object's attributes to cache
+   * @param objectAttributes    the list of object's filterAttributes to cache
    * @return <code>objectAttributes</code>, for call chaining
    */
   public ArrayList<ObjectAttribute> putObjectAttributes(int otId, 
@@ -381,9 +381,9 @@ public class Cache {
   }
   
   /**
-   * Attempts to fetch the collection of template attributes.
+   * Attempts to fetch the collection of template filterAttributes.
    *
-   * @return a collection of template attributes if there is a cache entry, 
+   * @return a collection of template filterAttributes if there is a cache entry,
    *        <code>null</code> otherwise
    */
   @SuppressWarnings("unchecked")
@@ -398,10 +398,10 @@ public class Cache {
 
   
   /**
-   * Adds template attributes to the cache.
+   * Adds template filterAttributes to the cache.
    *
    * @param templateAttributes
-   *          template attributes
+   *          template filterAttributes
    * @return <code>templateGroups</code>, for call chaining
    */
   public ArrayList<TemplateAttribute> putTemplateAttributes(
@@ -411,7 +411,7 @@ public class Cache {
   }
   
   /**
-   * Deletes the collection of template attributes that are cached. This is used
+   * Deletes the collection of template filterAttributes that are cached. This is used
    * to invalidate cache entries.
    *
    */

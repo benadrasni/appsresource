@@ -107,7 +107,7 @@ CREATE TABLE `appsresource`.`units` (
 );
 
 /*
-Table structure for object attributes
+Table structure for object filterAttributes
 */
 
 CREATE TABLE `appsresource`.`object_attributes` (
@@ -228,7 +228,7 @@ CREATE TABLE `appsresource`.`template_groups` (
 );
 
 /*
-Table structure for template attributes
+Table structure for template filterAttributes
 */
 
 CREATE TABLE `appsresource`.`template_attributes` (

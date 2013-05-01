@@ -12,7 +12,7 @@ import sk.benko.appsresource.client.model.ObjectAttribute;
 import com.google.gwt.user.client.ui.Label;
 
 /**
- * A widget to display table of object attributes.
+ * A widget to display table of object filterAttributes.
  *
  */
 public class ObjectAttributeTableView extends TableView implements 

@@ -433,7 +433,7 @@ public class TemplateDialog extends DesignerDialog implements ApplicationModel.T
    */
   public ObjectTemplate getObjectTemplate() {
     if (objectTemplate == null) {
-      //objectTemplate = new ObjectTemplate(amodel);
+      //objectTemplate = new ObjectTemplate(applicationModel);
       //objectTemplate.initialize(getModel().getTemplate());
       //objectTemplate.setVisible(false);
       //objectTemplate.setWidth("100%");
@@ -579,7 +579,7 @@ public class TemplateDialog extends DesignerDialog implements ApplicationModel.T
           getModel().getAttrsByTemplate().get(getModel().getTemplate().getId());
 
       if (templateAttributes == null) {
-        // load all attributes at once
+        // load all filterAttributes at once
         TemplateAttributeLoader tal = new TemplateAttributeLoader(getModel(),
             getModel().getTemplate());
         tal.start();

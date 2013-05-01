@@ -187,7 +187,7 @@ public class ImportObjectsDialog extends PopupPanel implements ApplicationModel.
       }
     });
 
-    // load template attributes for actual template
+    // load template filterAttributes for actual template
     tas.clear();
     for (TemplateAttribute ta : getModel().getAttrsByTemplate()
         .get(getModel().getAppt().getTId())) {

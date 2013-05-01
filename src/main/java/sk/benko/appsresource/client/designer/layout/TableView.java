@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import sk.benko.appsresource.client.model.DesignerModel;
 
 /**
- * A widget to display .
+ * Parent of all tables which displays design items.
  *
  */
 public abstract class TableView extends FlowPanel {
@@ -22,9 +22,15 @@ public abstract class TableView extends FlowPanel {
     setStyleName("content-table");
     filter();
   }
-  
+
+  /**
+   * Initialize column header.
+   */
   public abstract void initializeHeader();
 
+  /**
+   * Empty filter
+   */
   public void filter() {}
   
   // getters and setters

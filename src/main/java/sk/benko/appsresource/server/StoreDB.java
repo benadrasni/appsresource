@@ -130,10 +130,10 @@ public class StoreDB {
     }
 
     /**
-     * Gets all object attributes from the database.
+     * Gets all object filterAttributes from the database.
      *
      * @param otId  object type's id
-     * @return      list of all object type's attributes
+     * @return      list of all object type's filterAttributes
      */
     public ArrayList<ObjectAttribute> getObjectAttributes(int otId)
         throws SQLException {
@@ -306,19 +306,19 @@ public class StoreDB {
     }
 
     /**
-     * Gets all template attributes from the database.
+     * Gets all template filterAttributes from the database.
      *
-     * @return      list of all template's attributes for all templates
+     * @return      list of all template's filterAttributes for all templates
      */
     public ArrayList<TemplateAttribute> getTemplateAttributes() throws SQLException {
       return TemplateAttribute.loadTemplateAttributes(connection);
     }
 
     /**
-     * Gets all template attributes belongs to template group from the database.
+     * Gets all template filterAttributes belongs to template group from the database.
      *
      * @param tId     template's id
-     * @return        list of attributes belongs to the template
+     * @return        list of filterAttributes belongs to the template
      */
     public ArrayList<TemplateAttribute> getTemplateAttributes(int tId) throws SQLException {
       return TemplateAttribute.loadTemplateAttributes(connection, tId);
