@@ -108,16 +108,7 @@
         <web-resource-collection>
             <web-resource-name>all</web-resource-name>
             <url-pattern>/appsresource/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>*</role-name>
-        </auth-constraint>
-    </security-constraint>
-
-    <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>all</web-resource-name>
-            <url-pattern>/Appsresource.html</url-pattern>
+            <url-pattern>/appsresource.html</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>*</role-name>
