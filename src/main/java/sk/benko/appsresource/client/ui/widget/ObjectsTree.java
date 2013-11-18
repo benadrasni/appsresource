@@ -98,7 +98,7 @@ public class ObjectsTree extends SimplePanel implements
             getObjectTemplate().getTemplate().getId(),
             getValues().get(getModel().getObject().getId()),
             getTemplateId(), ti, key,
-            getActualTreeItems().get(0).getTa());
+            getActualTreeItems().get(0));
         tll.start();
       }
     } else {
@@ -269,19 +269,19 @@ public class ObjectsTree extends SimplePanel implements
     TreeItemData tid = (TreeItemData) item.getUserObject();
 
     if (!tid.isLoaded()) {
-      TemplateAttribute ta = getActualTreeItems().get(tid.getPath().size()).getTa();
+      TemplateTreeItem tti = getActualTreeItems().get(tid.getPath().size());
       String key = getActualTreeItems().get(0).getTtId()
           + TreeItemData.KEY_SEPARATOR + tid.getKey();
       if (tid.getPath().size() < getActualTreeItems().size() - 1) {
         List<TreeLevel> treeLevels = getModel().getTreeLevels().get(key);
         if (treeLevels != null)
-          onChooseTreeLevelLoaded(item, ta, treeLevels);
+          onChooseTreeLevelLoaded(item, tti.getTa(), treeLevels);
         else {
           ChooseTreeLevelLoader tll = new ChooseTreeLevelLoader(getModel(),
               Main.language,
               getObjectTemplate().getTemplate().getId(),
               getValues().get(getModel().getObject().getId()),
-              getTemplateId(), item, key, ta);
+              getTemplateId(), item, key, tti);
           tll.start();
         }
       } else {
@@ -290,7 +290,7 @@ public class ObjectsTree extends SimplePanel implements
           onChooseObjectsLoaded(item, treeObjects);
         else {
           ObjectLoader ol = new ObjectLoader(getModel(),
-              Main.language, getTemplateId(), item, key, ta, true);
+              Main.language, getTemplateId(), item, key, tti.getTa(), true);
           ol.start();
         }
       }

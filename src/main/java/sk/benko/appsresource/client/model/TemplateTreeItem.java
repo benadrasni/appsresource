@@ -1,8 +1,8 @@
 package sk.benko.appsresource.client.model;
 
-import java.io.Serializable;
-
 import com.google.gwt.core.client.GWT;
+
+import java.io.Serializable;
 
 /**
  * A client side data object representing a template tree item.
@@ -38,6 +38,11 @@ public class TemplateTreeItem implements Serializable {
   private int rank;
 
   /**
+   * The id of template tree item which the TemplateTreeItem is subset of
+   */
+  private int subsetOf;
+
+  /**
    * An observer to receive callbacks whenever this {@link TemplateTreeItem} is updated.
    */
   private transient Observer observer;
@@ -63,7 +68,7 @@ public class TemplateTreeItem implements Serializable {
    * @param rank
    */
   public TemplateTreeItem(int id, int ttId, TemplateTree tt, int taId, 
-      TemplateAttribute ta, int rank) {
+      TemplateAttribute ta, int rank, int subsetOf) {
     assert !GWT.isClient();
     this.id = id;
     this.ttId = ttId;
@@ -71,6 +76,7 @@ public class TemplateTreeItem implements Serializable {
     this.taId = taId;
     this.ta = ta;
     this.rank = rank;
+    this.subsetOf = subsetOf;
   }
 
   /**
@@ -123,6 +129,14 @@ public class TemplateTreeItem implements Serializable {
 
   public void setRank(int rank) {
     this.rank = rank;
+  }
+
+  public int getSubsetOf() {
+    return subsetOf;
+  }
+
+  public void setSubsetOf(int subsetOf) {
+    this.subsetOf = subsetOf;
   }
 
   /**

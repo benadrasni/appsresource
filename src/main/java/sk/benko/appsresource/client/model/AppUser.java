@@ -1,8 +1,8 @@
 package sk.benko.appsresource.client.model;
 
-import java.io.Serializable;
-
 import sk.benko.appsresource.client.ClientUtils;
+
+import java.io.Serializable;
 
 /**
  * A client-side data object representing an author.

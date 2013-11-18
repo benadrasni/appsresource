@@ -19,8 +19,8 @@ import java.util.List;
 @JsonIgnoreProperties
 public class CountRequest {
 
-  public Integer objectTypeId;
-  public List<FilterAttribute> filterAttributes;
+  private Integer objectTypeId;
+  private List<FilterAttribute> filterAttributes;
 
   public CountRequest() {}
 

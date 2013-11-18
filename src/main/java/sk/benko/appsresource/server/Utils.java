@@ -198,4 +198,8 @@ public class Utils {
     return clients;
   }
 
+  public static StoreDB.TemplateTreeItem toServerTemplateTreeItem(TemplateTreeItem tti) {
+    return new StoreDB.TemplateTreeItem(tti.getId(), tti.getTtId(), tti.getTaId(), tti.getRank(), tti.getSubsetOf());
+  }
+
 }

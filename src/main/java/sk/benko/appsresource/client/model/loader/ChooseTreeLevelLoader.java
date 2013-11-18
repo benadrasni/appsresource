@@ -20,7 +20,7 @@ public class ChooseTreeLevelLoader extends RetryTimer implements AsyncCallback<L
   private final int tId;
   private final TreeItem ti;
   private final String key;
-  private final TemplateAttribute ta;
+  private final TemplateTreeItem tti;
   private Map<Integer, List<AValue>> values;
 
   /**
@@ -32,10 +32,10 @@ public class ChooseTreeLevelLoader extends RetryTimer implements AsyncCallback<L
    * @param values    values
    * @param tId       template's id
    * @param key       key
-   * @param ta        - template attribute
+   * @param tti       template tree item
    */
   public ChooseTreeLevelLoader(ApplicationModel model, int langId, int tIdSource, Map<Integer, List<AValue>> values,
-                               int tId, TreeItem ti, String key, TemplateAttribute ta) {
+                               int tId, TreeItem ti, String key, TemplateTreeItem tti) {
     this.model = model;
     this.langId = langId;
     this.tIdSource = tIdSource;
@@ -43,13 +43,13 @@ public class ChooseTreeLevelLoader extends RetryTimer implements AsyncCallback<L
     this.tId = tId;
     this.key = key;
     this.ti = ti;
-    this.ta = ta;
+    this.tti = tti;
   }
 
   public void start() {
     Main.status.showTaskStatus(Main.constants.loading());
-    model.getService().getTreeLevel(langId, tIdSource, values, tId,
-        ((TreeItemData) ti.getUserObject()).getPath(), ta, this);
+    model.getService().getTreeLevel(langId, tIdSource, values, tId, ((TreeItemData) ti.getUserObject()).getPath(),
+        tti, this);
   }
 
   @Override
@@ -63,7 +63,7 @@ public class ChooseTreeLevelLoader extends RetryTimer implements AsyncCallback<L
   public void onSuccess(List<TreeLevel> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
-    model.notifyChooseTreeLevelLoaded(ti, key, ta, result);
+    model.notifyChooseTreeLevelLoaded(ti, key, tti.getTa(), result);
   }
 
   @Override

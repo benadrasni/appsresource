@@ -20,7 +20,7 @@ public class TreeLevelLoader extends RetryTimer implements AsyncCallback<List<Tr
   private final int tId;
   private final TreeItem ti;
   private final String key;
-  private final TemplateAttribute ta;
+  private final TemplateTreeItem tti;
 
   /**
    * Creates a new loader that is bound to the given model.
@@ -30,22 +30,20 @@ public class TreeLevelLoader extends RetryTimer implements AsyncCallback<List<Tr
    * @param tId       template's id
    * @param ti        actual tree item
    * @param key       the key
-   * @param ta        template attribute
+   * @param ta        template tree item
    */
-  public TreeLevelLoader(ApplicationModel model, int langId, int tId, 
-      TreeItem ti, String key, TemplateAttribute ta) {
+  public TreeLevelLoader(ApplicationModel model, int langId, int tId, TreeItem ti, String key, TemplateTreeItem tti) {
     this.model = model;
     this.langId = langId;
     this.tId = tId;
     this.ti = ti;
     this.key = key;
-    this.ta = ta;
+    this.tti = tti;
   }
 
   public void start() {
     Main.status.showTaskStatus(Main.constants.loading());
-    model.getService().getTreeLevel(langId, tId, 
-        ((TreeItemData)ti.getUserObject()).getPath(), ta, this);
+    model.getService().getTreeLevel(langId, tId, ((TreeItemData)ti.getUserObject()).getPath(), tti, this);
   }
 
   @Override
@@ -59,7 +57,7 @@ public class TreeLevelLoader extends RetryTimer implements AsyncCallback<List<Tr
   public void onSuccess(List<TreeLevel> result) {
     model.onServerSucceeded();
     model.getStatusObserver().onTaskFinished();
-    model.notifyTreeLevelLoaded(ti, key, ta, result);
+    model.notifyTreeLevelLoaded(ti, key, tti.getTa(), result);
   }
 
   @Override

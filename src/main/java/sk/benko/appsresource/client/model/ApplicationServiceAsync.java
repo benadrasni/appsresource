@@ -16,15 +16,15 @@ public interface ApplicationServiceAsync extends ServiceAsync {
    * @param langId
    * @param tId
    * @param path
-   * @param ta
+   * @param tti
    * @param callback
-   * @see ApplicationService#getTreeLevel(int, int, java.util.List, TemplateAttribute)
+   * @see ApplicationService#getTreeLevel(int, int, java.util.List, TemplateTreeItem)
    */
-  void getTreeLevel(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta,
+  void getTreeLevel(int langId, int tId, List<TreeLevel> path, TemplateTreeItem tti,
                     AsyncCallback<List<TreeLevel>> callback);
 
   void getTreeLevel(int langId, int tIdSource, Map<Integer, List<AValue>> values, int tId,
-                    List<TreeLevel> path, TemplateAttribute ta, AsyncCallback<List<TreeLevel>> callback);
+                    List<TreeLevel> path, TemplateTreeItem tti, AsyncCallback<List<TreeLevel>> callback);
 
   /**
    * @param langId

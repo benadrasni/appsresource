@@ -1,8 +1,8 @@
 package sk.benko.appsresource.client.model;
 
-import java.io.Serializable;
-
 import com.google.gwt.core.client.GWT;
+
+import java.io.Serializable;
 
 /**
  * A client side data object representing a template tree item.

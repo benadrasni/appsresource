@@ -392,8 +392,8 @@ public class DbServiceImpl extends ServiceImpl implements DbService {
         ArrayList<TemplateTreeItem> ttis = trees.get(tt);
         for (int i = 0; i < ttis.size(); i++) {
           TemplateTreeItem tti = ttis.get(i);
-          StoreDB.TemplateTreeItem stti = new StoreDB.TemplateTreeItem(
-              stt.getId(), tti.getTaId(), i);
+          StoreDB.TemplateTreeItem stti = new StoreDB.TemplateTreeItem(tti.getId(),
+              stt.getId(), tti.getTaId(), i, tti.getSubsetOf());
           api.saveTemplateTreeItem(stti);
         }
       }

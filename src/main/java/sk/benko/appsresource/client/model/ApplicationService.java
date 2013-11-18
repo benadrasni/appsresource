@@ -33,11 +33,11 @@ public interface ApplicationService extends Service {
    * @return
    * @throws AccessDeniedException
    */
-  List<TreeLevel> getTreeLevel(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta)
+  List<TreeLevel> getTreeLevel(int langId, int tId, List<TreeLevel> path, TemplateTreeItem tti)
       throws AccessDeniedException;
 
   List<TreeLevel> getTreeLevel(int langId, int tIdSource, Map<Integer, List<AValue>> values,
-      int tId, List<TreeLevel> path, TemplateAttribute ta)  throws AccessDeniedException;
+      int tId, List<TreeLevel> path, TemplateTreeItem tti)  throws AccessDeniedException;
   
   /**
    * Get all objects for given template and leaf attribute.

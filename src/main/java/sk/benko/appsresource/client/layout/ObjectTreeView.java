@@ -249,16 +249,16 @@ public class ObjectTreeView extends FlowPanel implements
     TreeItemData tid = (TreeItemData) item.getUserObject();
 
     if (!tid.isLoaded()) {
-      TemplateAttribute ta = getActualTreeItems().get(tid.getPath().size()).getTa();
+      TemplateTreeItem tti = getActualTreeItems().get(tid.getPath().size());
       String key = getActualTreeItems().get(0).getTtId()
           + TreeItemData.KEY_SEPARATOR + tid.getKey();
       if (tid.getPath().size() < getActualTreeItems().size() - 1) {
         List<TreeLevel> treeLevels = getModel().getTreeLevels().get(key);
         if (!isTreeReloading && treeLevels != null)
-          onTreeLevelLoaded(item, ta, treeLevels);
+          onTreeLevelLoaded(item, tti.getTa(), treeLevels);
         else {
           TreeLevelLoader tll = new TreeLevelLoader(getModel(),
-              Main.language, getAppt().getTId(), item, key, ta);
+              Main.language, getAppt().getTId(), item, key, tti);
           tll.start();
         }
       } else {
@@ -267,7 +267,7 @@ public class ObjectTreeView extends FlowPanel implements
           onObjectsLoaded(item, treeObjects);
         else {
           ObjectLoader ol = new ObjectLoader(getModel(),
-              Main.language, getAppt().getTId(), item, key, ta);
+              Main.language, getAppt().getTId(), item, key, tti.getTa());
           ol.start();
         }
         isTreeReloading = false;
@@ -411,7 +411,7 @@ public class ObjectTreeView extends FlowPanel implements
       else {
         TreeLevelLoader tll = new TreeLevelLoader(getModel(),
             Main.language, getAppt().getTId(), ti, key,
-            getActualTreeItems().get(0).getTa());
+            getActualTreeItems().get(0));
         tll.start();
       }
     } else {

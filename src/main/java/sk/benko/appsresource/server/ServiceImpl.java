@@ -53,10 +53,10 @@ public class ServiceImpl extends RemoteServiceServlet implements Service {
   private static ArrayList<TemplateTreeItem> toClientTemplateTreeItems(
       ArrayList<StoreDB.TemplateTreeItem> templateTreeItems) {
     final ArrayList<TemplateTreeItem> clients = new ArrayList<TemplateTreeItem>();
-    for (StoreDB.TemplateTreeItem tt : templateTreeItems) {
-      clients.add(new TemplateTreeItem(tt.getId(), tt.getTtId(),
-          Utils.toClientTemplateTree(tt.getTt()), tt.getTaId(),
-          Utils.toClientTemplateAttribute(tt.getTa()), tt.getRank()));
+    for (StoreDB.TemplateTreeItem tti : templateTreeItems) {
+      clients.add(new TemplateTreeItem(tti.getId(), tti.getTtId(),
+          Utils.toClientTemplateTree(tti.getTt()), tti.getTaId(),
+          Utils.toClientTemplateAttribute(tti.getTa()), tti.getRank(), tti.getSubsetOf()));
     }
     return clients;
   }

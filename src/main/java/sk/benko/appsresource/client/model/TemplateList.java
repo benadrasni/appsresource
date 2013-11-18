@@ -3,7 +3,6 @@ package sk.benko.appsresource.client.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import sk.benko.appsresource.client.ClientUtils;
 
 import com.google.gwt.core.client.GWT;

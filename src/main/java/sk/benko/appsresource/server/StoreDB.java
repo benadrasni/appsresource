@@ -553,23 +553,23 @@ public class StoreDB {
      * @return
      */
     public List<TreeLevel> getTreeLevelString(int langId, List<AValue> filter, int tId, List<TreeLevel> path,
-        TemplateAttribute ta) throws SQLException {
-      return TreeLevel.loadTreeLevelString(connection, langId, filter, tId, path, ta);
+        TemplateTreeItem tti, TemplateAttribute ta) throws SQLException {
+      return TreeLevel.loadTreeLevelString(connection, langId, filter, tId, path, tti, ta);
     }
 
-    public List<TreeLevel> getTreeLevelDate(List<AValue> filter, int tId, List<TreeLevel> path, TemplateAttribute ta)
-        throws SQLException {
-      return TreeLevel.loadTreeLevelDate(connection, filter, tId, path, ta);
+    public List<TreeLevel> getTreeLevelDate(List<AValue> filter, int tId, List<TreeLevel> path,
+        TemplateTreeItem tti, TemplateAttribute ta) throws SQLException {
+      return TreeLevel.loadTreeLevelDate(connection, filter, tId, path, tti, ta);
     }
 
-    public List<TreeLevel> getTreeLevelNumber(List<AValue> filter, int tId, List<TreeLevel> path, TemplateAttribute ta)
-        throws SQLException {
-      return TreeLevel.loadTreeLevelNumber(connection, filter, tId, path, ta);
+    public List<TreeLevel> getTreeLevelNumber(List<AValue> filter, int tId, List<TreeLevel> path,
+        TemplateTreeItem tti, TemplateAttribute ta) throws SQLException {
+      return TreeLevel.loadTreeLevelNumber(connection, filter, tId, path, tti, ta);
     }
 
     public List<TreeLevel> getTreeLevelRef(int langId, List<AValue> filter, int tId, List<TreeLevel> path,
-        TemplateAttribute ta) throws SQLException {
-      return TreeLevel.loadTreeLevelRef(connection, langId, filter, tId, path, ta);
+        TemplateTreeItem tti, TemplateAttribute ta) throws SQLException {
+      return TreeLevel.loadTreeLevelRef(connection, langId, filter, tId, path, tti, ta);
     }
 
     /**
@@ -596,7 +596,7 @@ public class StoreDB {
      *
      * @return
      */
-    public HashMap<AObject, ArrayList<AValue>> getSearchObjects(int langId,
+    public Map<AObject, List<AValue>> getSearchObjects(int langId,
         String searchString, int tlId, int from, int perPage)
             throws SQLException {
       return AObject.loadSearchObjects(connection, langId, searchString, tlId, from, perPage);
@@ -617,7 +617,7 @@ public class StoreDB {
      *
      * @return
      */
-    public LinkedHashMap<AObject, ArrayList<AValue>> getRelatedObjects(
+    public Map<AObject, List<AValue>> getRelatedObjects(
         int langId, int objId, int rel, int tlId, int from, int perPage)
             throws SQLException {
       return AObject.loadRelatedObjects(connection, langId, objId, rel, tlId, from, perPage);
@@ -4515,6 +4515,7 @@ public class StoreDB {
     public static final String TT_ID = "tti_tt_id";
     public static final String TA_ID = "tti_ta_id";
     public static final String RANK = "tti_rank";
+    public static final String SUBSETOF = "tti_subsetof";
 
     /**
      * The key of the template tree item.
@@ -4539,17 +4540,26 @@ public class StoreDB {
     private int rank;
 
     /**
+     * The id of template tree item which the TemplateTreeItem is subset of
+     */
+    private int subsetOf;
+
+
+    /**
      * Create a new application template.
      *
+     * @param id
      * @param ttId
      * @param taId
      * @param rank
-     *          the author who created this application template
+     * @param subsetOf
      */
-    public TemplateTreeItem(int ttId, int taId, int rank) {
+    public TemplateTreeItem(int id, int ttId, int taId, int rank, int subsetOf) {
+      setId(id);
       setTtId(ttId);
       setTaId(taId);
       setRank(rank);
+      setSubsetOf(subsetOf);
     }
 
     /**
@@ -4559,11 +4569,13 @@ public class StoreDB {
      * @throws SQLException
      */
     public TemplateTreeItem(ResultSet rs) throws SQLException {
+      setId(rs.getInt(ID));
       setTtId(rs.getInt(TT_ID));
       setTt(new TemplateTree(rs));
       setTaId(rs.getInt(TA_ID));
       setTa(new TemplateAttribute(rs, true, false));
       setRank(rs.getInt(RANK));
+      setSubsetOf(rs.getInt(SUBSETOF));
     }
 
     public int getId() {
@@ -4614,21 +4626,28 @@ public class StoreDB {
       this.rank = rank;
     }
 
+    public int getSubsetOf() {
+      return subsetOf;
+    }
+
+    public void setSubsetOf(int subsetOf) {
+      this.subsetOf = subsetOf;
+    }
+
     public TemplateTreeItem save(Connection c) throws SQLException {
       Statement stmt = c.createStatement();
       // insert new record
       stmt.execute(
         "INSERT INTO " + TABLE + " ("
-          + TT_ID + ", " + TA_ID + ", " + RANK + ")"
-          + " VALUES (" + getTtId() + "," + getTaId() + "," + getRank() + ")");
+          + TT_ID + ", " + TA_ID + ", " + RANK + ", " + SUBSETOF + ")"
+          + " VALUES (" + getTtId() + "," + getTaId() + "," + getRank() + "," + getSubsetOf() + ")");
       stmt.close();
       return this;
     }
 
     public static void deleteTemplateTreeItems(Connection c, int ttId) throws SQLException {
       Statement stmt = c.createStatement();
-      String query = "DELETE FROM " + TABLE
-          + " WHERE " + TT_ID + "=" + ttId;
+      String query = "DELETE FROM " + TABLE + " WHERE " + TT_ID + "=" + ttId;
       stmt.execute(query);
       stmt.close();
     }
@@ -6137,7 +6156,7 @@ public class StoreDB {
       return result;
     }
 
-    public static HashMap<AObject, ArrayList<AValue>> loadSearchObjects(Connection c,
+    public static Map<AObject, List<AValue>> loadSearchObjects(Connection c,
         int langId, String searchString, int tlId, int from, int perPage)
             throws SQLException {
       Statement stmt = c.createStatement();
@@ -6183,7 +6202,7 @@ public class StoreDB {
           + " ORDER BY " + ID + ", " + TemplateListItem.RANK + ", "
           + AValue.RANK  + ", main_char." + AValue.AVC_LANG_ID + ", ref_char." + AValue.AVC_LANG_ID;
       ResultSet rs = stmt.executeQuery(query);
-      HashMap<AObject, ArrayList<AValue>> result = getRows(rs, langId);
+      Map<AObject, List<AValue>> result = getRows(rs, langId);
       rs.close();
       stmt.close();
       return result;
@@ -6207,7 +6226,7 @@ public class StoreDB {
       return result;
     }
 
-    public static LinkedHashMap<AObject, ArrayList<AValue>> loadRelatedObjects(Connection c,
+    public static Map<AObject, List<AValue>> loadRelatedObjects(Connection c,
         int langId, int objId, int rel, int tlId, int from, int perPage)
             throws SQLException {
       Statement stmt = c.createStatement();
@@ -6248,7 +6267,7 @@ public class StoreDB {
           + " ORDER BY " + ID + ", " + TemplateListItem.RANK + ", "
           + AValue.RANK + ", main_char." + AValue.AVC_LANG_ID + ", ref_char." + AValue.AVC_LANG_ID;
       ResultSet rs = stmt.executeQuery(query);
-      LinkedHashMap<AObject, ArrayList<AValue>> result = getRows(rs, langId);
+      Map<AObject, List<AValue>> result = getRows(rs, langId);
       rs.close();
       stmt.close();
       return result;
@@ -6284,7 +6303,12 @@ public class StoreDB {
   public static class TreeLevel {
 
     /**
-     * The key of the object attribute.
+     * The id of the tree level.
+     */
+    private int id;
+
+    /**
+     * The template attribute.
      */
     private TemplateAttribute ta;
 
@@ -6309,54 +6333,27 @@ public class StoreDB {
     private int valueRef;
 
     /**
+     * The id of tree level which the TreeLevel is subset of
+     */
+    private int subsetOf;
+
+
+    /**
      * Create a new tree level item.
      *
      * @param ta
-     * @param valueString
      */
-    public TreeLevel(TemplateAttribute ta, String valueString) {
-      setTa(ta);
-      setValueString(valueString);
-    }
-    public TreeLevel(TemplateAttribute ta, Date valueDate) {
-      setTa(ta);
-      setValueDate(valueDate);
-    }
-    public TreeLevel(TemplateAttribute ta, Double valueDouble) {
-      setTa(ta);
-      setValueDouble(valueDouble);
-    }
-    public TreeLevel(TemplateAttribute ta, int valueRef, String valueString) {
-      setTa(ta);
-      setValueRef(valueRef);
-      setValueString(valueString);
-    }
-    public TreeLevel(TemplateAttribute ta, int valueRef, Double valueDouble) {
-      setTa(ta);
-      setValueRef(valueRef);
-      setValueDouble(valueDouble);
-    }
-    public TreeLevel(TemplateAttribute ta, int valueRef, Date valueDate) {
-      setTa(ta);
-      setValueRef(valueRef);
-      setValueDate(valueDate);
+    public TreeLevel(int id, TemplateAttribute ta) {
+      this.id = id;
+      this.ta = ta;
     }
 
-    public TreeLevel(TemplateAttribute ta, String valueString, Date valueDate,
-        Double valueDouble, int valueRef) {
-      setTa(ta);
-      setValueString(valueString);
-      setValueDate(valueDate);
-      setValueDouble(valueDouble);
-      setValueRef(valueRef);
+    public int getId() {
+      return id;
     }
 
     public TemplateAttribute getTa() {
       return ta;
-    }
-
-    public void setTa(TemplateAttribute ta) {
-      this.ta = ta;
     }
 
     public String getValueString() {
@@ -6391,8 +6388,16 @@ public class StoreDB {
       this.valueRef = valueRef;
     }
 
+    public int getSubsetOf() {
+      return subsetOf;
+    }
+
+    public void setSubsetOf(int subsetOf) {
+      this.subsetOf = subsetOf;
+    }
+
     public static List<TreeLevel> loadTreeLevelString(Connection c, int langId, List<AValue> filter, int tId,
-        List<TreeLevel> path, TemplateAttribute ta) throws SQLException {
+        List<TreeLevel> path, TemplateTreeItem tti, TemplateAttribute ta) throws SQLException {
       List<TreeLevel> result = new ArrayList<TreeLevel>();
 
       Statement stmt = c.createStatement();
@@ -6422,7 +6427,9 @@ public class StoreDB {
           + " ORDER BY avc." + AValue.VALUE_STRING;
       ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
-        result.add(new TreeLevel(ta, rs.getString(AValue.VALUE_STRING)));
+        TreeLevel tl = new TreeLevel(tti.getId(), ta);
+        tl.setValueString(rs.getString(AValue.VALUE_STRING));
+        result.add(tl);
       }
       rs.close();
       stmt.close();
@@ -6430,7 +6437,7 @@ public class StoreDB {
     }
 
     public static List<TreeLevel> loadTreeLevelDate(Connection c, List<AValue> filter, int tId, List<TreeLevel> path,
-        TemplateAttribute ta) throws SQLException {
+        TemplateTreeItem tti, TemplateAttribute ta) throws SQLException {
       List<TreeLevel> result = new ArrayList<TreeLevel>();
 
       Statement stmt = c.createStatement();
@@ -6458,7 +6465,9 @@ public class StoreDB {
           + " ORDER BY avd." + AValue.VALUE_DATE;
       ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
-        result.add(new TreeLevel(ta, rs.getString(AValue.VALUE_DATE)));
+        TreeLevel tl = new TreeLevel(tti.getId(), ta);
+        tl.setValueString(rs.getString(AValue.VALUE_DATE));
+        result.add(tl);
       }
       rs.close();
       stmt.close();
@@ -6466,7 +6475,7 @@ public class StoreDB {
     }
 
     public static List<TreeLevel> loadTreeLevelNumber(Connection c, List<AValue> filter, int tId, List<TreeLevel> path,
-        TemplateAttribute ta) throws SQLException {
+        TemplateTreeItem tti, TemplateAttribute ta) throws SQLException {
       List<TreeLevel> result = new ArrayList<TreeLevel>();
 
       Statement stmt = c.createStatement();
@@ -6487,7 +6496,9 @@ public class StoreDB {
           + " ORDER BY avn." + AValue.VALUE_NUMBER;
       ResultSet rs = stmt.executeQuery(query);
       while (rs.next()) {
-        result.add(new TreeLevel(ta, rs.getDouble(AValue.VALUE_NUMBER)));
+        TreeLevel tl = new TreeLevel(tti.getId(), ta);
+        tl.setValueDouble(rs.getDouble(AValue.VALUE_NUMBER));
+        result.add(tl);
       }
       rs.close();
       stmt.close();
@@ -6495,8 +6506,7 @@ public class StoreDB {
     }
 
     public static List<TreeLevel> loadTreeLevelRef(Connection c, int langId, List<AValue> filter, int tId,
-                                                        List<TreeLevel> path, TemplateAttribute ta)
-        throws SQLException {
+        List<TreeLevel> path, TemplateTreeItem tti, TemplateAttribute ta) throws SQLException {
       List<TreeLevel> result = new ArrayList<TreeLevel>();
 
       Statement stmt = c.createStatement();
@@ -6551,13 +6561,21 @@ public class StoreDB {
               defRef = rs.getInt(Relation.OBJ2);
             }
           } else {
-            result.add(new TreeLevel(ta, defRef, defString));
+            TreeLevel tl = new TreeLevel(tti.getId(), ta);
+            tl.setValueRef(defRef);
+            tl.setValueString(defString);
+            tl.setSubsetOf(tti.getSubsetOf());
+            result.add(tl);
             defId = rs.getInt(AValue.AVC_AV_ID);
             defString = rs.getString(AValue.VALUE_STRING);
             defRef = rs.getInt(Relation.OBJ2);
           }
         }
-        result.add(new TreeLevel(ta, defRef, defString));
+        TreeLevel tl = new TreeLevel(tti.getId(), ta);
+        tl.setValueRef(defRef);
+        tl.setValueString(defString);
+        tl.setSubsetOf(tti.getSubsetOf());
+        result.add(tl);
       }
       rs.close();
       stmt.close();
@@ -7351,10 +7369,11 @@ public class StoreDB {
   public static String[] getTablesAndWheres(List<TreeLevel> path) {
     String[] result = new String[2];
 
+    List<TreeLevel> adjustedPath = adjustPath(path);
     result[0] = "";
     result[1] = "";
-    for (int i = 0; i < path.size(); i++) {
-      TreeLevel level = path.get(i);
+    for (int i = 0; i < adjustedPath.size(); i++) {
+      TreeLevel level = adjustedPath.get(i);
       boolean isDerived = level.getTa().getDef() != null &&
           (level.getTa().getFlags() & (1<<TemplateAttribute.FLAG_DERIVED)) > 0;
 
@@ -7367,13 +7386,14 @@ public class StoreDB {
         result[1] = " AND av" + i + "." + AValue.ID + " is null " + result[1];
       } else {
         String derived;
+        result[1] = result[1]
+            + " AND av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID
+            + " AND av" + i + "." + AValue.OA_ID + "="  + level.getTa().getOaId();
         switch (level.getTa().getOa().getVt().getType()) {
           case ValueType.VT_INT:
           case ValueType.VT_REAL:
             result[0] = result[0] + ", " + AValue.TABLE + " av" + i + ", " + AValue.TABLE_DATE + " avn" + i;
             result[1] = result[1]
-                + " AND av" + i + "." + AValue.AO_ID + "="  + AObject.P_AO_ID
-                + " AND av" + i + "." + AValue.OA_ID + "="  + level.getTa().getOaId()
                 + " AND avn" + i + "." + AValue.AVN_AV_ID + "= av" + i + "." + AValue.ID
                 + " AND avn" + i + "." + AValue.VALUE_NUMBER + "=" + level.getValueDouble();
             break;
@@ -7385,8 +7405,6 @@ public class StoreDB {
               derived = String.format(level.getTa().getDef(), derived);
             }
             result[1] = result[1]
-                + " AND av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID
-                + " AND av" + i + "." + AValue.OA_ID + "="  + level.getTa().getOaId()
                 + " AND avc" + i + "." + AValue.AVC_AV_ID + "= av" + i + "." + AValue.ID
                 + " AND " + derived + "='" + ServerUtils.mySQLFilter(level.getValueString()) + "'";
             break;
@@ -7400,16 +7418,12 @@ public class StoreDB {
             }
 
             result[1] = result[1]
-                + " AND av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID
-                + " AND av" + i + "." + AValue.OA_ID + "="  + level.getTa().getOaId()
                 + " AND avd" + i + "." + AValue.AVD_AV_ID + "= av" + i + "." + AValue.ID
                 + " AND " + derived + "='" + (isDerived ? level.getValueString() : level.getValueDate()) + "'";
             break;
           case ValueType.VT_REF:
             result[0] = result[0] + ", " + AValue.TABLE + " av" + i + ", " + AValue.TABLE_REF + " avr" + i;
             result[1] = result[1]
-                + " AND av" + i + "." + AValue.AO_ID + "=" + AObject.P_AO_ID
-                + " AND av" + i + "." + AValue.OA_ID + "="  + level.getTa().getOaId()
                 + " AND avr" + i + "." + AValue.AVR_AV_ID + "= av" + i + "." + AValue.ID
                 + " AND avr" + i + "." + AValue.VALUE_REF + "=" + level.getValueRef();
             break;
@@ -7461,10 +7475,21 @@ public class StoreDB {
     return result;
   }
 
-  private static LinkedHashMap<AObject, ArrayList<AValue>> getRows(ResultSet rs, int langId) throws SQLException {
-    LinkedHashMap<AObject, ArrayList<AValue>> result = new LinkedHashMap<AObject, ArrayList<AValue>>();
+  private static List<TreeLevel> adjustPath(List<TreeLevel> path) {
+    Map<Integer, TreeLevel> map = new HashMap<Integer, TreeLevel>();
+    for (TreeLevel tl : path) {
+      map.put(tl.getId(), tl);
+      if (tl.getSubsetOf() > 0) {
+        map.remove(tl.getSubsetOf());
+      }
+    }
+    return new ArrayList(map.values());
+  }
 
-    ArrayList<AValue> values = null;
+  private static Map<AObject, List<AValue>> getRows(ResultSet rs, int langId) throws SQLException {
+    Map<AObject, List<AValue>> result = new LinkedHashMap<AObject, List<AValue>>();
+
+    List<AValue> values = null;
     AObject aobject = null;
     AValue valuePrev = null;
     boolean isDescendingPrev = false;

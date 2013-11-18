@@ -28,8 +28,13 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
   private static List<StoreDB.TreeLevel> toServerTreeLevels(List<TreeLevel> levels) {
     final List<StoreDB.TreeLevel> servers = new ArrayList<StoreDB.TreeLevel>();
     for (TreeLevel tl : levels) {
-      servers.add(new StoreDB.TreeLevel(Utils.toServerTemplateAttribute(tl.getTa()),
-          tl.getValueString(), tl.getValueDate(), tl.getValueDouble(), tl.getValueRef()));
+      StoreDB.TreeLevel stl = new StoreDB.TreeLevel(tl.getId(), Utils.toServerTemplateAttribute(tl.getTa()));
+      stl.setValueString(tl.getValueString());
+      stl.setValueDate(tl.getValueDate());
+      stl.setValueDouble(tl.getValueDouble());
+      stl.setValueRef(tl.getValueRef());
+      stl.setSubsetOf(tl.getSubsetOf());
+      servers.add(stl);
     }
     return servers;
   }
@@ -37,9 +42,8 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
   private static List<TreeLevel> toClientTreeLevels(List<StoreDB.TreeLevel> levels) {
     final List<TreeLevel> servers = new ArrayList<TreeLevel>();
     for (StoreDB.TreeLevel tl : levels) {
-      servers.add(new TreeLevel(Utils.toClientTemplateAttribute(tl.getTa()),
-          tl.getValueString(), tl.getValueDate(), tl.getValueDouble(),
-          tl.getValueRef()));
+      servers.add(new TreeLevel(tl.getId(), Utils.toClientTemplateAttribute(tl.getTa()),
+          tl.getValueString(), tl.getValueDate(), tl.getValueDouble(), tl.getValueRef(), tl.getSubsetOf()));
     }
     return servers;
   }
@@ -78,23 +82,23 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
    * Tree level
    */
   @Override
-  public List<TreeLevel> getTreeLevel(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta)
+  public List<TreeLevel> getTreeLevel(int langId, int tId, List<TreeLevel> path, TemplateTreeItem tti)
       throws AccessDeniedException {
-    return getLevel(langId, tId, path, ta);
+    return getLevel(langId, tId, path, tti);
   }
 
   public List<TreeLevel> getTreeLevel(int langId, int tIdSource, Map<Integer, List<AValue>> values, int tId,
-                                         List<TreeLevel> path, TemplateAttribute ta)
+                                         List<TreeLevel> path, TemplateTreeItem tti)
       throws AccessDeniedException {
-    return getLevel(langId, tIdSource, values, tId, path, ta);
+    return getLevel(langId, tIdSource, values, tId, path, tti);
   }
 
-  private List<TreeLevel> getLevel(int langId, int tId, List<TreeLevel> path, TemplateAttribute ta) {
-    return getLevel(langId, 0, null, tId, path, ta);
+  private List<TreeLevel> getLevel(int langId, int tId, List<TreeLevel> path, TemplateTreeItem tti) {
+    return getLevel(langId, 0, null, tId, path, tti);
   }
 
   private List<TreeLevel> getLevel(int langId, int tIdSource, Map<Integer, List<AValue>> values, int tId,
-                                   List<TreeLevel> path, TemplateAttribute ta) {
+                                   List<TreeLevel> path, TemplateTreeItem tti) {
     List<TreeLevel> result = new ArrayList<TreeLevel>();
     final StoreDB.Api api = store.getApi();
     try {
@@ -127,27 +131,27 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
       }
 
       List<StoreDB.TreeLevel> tl;
-      switch (ta.getOa().getVt().getType()) {
+      switch (tti.getTa().getOa().getVt().getType()) {
         case ValueType.VT_INT:
         case ValueType.VT_REAL:
-          tl = api.getTreeLevelNumber(filter, tId,
-              toServerTreeLevels(path), Utils.toServerTemplateAttribute(ta));
+          tl = api.getTreeLevelNumber(filter, tId, toServerTreeLevels(path),
+              Utils.toServerTemplateTreeItem(tti), Utils.toServerTemplateAttribute(tti.getTa()));
           break;
 
         case ValueType.VT_STRING:
-          tl = api.getTreeLevelString(langId, filter, tId,
-              toServerTreeLevels(path), Utils.toServerTemplateAttribute(ta));
+          tl = api.getTreeLevelString(langId, filter, tId, toServerTreeLevels(path),
+              Utils.toServerTemplateTreeItem(tti), Utils.toServerTemplateAttribute(tti.getTa()));
           break;
 
         case ValueType.VT_DATETIME:
         case ValueType.VT_DATE:
-          tl = api.getTreeLevelDate(filter, tId,
-              toServerTreeLevels(path), Utils.toServerTemplateAttribute(ta));
+          tl = api.getTreeLevelDate(filter, tId, toServerTreeLevels(path),
+              Utils.toServerTemplateTreeItem(tti), Utils.toServerTemplateAttribute(tti.getTa()));
           break;
 
         case ValueType.VT_REF:
-          tl = api.getTreeLevelRef(langId, filter, tId,
-              toServerTreeLevels(path), Utils.toServerTemplateAttribute(ta));
+          tl = api.getTreeLevelRef(langId, filter, tId, toServerTreeLevels(path),
+              Utils.toServerTemplateTreeItem(tti), Utils.toServerTemplateAttribute(tti.getTa()));
           break;
 
         default:
@@ -201,12 +205,12 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
     Map<AObject, List<AValue>> result = new LinkedHashMap<AObject, List<AValue>>();
     final StoreDB.Api api = store.getApi();
     try {
-      HashMap<StoreDB.AObject, ArrayList<StoreDB.AValue>> objValues =
+      Map<StoreDB.AObject, List<StoreDB.AValue>> objValues =
           api.getSearchObjects(langId, searchString, tlId, from, perPage);
       for (StoreDB.AObject aObject : objValues.keySet()) {
 
         ArrayList<AValue> values = new ArrayList<AValue>();
-        ArrayList<StoreDB.AValue> dbValues = objValues.get(aObject);
+        List<StoreDB.AValue> dbValues = objValues.get(aObject);
         if (dbValues != null)
           for (StoreDB.AValue dbValue : dbValues)
             values.add(Utils.toClientValue(dbValue));
@@ -226,12 +230,12 @@ public class ApplicationServiceImpl extends ServiceImpl implements ApplicationSe
     Map<AObject, List<AValue>> result = new LinkedHashMap<AObject, List<AValue>>();
     final StoreDB.Api api = store.getApi();
     try {
-      LinkedHashMap<StoreDB.AObject, ArrayList<StoreDB.AValue>> objValues =
+      Map<StoreDB.AObject, List<StoreDB.AValue>> objValues =
           api.getRelatedObjects(langId, objId, rel, tlId, from, perPage);
       for (StoreDB.AObject aObject : objValues.keySet()) {
 
-        ArrayList<AValue> values = new ArrayList<AValue>();
-        ArrayList<StoreDB.AValue> dbValues = objValues.get(aObject);
+        List<AValue> values = new ArrayList<AValue>();
+        List<StoreDB.AValue> dbValues = objValues.get(aObject);
         if (dbValues != null)
           for (StoreDB.AValue dbValue : dbValues)
             values.add(Utils.toClientValue(dbValue));
