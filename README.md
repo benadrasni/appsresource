@@ -9,5 +9,4 @@ There are object types like "Continent", "Country", "Locality" in application "W
 For each object type user can see all objects of this type in multilevel tree. Values of objects are displayed 
 in template on the right side. There are more than 150000 localities in mentioned application. 
 User can search within objects from application's main page. Everything is fully configurable 
-(including trees, lists, templates) in designer.
-
+(including trees, lists, templates) in designer. (See https://www.youtube.com/watch?v=7bW5Gy1s3y8 for details).
