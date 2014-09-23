@@ -22,10 +22,7 @@ import sk.benko.appsresource.client.model.ApplicationModel;
 import sk.benko.appsresource.client.model.TemplateAttribute;
 import sk.benko.appsresource.client.model.TreeLevel;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A generic widget to display designer dialog.
@@ -35,9 +32,9 @@ public class ImportObjectsDialog extends PopupPanel implements ApplicationModel.
   private static int ROWS = 5;
   final AbsolutePanel main = new AbsolutePanel();
   final ButtonView bImport = new ButtonView(ClientUtils.CSS_BUTTON + " "
-      + ClientUtils.CSS_DIALOG_BUTTON + " " + ClientUtils.CSS_DIALOG_BUTTONOK);
+          + ClientUtils.CSS_DIALOG_BUTTON + " " + ClientUtils.CSS_DIALOG_BUTTONOK);
   final ButtonView bCancel = new ButtonView(ClientUtils.CSS_BUTTON + " "
-      + ClientUtils.CSS_DIALOG_BUTTON + " " + ClientUtils.CSS_DIALOG_BUTTONCANCEL);
+          + ClientUtils.CSS_DIALOG_BUTTON + " " + ClientUtils.CSS_DIALOG_BUTTONCANCEL);
   ObjectView objectView;
   String filename;
   String importHeader;
@@ -45,7 +42,7 @@ public class ImportObjectsDialog extends PopupPanel implements ApplicationModel.
   CustomProgress progress = new CustomProgress();
   UploadButton uploadButton = new UploadButton();
   SingleUploader uploader = new SingleUploader(FileInputType.CUSTOM.with(chooseButton),
-      progress, uploadButton);
+          progress, uploadButton);
   HashMap<Integer, TemplateAttribute> tas = new HashMap<Integer, TemplateAttribute>();
   HorizontalPanel header = new HorizontalPanel();
   Label x = new Label(ClientUtils.CLOSE_CHAR);
@@ -172,14 +169,16 @@ public class ImportObjectsDialog extends PopupPanel implements ApplicationModel.
   }
 
   private void initializeImport() {
-    progress.setFileName(Main.messages.noFileChosen());
+    ArrayList names = new ArrayList<String>();
+    names.add(Main.messages.noFileChosen());
+    progress.setFileNames(names);
     filename = "";
     importHeader = "";
     uploader.reset();
     uploader.setServletPath(uploader.getServletPath()
-        + "?template=" + getModel().getAppt().getTId()
-        + "&app=" + getModel().getAppt().getAppId()
-        + "&user=" + getModel().getAppu().getUserId());
+            + "?template=" + getModel().getAppt().getTId()
+            + "&app=" + getModel().getAppt().getAppId()
+            + "&user=" + getModel().getAppu().getUserId());
 
     x.addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
@@ -190,32 +189,32 @@ public class ImportObjectsDialog extends PopupPanel implements ApplicationModel.
     // load template filterAttributes for actual template
     tas.clear();
     for (TemplateAttribute ta : getModel().getAttrsByTemplate()
-        .get(getModel().getAppt().getTId())) {
+            .get(getModel().getAppt().getTId())) {
       tas.put(ta.getId(), ta);
     }
 
     // buttons
     bCancel.addDomHandler(
-        new
+            new
 
-            ClickHandler() {
-              public void onClick(ClickEvent event) {
-                ImportObjectsDialog.this.hide();
-              }
-            }, ClickEvent.getType());
+                    ClickHandler() {
+                      public void onClick(ClickEvent event) {
+                        ImportObjectsDialog.this.hide();
+                      }
+                    }, ClickEvent.getType());
     bCancel.getElement().setInnerText(Main.constants.cancel());
 
     bImport.addDomHandler(
-        new
+            new
 
-            ClickHandler() {
-              public void onClick(ClickEvent event) {
-                bImport.addStyleDependentName(CSSConstants.SUFFIX_DISABLED);
-                Main.status.showTaskStatus(Main.constants.importing());
-                importObjects();
-                //ImportObjectsDialog.this.hide();
-              }
-            }, ClickEvent.getType());
+                    ClickHandler() {
+                      public void onClick(ClickEvent event) {
+                        bImport.addStyleDependentName(CSSConstants.SUFFIX_DISABLED);
+                        Main.status.showTaskStatus(Main.constants.importing());
+                        importObjects();
+                        //ImportObjectsDialog.this.hide();
+                      }
+                    }, ClickEvent.getType());
     bImport.getElement().setInnerText(Main.constants.importFile());
     bImport.addStyleDependentName(CSSConstants.SUFFIX_DISABLED);
   }
@@ -236,8 +235,8 @@ public class ImportObjectsDialog extends PopupPanel implements ApplicationModel.
       }
     }
     getModel().importObjects(
-        getModel().getAppt().getApp(), getModel().getAppt().getT(),
-        filename, map, keys, cbOnlyUpdate.getValue());
+            getModel().getAppt().getApp(), getModel().getAppt().getT(),
+            filename, map, keys, cbOnlyUpdate.getValue());
   }
 
   @Override
@@ -322,18 +321,18 @@ public class ImportObjectsDialog extends PopupPanel implements ApplicationModel.
     Status status;
     int percent = 0;
     Panel panel = new HorizontalPanel();
-    Label fileNameLabel = new Label();
+    Label fileNamesLabel = new Label();
     Label statusLabel = new Label();
 
     {
-      panel.add(fileNameLabel);
+      panel.add(fileNamesLabel);
       panel.add(statusLabel);
-      fileNameLabel.setStyleName(ClientUtils.CSS_FILENAME);
+      fileNamesLabel.setStyleName(ClientUtils.CSS_FILENAME);
       //statusLabel.setStyleName("status");
     }
 
     @Override
-    public void setProgress(int done, int total) {
+    public void setProgress(long done, long total) {
     }
 
     @Override
@@ -370,8 +369,15 @@ public class ImportObjectsDialog extends PopupPanel implements ApplicationModel.
     }
 
     @Override
-    public void setFileName(String name) {
-      fileNameLabel.setText(name);
+    public void setFileNames(List<String> fileNames) {
+      StringBuffer names = new StringBuffer();
+      for (String fileName : fileNames) {
+        if (names.length() > 0) {
+          names.append(", ");
+        }
+        names.append(fileName);
+      }
+      fileNamesLabel.setText(names.toString());
     }
 
     @Override
@@ -384,6 +390,11 @@ public class ImportObjectsDialog extends PopupPanel implements ApplicationModel.
 
     @Override
     public void setVisible(boolean b) {
+    }
+
+    @Override
+    public Widget asWidget() {
+      return panel;
     }
   }
 }
