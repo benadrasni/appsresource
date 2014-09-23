@@ -302,9 +302,11 @@ CREATE TABLE `appsresource`.`template_tree_items` (
   `tti_tt_id` INT(11) NOT NULL,
   `tti_ta_id` INT(11) NOT NULL,
   `tti_rank` INT NOT NULL,
+  `tti_subsetof` INT(11) default NULL,
   PRIMARY KEY  (`tti_id`),
   FOREIGN KEY (tti_ta_id) REFERENCES template_attributes(ta_id),
-  FOREIGN KEY (tti_tt_id) REFERENCES template_trees(tt_id)
+  FOREIGN KEY (tti_tt_id) REFERENCES template_trees(tt_id),
+  FOREIGN KEY (tti_subsetof) REFERENCES template_tree_items(tti_id)
 );
 
 /*
