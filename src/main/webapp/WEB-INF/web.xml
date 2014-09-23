@@ -31,6 +31,10 @@
             <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
             <param-value>true</param-value>
         </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.config.feature.DisableWADL</param-name>
+            <param-value>true</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -106,9 +110,16 @@
 
     <security-constraint>
         <web-resource-collection>
-            <web-resource-name>all</web-resource-name>
-            <url-pattern>/appsresource/*</url-pattern>
-            <url-pattern>/appsresource.html</url-pattern>
+            <web-resource-name>Open Content</web-resource-name>
+            <url-pattern>/rest/*</url-pattern>
+        </web-resource-collection>
+        <!-- OMIT auth-constraint -->
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Secured Content</web-resource-name>
+            <url-pattern>/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>*</role-name>

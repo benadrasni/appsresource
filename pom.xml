@@ -7,17 +7,19 @@
 	<packaging>war</packaging>
 
 	<properties>
-		<webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
-        <gwt.version>2.5.0</gwt.version>
-		<gae.version>1.7.4</gae.version>
+        <gwt.version>2.6.1</gwt.version>
+        <gae.version>1.9.9</gae.version>
+        <gwtupload.version>1.0.1</gwtupload.version>
         <jersey.version>1.17</jersey.version>
         <asm.version>3.3.1</asm.version>
         <restygwt.version>1.3.1</restygwt.version>
+		<webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
+        <gae.home>/home/adrian/Development/appengine-java-sdk-${gae.version}</gae.home>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<build>
-		<sourceDirectory>src/main/java</sourceDirectory>
+        <sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
 		<outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
 		<resources>
@@ -32,7 +34,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.5.1</version>
+				<version>3.1</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -41,17 +43,21 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
-				<version>2.5.0</version>
+				<version>${gwt.version}</version>
 
 				<executions>
 					<execution>
 						<goals>
-							<goal>compile</goal>
+                            <goal>compile</goal>
+                            <goal>test</goal>
 						</goals>
 					</execution>
 				</executions>
 				<configuration>
 					<server>com.google.appengine.tools.development.gwt.AppEngineLauncher</server>
+                    <appEngineHome>${gae.home}</appEngineHome>
+                    <appEngineVersion>${gae.version}</appEngineVersion>
+                    <extraJvmArgs>-Dappengine.sdk.root=${gae.home} -Dgwt.appEngineVersion=${gae.version}</extraJvmArgs>
 					<i18nMessagesBundles>
 						<resourceBundle>sk.benko.appsresource.client.AppsresourceMessages</resourceBundle>
 					</i18nMessagesBundles>
@@ -59,22 +65,70 @@
 						<resourceBundle>sk.benko.appsresource.client.AppsresourceConstants</resourceBundle>
 					</i18nConstantsBundles>
 					<runTarget>Appsresource.html</runTarget>
+                    <codeServerPort>9996</codeServerPort>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>net.kindleit</groupId>
 				<artifactId>maven-gae-plugin</artifactId>
-				<version>0.9.5</version>
-
-				<dependencies>
-					<dependency>
-						<groupId>net.kindleit</groupId>
-						<artifactId>gae-runtime</artifactId>
-						<version>1.7.3</version>
-						<type>pom</type>
-					</dependency>
-				</dependencies>
-			</plugin>
+				<version>0.9.6</version>
+                <dependencies>
+                    <!-- Google App Engine API -->
+                    <dependency>
+                        <groupId>com.google.appengine</groupId>
+                        <artifactId>appengine-api-1.0-sdk</artifactId>
+                        <version>${gae.version}</version>
+                    </dependency>
+                    <!-- Google App Engine Runtime Dependencies -->
+                    <dependency>
+                        <groupId>org.apache.geronimo.specs</groupId>
+                        <artifactId>geronimo-jta_1.1_spec</artifactId>
+                        <version>1.1.1</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.geronimo.specs</groupId>
+                        <artifactId>geronimo-jpa_3.0_spec</artifactId>
+                        <version>1.1.1</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.jdo</groupId>
+                        <artifactId>jdo2-api</artifactId>
+                        <version>2.3-eb</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.datanucleus</groupId>
+                        <artifactId>datanucleus-core</artifactId>
+                        <version>1.1.5</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.google.appengine.orm</groupId>
+                        <artifactId>datanucleus-appengine</artifactId>
+                        <version>1.0.10</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.datanucleus</groupId>
+                        <artifactId>datanucleus-jpa</artifactId>
+                        <version>1.1.5</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                    <!-- App Engine Runtime Dependencies -->
+                    <dependency>
+                        <groupId>com.google.appengine</groupId>
+                        <artifactId>appengine-tools-sdk</artifactId>
+                        <version>${gae.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>net.kindleit</groupId>
+                        <artifactId>gae-runtime</artifactId>
+                        <version>1.8.8</version>
+                        <type>pom</type>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.6</version>
@@ -101,6 +155,17 @@
 	
 	<dependencies>
         <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+            <version>${gwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.16</version>
@@ -108,20 +173,20 @@
         <dependency>
 			<groupId>com.allen-sauer.gwt.dnd</groupId>
 			<artifactId>gwt-dnd</artifactId>
-			<version>3.1.2</version>
+			<version>3.3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.gwtupload</groupId>
 			<artifactId>gwtupload</artifactId>
-			<version>0.6.4</version>
+			<version>${gwtupload.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.gwtupload</groupId>
 			<artifactId>gwtupload-gae</artifactId>
-			<version>0.6.4</version>
+			<version>${gwtupload.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>au.com.bytecode</groupId>
+			<groupId>net.sf.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>2.3</version>
 		</dependency>
@@ -135,21 +200,16 @@
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 		</dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.9</version>
+        </dependency>
+
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-1.0-sdk</artifactId>
 			<version>${gae.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-servlet</artifactId>
-			<version>${gwt.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-			<version>${gwt.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.appengine</groupId>
@@ -164,8 +224,14 @@
         <dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-endpoints</artifactId>
-			<version>1.7.3</version>
+			<version>${gae.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-tools-sdk</artifactId>
+            <version>${gae.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.fusesource.restygwt</groupId>
             <artifactId>restygwt</artifactId>
