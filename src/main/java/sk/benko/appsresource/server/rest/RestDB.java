@@ -76,35 +76,7 @@ public class RestDB {
 
   private static final Logger log = Logger.getLogger(RestDB.class.getName());
 
-  public static final String TABLE_PARENTS = "aobject_parents";
-  public static final String TABLE_VALUE = "avalues";
-  public static final String TABLE_VALUE_CHAR = "avalues_char";
-  public static final String TABLE_VALUE_DATE = "avalues_date";
-  public static final String TABLE_VALUE_NUMBER = "avalues_number";
-  public static final String TABLE_VALUE_TEXT = "avalues_text";
-  public static final String TABLE_VALUE_REF = "avalues_ref";
-  public static final String TABLE_TEMPLATE_ATTRIBUTE = "template_attributes";
-
-  public static final String PARENTS_OT_ID = "pa_ot_id";
-  public static final String PARENTS_AO_ID = "pa_ao_id";
-  public static final String VALUE_ID = "av_id";
-  public static final String VALUE_AO_ID = "av_ao_id";
-  public static final String VALUE_OA_ID = "av_oa_id";
-  public static final String VALUE_RANK = "av_rank";
-  public static final String VALUE_CHAR_AV_ID = "avc_av_id";
-  public static final String VALUE_CHAR_LANG_ID = "avc_lang_id";
-  public static final String VALUE_CHAR_VALUE = "avc_value";
-  public static final String VALUE_DATE_AV_ID = "avd_av_id";
-  public static final String VALUE_DATE_VALUE = "avd_value";
-  public static final String VALUE_NUMBER_AV_ID = "avn_av_id";
-  public static final String VALUE_NUMBER_VALUE = "avn_value";
-  public static final String VALUE_TEXT_AV_ID = "avt_av_id";
-  public static final String VALUE_TEXT_VALUE = "avt_value";
-  public static final String VALUE_REF_AV_ID = "avr_av_id";
-  public static final String VALUE_REF_VALUE = "avr_value";
   public static final String TA_ID = "ta_id";
-  public static final String TA_OA_ID = "ta_oa_id";
-  public static final String TA_SHARED2 = "ta_shared2";
   public static final String TA_FLAGS = "ta_flags";
 
   /**
@@ -116,17 +88,15 @@ public class RestDB {
     return new Api();
   }
 
-  private static Integer getCount(Connection c, CountRequest countRequest) throws SQLException {
+  static Integer getCount(Connection c, CountRequest countRequest) throws SQLException {
     Integer result = 0;
 
     Statement stmt = c.createStatement();
     String[] hlpFilter =  getTablesAndWheresForFilter(countRequest.getFilterAttributes(), 0);
 
     String query = "SELECT COUNT(*) "
-        + " FROM " + TABLE_PARENTS
-        + hlpFilter[0]
-        + " WHERE " + PARENTS_OT_ID + "=" + countRequest.getObjectTypeId()
-        + hlpFilter[1];
+        + " FROM aobject_parents " + hlpFilter[0]
+        + " WHERE pa_ot_id = " + countRequest.getObjectTypeId() + hlpFilter[1];
 
     ResultSet rs = stmt.executeQuery(query);
     if (rs.next()) {
@@ -138,8 +108,7 @@ public class RestDB {
   }
 
 
-  private static Map<Integer, Map<Integer, String>> getList(Connection c, ListRequest listRequest)
-      throws SQLException {
+  static Map<Integer, Map<Integer, String>> getList(Connection c, ListRequest listRequest) throws SQLException {
     Statement stmt = c.createStatement();
     String[] hlpFilter =  getTablesAndWheresForFilter(listRequest.getFilterAttributes(), 0);
 
@@ -150,25 +119,21 @@ public class RestDB {
         + " CASE WHEN main_ref.avr_av_id is NULL THEN main_char.avc_lang_id ELSE ref_char.avc_lang_id END as avc_lang_id, "
         + " avd_value, avn_value, main_ref.avr_value, main_val.av_user_id, "
         + " ref.av_ao_id as ao, ref.av_oa_id as oa, ref_char.avc_value as ao_leaf "
-        + " FROM " + TABLE_TEMPLATE_ATTRIBUTE + hlpFilter[0] + " left outer join "
-        + TABLE_VALUE + " main_val on (main_val." + VALUE_OA_ID + " = " + TA_OA_ID + ") left outer join "
-        + TABLE_VALUE_CHAR + " main_char on (main_char." + VALUE_CHAR_AV_ID + " = main_val." + VALUE_ID + ") left outer join "
-        + TABLE_VALUE_DATE + " on (" + VALUE_DATE_AV_ID + " = main_val." + VALUE_ID + ") left outer join "
-        + TABLE_VALUE_NUMBER + " on (" + VALUE_NUMBER_AV_ID + " = main_val." + VALUE_ID + ") left outer join "
-        + TABLE_VALUE_REF + " main_ref on (main_ref." + VALUE_REF_AV_ID + " = main_val." + VALUE_ID + ") left outer join "
-        + TABLE_VALUE_TEXT + " main_text on (main_text." + VALUE_TEXT_AV_ID + " = main_val." + VALUE_ID + ") "
-        + " left outer join " + TABLE_VALUE + " ref on (main_ref." + VALUE_REF_VALUE + " = ref." + VALUE_AO_ID
-        + " AND " + TA_SHARED2 + " = ref." + VALUE_OA_ID + ") left outer join "
-        + TABLE_VALUE_CHAR + " ref_char on (ref_char." + VALUE_CHAR_AV_ID + " = ref." + VALUE_ID + ")"
-        + " WHERE " + TA_ID + " in (" + listRequest.getAttributesAsString() + ") " + hlpFilter[1]
-        + " ORDER BY main_val." + VALUE_AO_ID + ", " + VALUE_RANK
-        + ", main_char." + VALUE_CHAR_LANG_ID + ", ref_char." + VALUE_CHAR_LANG_ID;
+        + " FROM aobjects, template_attributes " + hlpFilter[0] + " left outer join "
+        + " avalues main_val on (main_val.av_oa_id = ta_oa_id) left outer join "
+        + " avalues_char main_char on (main_char.avc_av_id = main_val.av_id) left outer join "
+        + " avalues_date on (avc_av_id = main_val.av_id) left outer join "
+        + " avalues_number on (avn_av_id = main_val.av_id) left outer join "
+        + " avalues_ref main_ref on (main_ref.avr_av_id = main_val.av_id) left outer join "
+        + " avalues_text main_text on (main_text.avt_av_id = main_val.av_id) "
+        + " left outer join avalues ref on (main_ref.avr_value = ref.av_ao_id "
+        + " AND ta_shared2 = ref.av_oa_id) left outer join "
+        + " avalues_char ref_char on (ref_char.avc_av_id = ref.av_id)"
+        + " WHERE main_val.av_ao_id = ao_id AND ta_id in (" + listRequest.getAttributesAsString() + ") " + hlpFilter[1]
+        + " ORDER BY main_val.av_ao_id, av_rank, main_char.avc_lang_id, ref_char.avc_lang_id";
 
     ResultSet rs = stmt.executeQuery(query);
     Map<Integer, Map<Integer, String>> result = getRows(rs, listRequest.getLangId());
-    if (rs.next()) {
-
-    }
     rs.close();
     stmt.close();
     return result;
@@ -185,24 +150,24 @@ public class RestDB {
 
       int i = filterOffset;
       for (FilterAttribute filterAttribute : filter) {
-        tables.append(", " + TABLE_VALUE + " av");
+        tables.append(", avalues av");
         tables.append(i);
         wheres.append(" AND av");
         wheres.append(i);
-        wheres.append("." + VALUE_AO_ID + "=" + PARENTS_AO_ID + " AND av");
+        wheres.append(".av_ao_id = pa_ao_id AND av");
         wheres.append(i);
-        wheres.append("." + VALUE_OA_ID + "=");
+        wheres.append(".av_oa_id = ");
         wheres.append(filterAttribute.getAttributeId());
 
-        tables.append(", " + TABLE_VALUE_REF + " avr");
+        tables.append(", avalues_ref avr");
         tables.append(i);
         wheres.append(" AND avr");
         wheres.append(i);
-        wheres.append("." + VALUE_REF_AV_ID + "= av");
+        wheres.append(".avr_av_id = av");
         wheres.append(i);
-        wheres.append("." + VALUE_ID + " AND avr");
+        wheres.append(".av_id AND avr");
         wheres.append(i);
-        wheres.append("." + VALUE_REF_VALUE + "=");
+        wheres.append(".avr_value = ");
         wheres.append(filterAttribute.getValueId());
 
         i++;
@@ -217,18 +182,18 @@ public class RestDB {
     Map<Integer, Map<Integer, String>> result = new LinkedHashMap<Integer, Map<Integer, String>>();
 
     List<StoreDB.AValue> values = null;
-    StoreDB.AObject aobject = null;
+    StoreDB.AObject aObject = null;
     StoreDB.AValue valuePrev = null;
     boolean isDescendingPrev = false;
     while (rs.next()) {
-      if (aobject == null || rs.getInt(StoreDB.AObject.ID) != aobject.getId()) {
+      if (aObject == null || rs.getInt(StoreDB.AObject.ID) != aObject.getId()) {
         if (values != null) {
           if (isDescendingPrev)
             values.add(valuePrev);
-          result.put(aobject.getId(), convert(values));
+          result.put(aObject.getId(), convert(values));
         }
         values = new ArrayList<StoreDB.AValue>();
-        aobject = new StoreDB.AObject(rs, false, false);
+        aObject = new StoreDB.AObject(rs, false, false);
         isDescendingPrev = false;
         valuePrev = null;
       }
@@ -268,7 +233,7 @@ public class RestDB {
     }
     if (isDescendingPrev)
       values.add(valuePrev);
-    result.put(aobject.getId(), convert(values));
+    result.put(aObject.getId(), convert(values));
 
     return result;
   }
