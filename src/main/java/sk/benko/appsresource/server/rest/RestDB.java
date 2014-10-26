@@ -65,7 +65,7 @@ public class RestDB {
       }
     }
 
-    public Map<Integer, Map<Integer, String>> getList(ListRequest listRequest) throws SQLException {
+    public Map<Integer, Map<Integer, List<String>>> getList(ListRequest listRequest) throws SQLException {
       return RestDB.getList(connection, listRequest);
     }
 
@@ -92,7 +92,7 @@ public class RestDB {
     Integer result = 0;
 
     Statement stmt = c.createStatement();
-    String[] hlpFilter =  getTablesAndWheresForFilter(countRequest.getFilterAttributes(), 0);
+    String[] hlpFilter =  getTablesAndWheresForFilter(countRequest.getFilterAttributes(), 0, true);
 
     String query = "SELECT COUNT(*) "
         + " FROM aobject_parents " + hlpFilter[0]
@@ -108,9 +108,9 @@ public class RestDB {
   }
 
 
-  static Map<Integer, Map<Integer, String>> getList(Connection c, ListRequest listRequest) throws SQLException {
+  static Map<Integer, Map<Integer, List<String>>> getList(Connection c, ListRequest listRequest) throws SQLException {
     Statement stmt = c.createStatement();
-    String[] hlpFilter =  getTablesAndWheresForFilter(listRequest.getFilterAttributes(), 0);
+    String[] hlpFilter =  getTablesAndWheresForFilter(listRequest.getFilterAttributes(), 0, false);
 
     String query = "SELECT distinct ao_id, ao_ot_id, ao_user_id, ao_lastupdateat, "
         + " ta_id, ta_flags, main_val.av_id, main_val.av_ao_id, "
@@ -119,10 +119,10 @@ public class RestDB {
         + " CASE WHEN main_ref.avr_av_id is NULL THEN main_char.avc_lang_id ELSE ref_char.avc_lang_id END as avc_lang_id, "
         + " avd_value, avn_value, main_ref.avr_value, main_val.av_user_id, "
         + " ref.av_ao_id as ao, ref.av_oa_id as oa, ref_char.avc_value as ao_leaf "
-        + " FROM aobjects, template_attributes " + hlpFilter[0] + " left outer join "
+        + " FROM aobjects " + hlpFilter[0] + ", template_attributes left outer join "
         + " avalues main_val on (main_val.av_oa_id = ta_oa_id) left outer join "
         + " avalues_char main_char on (main_char.avc_av_id = main_val.av_id) left outer join "
-        + " avalues_date on (avc_av_id = main_val.av_id) left outer join "
+        + " avalues_date on (avd_av_id = main_val.av_id) left outer join "
         + " avalues_number on (avn_av_id = main_val.av_id) left outer join "
         + " avalues_ref main_ref on (main_ref.avr_av_id = main_val.av_id) left outer join "
         + " avalues_text main_text on (main_text.avt_av_id = main_val.av_id) "
@@ -130,16 +130,16 @@ public class RestDB {
         + " AND ta_shared2 = ref.av_oa_id) left outer join "
         + " avalues_char ref_char on (ref_char.avc_av_id = ref.av_id)"
         + " WHERE main_val.av_ao_id = ao_id AND ta_id in (" + listRequest.getAttributesAsString() + ") " + hlpFilter[1]
-        + " ORDER BY main_val.av_ao_id, av_rank, main_char.avc_lang_id, ref_char.avc_lang_id";
+        + " ORDER BY main_val.av_ao_id, ta_id, av_rank, main_char.avc_lang_id, ref_char.avc_lang_id";
 
     ResultSet rs = stmt.executeQuery(query);
-    Map<Integer, Map<Integer, String>> result = getRows(rs, listRequest.getLangId());
+    Map<Integer, Map<Integer, List<String>>> result = getRows(rs, listRequest.getLangId());
     rs.close();
     stmt.close();
     return result;
   }
 
-  private static String[] getTablesAndWheresForFilter(List<FilterAttribute> filter, int filterOffset) {
+  private static String[] getTablesAndWheresForFilter(List<FilterAttribute> filter, int filterOffset, boolean isCount) {
     String[] result = new String[2];
 
     result[0] = "";
@@ -154,7 +154,7 @@ public class RestDB {
         tables.append(i);
         wheres.append(" AND av");
         wheres.append(i);
-        wheres.append(".av_ao_id = pa_ao_id AND av");
+        wheres.append(".av_ao_id = " + (isCount ? "pa_": "") + "ao_id AND av");
         wheres.append(i);
         wheres.append(".av_oa_id = ");
         wheres.append(filterAttribute.getAttributeId());
@@ -178,8 +178,8 @@ public class RestDB {
     return result;
   }
 
-  private static Map<Integer, Map<Integer, String>> getRows(ResultSet rs, int langId) throws SQLException {
-    Map<Integer, Map<Integer, String>> result = new LinkedHashMap<Integer, Map<Integer, String>>();
+  private static Map<Integer, Map<Integer, List<String>>> getRows(ResultSet rs, int langId) throws SQLException {
+    Map<Integer, Map<Integer, List<String>>> result = new LinkedHashMap<Integer, Map<Integer, List<String>>>();
 
     List<StoreDB.AValue> values = null;
     StoreDB.AObject aObject = null;
@@ -238,18 +238,21 @@ public class RestDB {
     return result;
   }
 
-  private static Map<Integer, String> convert(List<StoreDB.AValue> values) {
-    Map<Integer, String> result = new HashMap<Integer, String>();
+  private static Map<Integer, List<String>> convert(List<StoreDB.AValue> values) {
+    Map<Integer, List<String>> result = new HashMap<Integer, List<String>>();
     for(StoreDB.AValue value : values) {
+      List<String> resultValues = new ArrayList<String>();
       if (value.getValueString() != null) {
-        result.put(value.getUserId(), value.getValueString());
+        resultValues.add(value.getValueString());
       } else if (value.getValueDate() != null) {
-        result.put(value.getUserId(), value.getValueDate().toString());
+        resultValues.add(value.getValueDate().toString());
       } else if (value.getValueDouble() != null) {
-        result.put(value.getUserId(), value.getValueDouble().toString());
-      } else if (value.getValueTimestamp() != null) {
-        result.put(value.getUserId(), value.getValueTimestamp().toString());
+        resultValues.add(value.getValueDouble().toString());
+     } else if (value.getValueTimestamp() != null) {
+        resultValues.add(value.getValueTimestamp().toString());
       }
+      resultValues.add(""+value.getValueRef());
+      result.put(value.getUserId(), resultValues);
     }
 
     return result;

@@ -17,7 +17,8 @@ import java.util.Map;
  * User: adrian
  * Date: 20.11.2013
  * Time: 17:50
- * To change this template use File | Settings | File Templates.
+ * <p/>
+ * Tests for rest services
  */
 public class RestDBTest extends TestCase {
 
@@ -38,7 +39,7 @@ public class RestDBTest extends TestCase {
     try {
       Class.forName("com.mysql.jdbc.Driver");
       Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
-      Map<Integer, Map<Integer, String>> result = store.getList(con, listRequest);
+      Map<Integer, Map<Integer, List<String>>> result = store.getList(con, listRequest);
       assertNotNull(result.get(189375));
       assertNotNull(result.get(189440));
       assertNotNull(result.get(189447));

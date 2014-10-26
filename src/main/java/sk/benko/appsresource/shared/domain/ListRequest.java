@@ -61,4 +61,17 @@ public class ListRequest {
     }
     return result.toString().substring(1);
   }
+
+  @Override
+  public String toString() {
+    StringBuffer result = new StringBuffer();
+
+    result.append("langId=" + langId + "; ");
+    result.append("filterAttributes=" + filterAttributes + "; ");
+    result.append("attributes=" + getAttributesAsString() + "; ");
+    result.append("from=" + from + "; ");
+    result.append("number=" + number);
+
+    return result.toString();
+  }
 }
