@@ -1,7 +1,7 @@
 package sk.benko.appsresource.server.rest;
 
 import org.apache.log4j.Logger;
-import sk.benko.appsresource.shared.domain.CountRequest;
+import sk.benko.appsresource.shared.domain.DetailRequest;
 import sk.benko.appsresource.shared.domain.ListRequest;
 
 import javax.ws.rs.Consumes;
@@ -22,26 +22,26 @@ import java.util.Map;
  * <p/>
  * List service
  */
-@Path("/list")
+@Path("/detail")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class ListResource {
+public class DetailResource {
 
-  private static final Logger logger = Logger.getLogger(ListResource.class.getName());
+  private static final Logger logger = Logger.getLogger(DetailResource.class.getName());
   /**
    * A reference to the data store.
    */
   private final RestDB store = new RestDB();
 
   @POST
-  public Map<Integer, Map<String, List<String>>> getList(ListRequest listRequest) {
-    logger.info("Getting request..." + listRequest);
+  public Map<Integer, Map<String, List<String>>> getDetail(DetailRequest detailRequest) {
+    logger.info("Getting request..." + detailRequest);
     final RestDB.Api api = store.getApi();
     Map<Integer, Map<String, List<String>>> result = new HashMap<Integer, Map<String, List<String>>>();
 
     try {
-      result = api.getList(listRequest);
-      logger.info("Returning list..." + result);
+      result = api.getDetail(detailRequest);
+      logger.info("Returning details..." + result);
     } catch (SQLException ex) {
       logger.error(ex.getLocalizedMessage(), ex);
     } finally {

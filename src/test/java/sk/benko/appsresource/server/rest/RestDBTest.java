@@ -39,7 +39,7 @@ public class RestDBTest extends TestCase {
     try {
       Class.forName("com.mysql.jdbc.Driver");
       Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
-      Map<Integer, Map<Integer, List<String>>> result = store.getList(con, listRequest);
+      Map<Integer, Map<String, List<String>>> result = store.getList(con, listRequest);
       assertNotNull(result.get(189375));
       assertNotNull(result.get(189440));
       assertNotNull(result.get(189447));

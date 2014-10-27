@@ -11,7 +11,8 @@ import java.util.List;
  * User: adrian
  * Date: 16.9.2013
  * Time: 19:00
- * To change this template use File | Settings | File Templates.
+ * <p/>
+ * Get list of object's with given attributes which match filter attributes
  */
 @XmlRootElement
 @JsonIgnoreProperties
