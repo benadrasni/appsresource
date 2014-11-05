@@ -22,7 +22,7 @@ import java.util.*;
 public class RestDB {
 
   public class Api {
-    private static final String URL = "jdbc:google:rdbms://appsres:appsres2/appsresource";
+    private static final String URL = "jdbc:google:rdbms://appsresource:appsresource/appsresource";
     private static final String USER = "appsres";
     private static final String PASSWORD = "appsres";
 
