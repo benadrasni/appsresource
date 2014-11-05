@@ -31,7 +31,7 @@ public class StoreDB {
   private static final int LOG_VALUE_DELETE = 5;
 
   public class Api {
-    private static final String URL = "jdbc:google:rdbms://appsres:appsres2/appsresource";
+    private static final String URL = "jdbc:google:rdbms://appsresource:appsresource/appsresource";
     private static final String USER = "appsres";
     private static final String PASSWORD = "appsres";
 
