@@ -24,8 +24,6 @@
     <set-configuration-property name="devModeRedirectEnabled" value="true"/>
     <set-property name="compiler.useSourceMaps" value="true"/>
 
-    <stylesheet src="upload.css"/>
-
     <!-- Specify the app entry point class.                         -->
     <entry-point class='sk.benko.appsresource.client.layout.Main'/>
 
