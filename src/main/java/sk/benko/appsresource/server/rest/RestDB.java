@@ -269,9 +269,11 @@ public class RestDB {
       valuePrev = value;
       isDescendingPrev = isDescending;
     }
-    if (isDescendingPrev)
-      values.add(valuePrev);
-    result.put(aObject.getId(), convert(values));
+    if (aObject != null) {
+      if (isDescendingPrev)
+        values.add(valuePrev);
+      result.put(aObject.getId(), convert(values));
+    }
 
     return result;
   }
