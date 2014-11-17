@@ -292,6 +292,7 @@ public class RestDB {
         resultValues.add(value.getValueTimestamp().toString());
       }
       resultValues.add("" + value.getValueRef());
+      resultValues.add("" + value.getLangId());
       result.put(""+value.getUserId()+"_"+value.getRank(), resultValues);
     }
 
